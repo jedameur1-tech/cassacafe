@@ -101,7 +101,6 @@
       border-radius: 8px;
     }
 
-    /* Main Container */
     main {
       max-width: 960px;
       margin: 0 auto;
@@ -127,7 +126,7 @@
       color: #fdba74;
     }
 
-    /* Pills & Badges */
+    /* Pills */
     .pill {
       font-size: 0.72rem;
       font-weight: 700;
@@ -157,11 +156,7 @@
       gap: 8px;
       margin-bottom: 10px;
     }
-    .card-title {
-      font-size: 0.96rem;
-      font-weight: 700;
-      color: var(--text);
-    }
+    .card-title { font-size: 0.96rem; font-weight: 700; color: var(--text); }
 
     /* Hero Profit Card */
     .hero-card {
@@ -204,6 +199,36 @@
       justify-content: space-between;
     }
     details.breakdown summary::-webkit-details-marker { display: none; }
+
+    details.mini-details {
+      margin-top: 6px;
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 9px;
+    }
+    details.mini-details summary {
+      cursor: pointer;
+      color: var(--info);
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .sold-list {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.8rem;
+    }
+    .sold-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px dashed rgba(51, 65, 85, 0.7);
+      padding-bottom: 3px;
+    }
+    .sold-row:last-child { border-bottom: none; padding-bottom: 0; }
+
     .kv-list {
       margin-top: 10px;
       display: flex;
@@ -220,7 +245,6 @@
     .kv-row span:first-child { color: var(--muted); }
     .kv-row strong { direction: ltr; }
 
-    /* Action Bar */
     .quick-actions {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -275,11 +299,7 @@
     }
 
     /* List Items */
-    .list-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    .list-stack { display: flex; flex-direction: column; gap: 10px; }
     .item-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -315,12 +335,7 @@
 
     /* Forms */
     .form-group { margin-bottom: 12px; }
-    label {
-      display: block;
-      font-size: 0.83rem;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
+    label { display: block; font-size: 0.83rem; color: var(--muted); margin-bottom: 4px; }
     input, select, textarea {
       width: 100%;
       background: var(--bg);
@@ -331,20 +346,9 @@
       font-size: 0.92rem;
       font-family: inherit;
     }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .row-flex {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .row-flex { display: flex; gap: 8px; align-items: center; }
     .hint { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }
     .error-msg {
       color: #fca5a5;
@@ -357,7 +361,7 @@
     }
     .empty-box {
       text-align: center;
-      padding: 24px 12px;
+      padding: 22px 12px;
       color: var(--muted);
       font-size: 0.88rem;
       border: 1px dashed var(--border);
@@ -365,12 +369,7 @@
     }
 
     /* Tags & Dynamic Rows */
-    .tags-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 8px;
-    }
+    .tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
     .tag-btn {
       background: var(--surface-2);
       color: #e2e8f0;
@@ -390,11 +389,7 @@
       flex-direction: column;
       gap: 6px;
     }
-    .dyn-row-top {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
+    .dyn-row-top { display: flex; gap: 6px; align-items: center; }
 
     /* Settlement Summary Box */
     .due-box {
@@ -409,12 +404,7 @@
       gap: 10px;
       flex-wrap: wrap;
     }
-    .due-box .amount {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: var(--info);
-      direction: ltr;
-    }
+    .due-box .amount { font-size: 1.35rem; font-weight: 800; color: var(--info); direction: ltr; }
 
     /* Bottom Navigation */
     .bottom-nav {
@@ -489,12 +479,7 @@
       border-bottom: 1px solid var(--border);
     }
     .modal-header h2 { font-size: 1.05rem; color: var(--primary); }
-    .close-btn {
-      background: transparent;
-      color: var(--muted);
-      font-size: 1.4rem;
-      padding: 0 6px;
-    }
+    .close-btn { background: transparent; color: var(--muted); font-size: 1.4rem; padding: 0 6px; }
     .section-box {
       background: rgba(15, 23, 42, 0.55);
       border: 1px solid var(--border);
@@ -502,11 +487,7 @@
       padding: 11px;
       margin-bottom: 12px;
     }
-    .section-box h3 {
-      font-size: 0.88rem;
-      color: var(--primary);
-      margin-bottom: 8px;
-    }
+    .section-box h3 { font-size: 0.88rem; color: var(--primary); margin-bottom: 8px; }
 
     /* Toast */
     .toast {
@@ -683,17 +664,23 @@
         <div id="invoicesList" class="list-stack"></div>
       </div>
 
-      <!-- تبويب 4: المخزون -->
+      <!-- تبويب 4: المخزون والجرد الفعلي (بدون إضافة/حذف أصناف) -->
       <div id="tab-stock" class="tab-panel hidden">
         <div class="row-flex" style="justify-content: space-between; margin-bottom: 10px;">
           <h2 style="font-size: 1.05rem;">المخزون والجرد الفعلي</h2>
-          <button id="stockAddBtn" class="btn-primary btn-sm">+ إضافة صنف</button>
+          <span class="pill pill-muted">إعداد الأصناف من المشرف</span>
         </div>
         <div id="stockList" class="list-stack"></div>
 
         <details class="card" style="margin-top: 14px;">
           <summary style="cursor: pointer; font-weight: 700; color: var(--primary);">سجل عمليات الجرد الفعلي لهذا الشهر ▾</summary>
           <div id="auditsList" class="list-stack" style="margin-top: 10px;"></div>
+        </details>
+
+        <details class="card" style="margin-top: 10px;">
+          <summary style="cursor: pointer; font-weight: 700; color: var(--info);">معاينة قائمة السلع والأسعار المعتمدة ▾</summary>
+          <div class="hint" style="margin: 6px 0 8px;">لإضافة سلع جديدة أو تعديل الأسعار، تواصل مع المشرف.</div>
+          <div id="readonlyProductsList" class="sold-list"></div>
         </details>
       </div>
 
@@ -734,7 +721,7 @@
 
         <div class="card">
           <div class="card-header">
-            <span class="card-title">إعدادات المقهى</span>
+            <span class="card-title">بيانات التشغيل</span>
           </div>
           <form id="configForm">
             <div class="grid-2">
@@ -757,21 +744,7 @@
                 <input id="cfgDailyWage" type="text" inputmode="decimal" dir="ltr" />
               </div>
             </div>
-            <div class="grid-2">
-              <div class="form-group">
-                <label for="cfgLowWeight">عتبة نقص الوزن (غرام)</label>
-                <input id="cfgLowWeight" type="number" min="0" dir="ltr" />
-              </div>
-              <div class="form-group">
-                <label for="cfgLowUnit">عتبة نقص الوحدات (قطعة)</label>
-                <input id="cfgLowUnit" type="number" min="0" dir="ltr" />
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="cfgQuickTags">وسوم المصاريف اليومية السريعة (افصل بفاصلة)</label>
-              <textarea id="cfgQuickTags" rows="2"></textarea>
-            </div>
-            <button type="submit" class="btn-primary btn-full">حفظ الإعدادات</button>
+            <button type="submit" class="btn-primary btn-full">حفظ البيانات</button>
           </form>
         </div>
       </div>
@@ -786,6 +759,32 @@
       <button class="nav-btn" data-tab="settings"><span class="ico">⚙️</span><span>الإعدادات</span></button>
     </nav>
   </section>
+
+  <!-- نافذة الجرد الفعلي للمخزون -->
+  <div id="auditModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>🔍 جرد وتصحيح الرصيد الفعلي</h2>
+        <button class="close-btn" data-close="auditModal">&times;</button>
+      </div>
+      <div id="auditItemInfo" class="section-box"></div>
+      <form id="auditForm">
+        <div class="form-group">
+          <label for="auditActualQty">الكمية الفعلية الموجودة حالياً *</label>
+          <input id="auditActualQty" type="number" step="any" min="0" required dir="ltr" />
+          <div id="auditDiffHint" class="hint"></div>
+        </div>
+        <div class="form-group">
+          <label for="auditNote">سبب الفارق / ملاحظة الجرد</label>
+          <input id="auditNote" type="text" placeholder="مثال: جرد نهاية الأسبوع / تلف..." />
+        </div>
+        <div class="row-flex">
+          <button type="submit" class="btn-primary btn-full">اعتماد الرصيد الفعلي وتسجيل الجرد</button>
+          <button type="button" class="btn-secondary" data-close="auditModal">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- نافذة تسجيل يومية جديدة -->
   <div id="dayModal" class="modal-backdrop hidden">
@@ -856,14 +855,14 @@
         <div class="form-group">
           <label for="revWage">أجر العامل لهذا اليوم (بالدينار)</label>
           <input id="revWage" type="text" inputmode="decimal" dir="ltr" required />
-          <div class="hint">يمكنك تعديله إلى 0 إذا لم يستحق أجراً كاملاً أو تغييره حسب الاتفاق.</div>
+          <div class="hint">يمكنك تعديله إلى 0 أو تغييره حسب الاتفاق.</div>
         </div>
         <div class="form-group">
-          <label for="revNote">ملاحظة الإدارة (تظهر للعامل)</label>
+          <label for="revNote">ملاحظة الإدارة</label>
           <input id="revNote" type="text" placeholder="اختياري..." />
         </div>
         <div class="list-stack">
-          <button type="submit" data-mode="approve" class="btn-success btn-full">✅ اعتماد اليومية (تبقى للتسوية)</button>
+          <button type="submit" class="btn-success btn-full">✅ اعتماد اليومية (تبقى للتسوية)</button>
           <button type="button" id="revApproveSettleBtn" class="btn-info btn-full">💰 اعتماد وتسوية نقدية فورية</button>
           <button type="button" id="revRejectBtn" class="btn-danger btn-full">❌ رفض اليومية</button>
         </div>
@@ -950,65 +949,6 @@
     </div>
   </div>
 
-  <!-- نافذة إضافة صنف للمخزون -->
-  <div id="stockItemModal" class="modal-backdrop hidden">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>📦 إضافة صنف للمخزون</h2>
-        <button class="close-btn" data-close="stockItemModal">&times;</button>
-      </div>
-      <form id="stockItemForm">
-        <div class="form-group">
-          <label for="stName">اسم الصنف *</label>
-          <input id="stName" type="text" required placeholder="مثال: قهوة حبوب، ماء 0.5ل، كوكا كولا..." />
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="stUnit">وحدة القياس *</label>
-            <select id="stUnit">
-              <option value="unit">وحدة / قارورة / علبة</option>
-              <option value="g">وزن بالغرام (غ)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="stQty">الرصيد الابتدائي *</label>
-            <input id="stQty" type="number" step="any" min="0" required dir="ltr" value="0" />
-          </div>
-        </div>
-        <div class="row-flex">
-          <button type="submit" class="btn-primary btn-full">حفظ الصنف</button>
-          <button type="button" class="btn-secondary" data-close="stockItemModal">إلغاء</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- نافذة الجرد الفعلي للمخزون -->
-  <div id="auditModal" class="modal-backdrop hidden">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>🔍 جرد وتصحيح الرصيد الفعلي</h2>
-        <button class="close-btn" data-close="auditModal">&times;</button>
-      </div>
-      <div id="auditItemInfo" class="section-box"></div>
-      <form id="auditForm">
-        <div class="form-group">
-          <label for="auditActualQty">الكمية الفعلية الموجودة حالياً *</label>
-          <input id="auditActualQty" type="number" step="any" min="0" required dir="ltr" />
-          <div id="auditDiffHint" class="hint"></div>
-        </div>
-        <div class="form-group">
-          <label for="auditNote">سبب الفارق / ملاحظة الجرد</label>
-          <input id="auditNote" type="text" placeholder="مثال: جرد نهاية الأسبوع / تلف..." />
-        </div>
-        <div class="row-flex">
-          <button type="submit" class="btn-primary btn-full">اعتماد الرصيد الفعلي وتسجيل الجرد</button>
-          <button type="button" class="btn-secondary" data-close="auditModal">إلغاء</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <div id="toast" class="toast hidden"></div>
 
   <!-- Firebase Compat SDK v10.12.2 -->
@@ -1031,7 +971,6 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // الحالة العامة
     const state = {
       user: null,
       userProfile: null,
@@ -1057,6 +996,7 @@
     };
 
     let listeners = [];
+    let monthListeners = [];
 
     // أدوات مساعدة
     function getCurrentMonthKey() {
@@ -1076,7 +1016,7 @@
         .replace(/'/g, "&#39;");
     }
     function toMillimes(val) {
-      const cleaned = String(val == null ? "" : val).replace(",", ".").trim();
+      const cleaned = String(val == null ? "" : val).replace(/,/g, ".").trim();
       const num = parseFloat(cleaned);
       if (isNaN(num)) return 0;
       return Math.round(num * 1000);
@@ -1103,6 +1043,19 @@
         return false;
       }
       return true;
+    }
+
+    function getProductsList() {
+      const raw = state.config && state.config.products;
+      if (!raw) return [];
+      const arr = [];
+      if (Array.isArray(raw)) {
+        raw.forEach((p, idx) => { if (p) arr.push({ ...p, id: p.id || String(idx) }); });
+      } else if (typeof raw === "object") {
+        Object.entries(raw).forEach(([k, p]) => { if (p) arr.push({ ...p, id: k }); });
+      }
+      const catOrder = { hot: 1, cold: 2, food: 3, fun: 4 };
+      return arr.sort((a, b) => (catOrder[a.category] || 9) - (catOrder[b.category] || 9) || (a.createdAt || 0) - (b.createdAt || 0));
     }
 
     let toastTimer = null;
@@ -1135,12 +1088,12 @@
     function detachAllListeners() {
       listeners.forEach(({ ref, cb }) => ref.off("value", cb));
       listeners = [];
+      monthListeners.forEach(({ ref, cb }) => ref.off("value", cb));
+      monthListeners = [];
     }
     function listen(path, cb) {
       const ref = db.ref(path);
-      ref.on("value", cb, (err) => {
-        console.error(path, err);
-      });
+      ref.on("value", cb, (err) => console.error(path, err));
       listeners.push({ ref, cb });
     }
 
@@ -1273,7 +1226,6 @@
       attachMonthListeners();
     }
 
-    let monthListeners = [];
     function attachMonthListeners() {
       monthListeners.forEach(({ ref, cb }) => ref.off("value", cb));
       monthListeners = [];
@@ -1409,7 +1361,6 @@
 
       const netProfit = approvedSales - approvedDailyExp - approvedInvoicesTotal - fixedTotal - approvedWages;
 
-      // حساب المستحق من العامل (أيام معتمدة غير مسواة - فواتير نقدية دفعها العامل غير مسواة)
       let workerDaysNet = 0;
       unsettledApprovedDays.forEach((d) => {
         workerDaysNet += (d.sales - d.expTotal - d.wage);
@@ -1420,7 +1371,6 @@
       });
       const workerNetDue = workerDaysNet - workerPaidInvs;
 
-      // فحص المخزون المنخفض
       const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
       const lowW = Number(state.config.lowStockWeightLimit != null ? state.config.lowStockWeightLimit : 1000);
       const lowU = Number(state.config.lowStockUnitLimit != null ? state.config.lowStockUnitLimit : 10);
@@ -1525,7 +1475,6 @@
       document.getElementById("bdWages").textContent = formatDT(m.approvedWages);
       document.getElementById("bdWagesRow").classList.toggle("hidden", !isTeamMode());
 
-      // زر التسوية وصندوق المستحقات في وضع الفريق
       const hasUnsettled = isTeamMode() && (m.unsettledApprovedDays.length > 0 || m.unsettledWorkerInvoices.length > 0);
       document.getElementById("qaSettleBtn").classList.toggle("hidden", !isTeamMode());
       document.getElementById("dashWorkerDueBox").classList.toggle("hidden", !hasUnsettled);
@@ -1534,7 +1483,6 @@
         document.getElementById("dashWorkerDueVal").textContent = formatDT(m.workerNetDue);
       }
 
-      // تنبيه نقص المخزون
       const lowBox = document.getElementById("dashLowStockBox");
       lowBox.classList.toggle("hidden", m.lowStockItems.length === 0);
       if (m.lowStockItems.length > 0) {
@@ -1543,7 +1491,6 @@
           .join("");
       }
 
-      // الفواتير المعلقة
       const pInvBox = document.getElementById("dashPendingInvBox");
       pInvBox.classList.toggle("hidden", m.pendingInvoices.length === 0);
       document.getElementById("dashPendingInvCount").textContent = m.pendingInvoices.length;
@@ -1551,7 +1498,6 @@
         document.getElementById("dashPendingInvList").innerHTML = m.pendingInvoices.map(renderInvoiceCardHtml).join("");
       }
 
-      // اليوميات غير المسواة (أو الأخيرة في الفردي)
       const dashDaysTitle = document.getElementById("dashDaysTitle");
       const dashDaysList = document.getElementById("dashDaysList");
       if (isTeamMode()) {
@@ -1572,6 +1518,17 @@
           dashDaysList.innerHTML = recent.map(renderDayCardHtml).join("");
         }
       }
+    }
+
+    function renderItemsSoldRowsHtml(itemsSold) {
+      if (!Array.isArray(itemsSold) || !itemsSold.length) return "";
+      const sorted = itemsSold.slice().sort((a, b) => (Number(b.lineTotal) || 0) - (Number(a.lineTotal) || 0));
+      return sorted.map((it) => `
+        <div class="sold-row">
+          <span>${escapeHtml(it.name)} <strong style="color: var(--primary);">×${Number(it.qty) || 0}</strong></span>
+          <strong dir="ltr">${formatDT(it.lineTotal)}</strong>
+        </div>
+      `).join("");
     }
 
     function renderDayCardHtml(d) {
@@ -1599,6 +1556,17 @@
         : "";
       const noteLine = e.note ? `<div class="hint">ملاحظة: ${escapeHtml(e.note)}</div>` : "";
       const adminNoteLine = d.dec && d.dec.note ? `<div class="hint" style="color: var(--info);">ملاحظة الإدارة: ${escapeHtml(d.dec.note)}</div>` : "";
+
+      let soldDetailsHtml = "";
+      if (Array.isArray(e.itemsSold) && e.itemsSold.length) {
+        const totalUnits = e.itemsSold.reduce((acc, x) => acc + (Number(x.qty) || 0), 0);
+        soldDetailsHtml = `
+          <details class="mini-details">
+            <summary>تفصيل المبيعات والكونتور (${totalUnits} قطعة) ▾</summary>
+            <div class="sold-list">${renderItemsSoldRowsHtml(e.itemsSold)}</div>
+          </details>
+        `;
+      }
 
       let actionsHtml = "";
       if (d.status === "pending") {
@@ -1633,6 +1601,7 @@
             <div class="kv-row"><span>${isTeamMode() ? "صافي اليوم للتسوية:" : "صافي اليوم:"}</span><strong style="color: var(--primary);">${formatDT(dayNet)}</strong></div>
             ${expLines}
             ${stockLines}
+            ${soldDetailsHtml}
             ${noteLine}
             ${adminNoteLine}
           </div>
@@ -1680,7 +1649,6 @@
         ? filtered.map(renderDayCardHtml).join("")
         : `<div class="empty-box">لا توجد يوميات ضمن هذا التصنيف.</div>`;
 
-      // أرشيف التسويات (وضع الفريق)
       const archBox = document.getElementById("settlementsArchiveBox");
       archBox.classList.toggle("hidden", !isTeamMode());
       if (isTeamMode()) {
@@ -1773,6 +1741,7 @@
         : `<div class="empty-box">لا توجد فواتير ضمن هذا التصنيف.</div>`;
     }
 
+    // ============ تبويب المخزون (مراقبة وجرد فعلي فقط) ============
     function renderStockTab(m) {
       const entries = Object.entries(m.stockObj)
         .map(([id, item]) => ({ id, ...item }))
@@ -1785,25 +1754,24 @@
         ? entries.map((it) => {
             const limit = it.unit === "g" ? lowW : lowU;
             const isLow = (Number(it.qty) || 0) <= limit;
+            const packText = it.packLabel || (it.unit === "g" ? "كيلوغرام" : (it.packSize === 12 ? "ستيكة 12" : (it.packSize === 6 ? "ستيكة 6" : "قطعة")));
             return `
               <div class="item-card ${isLow ? "low" : ""}">
                 <div class="item-top">
                   <div>
                     <strong>${escapeHtml(it.name)}</strong>
-                    <div class="hint">القياس: ${it.unit === "g" ? "بالغرام" : "بالوحدة"}</div>
+                    <div class="hint">الجرد: ${it.unit === "g" ? "بالغرام" : "بالوحدة"} — الشراء: ${escapeHtml(packText)}</div>
                   </div>
                   <span class="pill ${isLow ? "pill-err" : "pill-ok"}">${formatQty(it.qty, it.unit)}</span>
                 </div>
                 <div class="item-actions">
                   <button class="btn-info btn-sm" data-stock-action="audit" data-id="${escapeHtml(it.id)}">🔍 جرد فعلي</button>
-                  <button class="btn-danger btn-sm" data-stock-action="delete" data-id="${escapeHtml(it.id)}">حذف</button>
                 </div>
               </div>
             `;
           }).join("")
-        : `<div class="empty-box">المخزون فارغ حالياً. أضف أصناف المقهى (القهوة، الماء، المشروبات...) لربطها بالفواتير واليوميات.</div>`;
+        : `<div class="empty-box">لم تُجهّز مواد المخزون بعد لهذا المقهى. تواصل مع المشرف لإعداد الأصناف.</div>`;
 
-      // سجل الجرد
       const audits = Object.entries(state.admin.stock_audits || {})
         .map(([id, a]) => ({ id, ...a }))
         .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
@@ -1823,8 +1791,97 @@
             </div>
           `).join("")
         : `<div class="empty-box">لا توجد عمليات جرد مسجّلة في هذا الشهر.</div>`;
+
+      const prods = getProductsList().filter((p) => p.active !== false);
+      document.getElementById("readonlyProductsList").innerHTML = prods.length
+        ? prods.map((p) => `
+            <div class="sold-row">
+              <span>${escapeHtml(p.name)}</span>
+              <strong style="color: var(--primary);" dir="ltr">${formatDT(p.price)}</strong>
+            </div>
+          `).join("")
+        : `<div class="hint">لم تُضف قائمة سلع مخصصة بعد.</div>`;
     }
 
+    function openAuditModal(itemId) {
+      if (!assertWritable()) return;
+      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
+      const item = stockObj[itemId];
+      if (!item) return;
+
+      state.auditItemId = itemId;
+      document.getElementById("auditItemInfo").innerHTML = `
+        <div class="kv-row"><span>المادة:</span><strong>${escapeHtml(item.name)}</strong></div>
+        <div class="kv-row"><span>الرصيد النظري المسجّل:</span><strong style="color: var(--primary);">${formatQty(item.qty, item.unit)}</strong></div>
+      `;
+      document.getElementById("auditActualQty").value = Number(item.qty) || 0;
+      document.getElementById("auditNote").value = "";
+      updateAuditDiffHint();
+      openModal("auditModal");
+    }
+
+    function updateAuditDiffHint() {
+      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
+      const item = stockObj[state.auditItemId];
+      if (!item) return;
+      const actual = parseFloat(document.getElementById("auditActualQty").value);
+      const theo = Number(item.qty) || 0;
+      const el = document.getElementById("auditDiffHint");
+      if (isNaN(actual)) { el.textContent = ""; return; }
+      const diff = Number((actual - theo).toFixed(3));
+      if (diff === 0) {
+        el.textContent = "✅ الرصيد الفعلي مطابق تماماً للنظري.";
+        el.style.color = "var(--success)";
+      } else if (diff < 0) {
+        el.textContent = `⚠️ عجز في المخزون قدره ${formatQty(Math.abs(diff), item.unit)}`;
+        el.style.color = "var(--danger)";
+      } else {
+        el.textContent = `ℹ️ فائض في المخزون قدره +${formatQty(diff, item.unit)}`;
+        el.style.color = "var(--info)";
+      }
+    }
+
+    document.getElementById("auditActualQty").addEventListener("input", updateAuditDiffHint);
+
+    document.getElementById("auditForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!assertWritable() || !state.auditItemId) return;
+      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
+      const item = stockObj[state.auditItemId];
+      if (!item) return;
+
+      const actualQty = parseFloat(document.getElementById("auditActualQty").value) || 0;
+      const theoQty = Number(item.qty) || 0;
+      const diff = Number((actualQty - theoQty).toFixed(3));
+      const note = document.getElementById("auditNote").value.trim();
+      const nowMs = Date.now();
+      const auditId = db.ref().push().key;
+
+      const updates = {};
+      updates[`live/stock_state/stock/${state.auditItemId}/qty`] = actualQty;
+      updates[`live/stock_state/updatedAt`] = nowMs;
+      updates[`admin/${state.selectedMonth}/stock_audits/${auditId}`] = {
+        itemId: state.auditItemId,
+        itemName: item.name,
+        unit: item.unit,
+        theoreticalQty: theoQty,
+        actualQty,
+        diff,
+        date: getTodayDateStr(),
+        note,
+        createdAt: nowMs
+      };
+
+      try {
+        await db.ref(`tenants/${state.cafeId}`).update(updates);
+        closeModal("auditModal");
+        showToast("تم اعتماد الجرد وتحديث رصيد المخزون.");
+      } catch (err) {
+        showToast("فشل الحفظ: " + err.message, "err");
+      }
+    });
+
+    // ============ تبويب الإعدادات والمصاريف الثابتة ============
     function renderSettingsTab(m) {
       document.getElementById("fixedMonthLbl").textContent = state.selectedMonth;
       document.getElementById("fixedTotalLbl").textContent = formatDT(m.fixedTotal);
@@ -1854,16 +1911,12 @@
       document.getElementById("activeMonthHint").textContent =
         `الشهر النشط حالياً في المنظومة: ${state.live.active_month || "غير محدد"}`;
 
-      // تعبئة نموذج الإعدادات (فقط إذا لم يكن المستخدم يكتب فيه حالياً)
       if (!document.getElementById("configForm").contains(document.activeElement)) {
         document.getElementById("cfgCafeName").value = state.config.cafeName || "";
         document.getElementById("cfgOwnerName").value = state.config.ownerName || "الإدارة";
         document.getElementById("cfgTeamFields").classList.toggle("hidden", !isTeamMode());
         document.getElementById("cfgWorkerName").value = state.config.workerName || "العامل";
         document.getElementById("cfgDailyWage").value = ((Number(state.config.defaultDailyWage) || 0) / 1000).toFixed(3);
-        document.getElementById("cfgLowWeight").value = state.config.lowStockWeightLimit != null ? state.config.lowStockWeightLimit : 1000;
-        document.getElementById("cfgLowUnit").value = state.config.lowStockUnitLimit != null ? state.config.lowStockUnitLimit : 10;
-        document.getElementById("cfgQuickTags").value = (state.config.consumableQuickTags || []).join("، ");
       }
     }
 
@@ -1887,7 +1940,7 @@
       const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
       const items = Object.entries(stockObj);
       if (!items.length) {
-        showToast("أضف أصنافاً في تبويب المخزون أولاً.", "err");
+        showToast("لا توجد مواد مخزون مضافة حالياً.", "err");
         return;
       }
       const options = items.map(([id, it]) =>
@@ -1940,7 +1993,7 @@
 
       const date = document.getElementById("dDate").value;
       const monthKey = date.slice(0, 7);
-      const sales = toMillimes(document.getElementById("dSales").value);
+      const sales = Math.max(0, toMillimes(document.getElementById("dSales").value));
       const note = document.getElementById("dNote").value.trim();
       const ownerShift = !isTeamMode() || document.getElementById("dOwnerShift").checked;
 
@@ -1948,7 +2001,7 @@
       let expensesTotal = 0;
       document.querySelectorAll("#dayExpRows .dyn-row").forEach((row) => {
         const label = row.querySelector(".exp-label").value.trim();
-        const amt = toMillimes(row.querySelector(".exp-amt").value);
+        const amt = Math.max(0, toMillimes(row.querySelector(".exp-amt").value));
         if (label && amt > 0) {
           expenses.push({ label, amount: amt });
           expensesTotal += amt;
@@ -2004,9 +2057,7 @@
           const cur = Number(stockObj[itemId].qty) || 0;
           updates[`live/stock_state/stock/${itemId}/qty`] = Number((cur - usedQty).toFixed(3));
         });
-        if (Object.keys(deltas).length > 0) {
-          updates[`live/stock_state/updatedAt`] = nowMs;
-        }
+        if (Object.keys(deltas).length > 0) updates[`live/stock_state/updatedAt`] = nowMs;
 
         await db.ref(`tenants/${state.cafeId}`).update(updates);
         if (monthKey !== state.selectedMonth) {
@@ -2023,7 +2074,7 @@
       }
     });
 
-    // ============ إجراءات اليوميات (مراجعة / اعتماد / إلغاء) ============
+    // ============ إجراءات اليوميات ============
     document.getElementById("daysFilters").addEventListener("click", (e) => {
       const btn = e.target.closest("[data-day-filter]");
       if (!btn) return;
@@ -2042,19 +2093,27 @@
         const defaultWage = Number(state.config.defaultDailyWage) || 0;
         const expLines = (entry.expenses || []).map((x) => `${escapeHtml(x.label)}: ${formatDT(x.amount)}`).join(" | ") || "لا يوجد";
         const stockLines = (entry.stockUsage || []).map((x) => `${escapeHtml(x.name)}: -${formatQty(x.qty, x.unit)}`).join(" | ") || "لا يوجد";
+        const soldHtml = Array.isArray(entry.itemsSold) && entry.itemsSold.length
+          ? `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);">
+               <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary); margin-bottom: 4px;">تفصيل المبيعات (الكونتور الكامل):</div>
+               <div class="sold-list">${renderItemsSoldRowsHtml(entry.itemsSold)}</div>
+             </div>`
+          : "";
+
         document.getElementById("reviewDaySummary").innerHTML = `
           <div class="kv-row"><span>التاريخ:</span><strong dir="ltr">${escapeHtml(entry.date)}</strong></div>
-          <div class="kv-row"><span>المداخيل:</span><strong style="color: var(--success);">${formatDT(entry.sales)}</strong></div>
+          <div class="kv-row"><span>إجمالي المداخيل:</span><strong style="color: var(--success);">${formatDT(entry.sales)}</strong></div>
           <div class="kv-row"><span>المصاريف اليومية:</span><strong>${formatDT(entry.expensesTotal)}</strong></div>
           <div class="hint" style="margin-top: 6px;">تفصيل المصاريف: ${expLines}</div>
           <div class="hint">استهلاك المخزون: ${stockLines}</div>
           ${entry.note ? `<div class="hint">ملاحظة العامل: ${escapeHtml(entry.note)}</div>` : ""}
+          ${soldHtml}
         `;
         document.getElementById("revWage").value = (defaultWage / 1000).toFixed(3);
         document.getElementById("revNote").value = "";
         openModal("reviewDayModal");
       } else if (action === "quick-reject") {
-        const reason = prompt("سبب رفض اليومية (اختياري):") || "";
+        const reason = prompt("سبب رفض اليومية (اختياري):");
         if (reason === null) return;
         await decideWorkerDay(entryId, "rejected", 0, false, reason);
       } else if (action === "settle-one") {
@@ -2100,7 +2159,7 @@
         status,
         settled: status === "approved" && settleNow,
         settledAt: status === "approved" && settleNow ? nowMs : null,
-        dailyWage: status === "approved" ? wageMillimes : 0,
+        dailyWage: status === "approved" ? Math.max(0, wageMillimes) : 0,
         approvedAt: nowMs,
         stockApplied: status === "approved",
         note: note || ""
@@ -2121,7 +2180,7 @@
 
       if (status === "approved" && settleNow) {
         const setId = db.ref().push().key;
-        const netDue = (Number(entry.sales) || 0) - (Number(entry.expensesTotal) || 0) - wageMillimes;
+        const netDue = (Number(entry.sales) || 0) - (Number(entry.expensesTotal) || 0) - Math.max(0, wageMillimes);
         updates[`admin/${state.selectedMonth}/settlements/${setId}`] = {
           date: getTodayDateStr(),
           entryIds: [entryId],
@@ -2312,7 +2371,7 @@
     function recalcInvoiceTotal() {
       let sum = 0;
       document.querySelectorAll("#invLineRows .il-total").forEach((inp) => {
-        sum += toMillimes(inp.value);
+        sum += Math.max(0, toMillimes(inp.value));
       });
       document.getElementById("invCalcTotal").textContent = formatDT(sum);
     }
@@ -2352,27 +2411,15 @@
         const itemId = row.querySelector(".il-stock").value;
         const customName = row.querySelector(".il-custom-name").value.trim();
         const qty = parseFloat(row.querySelector(".il-qty").value) || 0;
-        const lineTotal = toMillimes(row.querySelector(".il-total").value);
+        const lineTotal = Math.max(0, toMillimes(row.querySelector(".il-total").value));
         if (lineTotal <= 0 && qty <= 0) return;
 
         if (itemId && stockObj[itemId]) {
-          items.push({
-            itemId,
-            name: stockObj[itemId].name,
-            unit: stockObj[itemId].unit,
-            qty,
-            lineTotal
-          });
+          items.push({ itemId, name: stockObj[itemId].name, unit: stockObj[itemId].unit, qty, lineTotal });
           deltas[itemId] = (deltas[itemId] || 0) + qty;
           totalAmount += lineTotal;
         } else if (customName) {
-          items.push({
-            itemId: null,
-            name: customName,
-            unit: "unit",
-            qty: qty || 1,
-            lineTotal
-          });
+          items.push({ itemId: null, name: customName, unit: "unit", qty: qty || 1, lineTotal });
           totalAmount += lineTotal;
         }
       });
@@ -2507,7 +2554,7 @@
       }
     }
 
-    // تفويض نقرات البطاقات في الرئيسية واليوميات والفواتير
+    // تفويض النقرات
     document.querySelector("main").addEventListener("click", (e) => {
       const dayBtn = e.target.closest("[data-day-action]");
       if (dayBtn) {
@@ -2520,8 +2567,8 @@
         return;
       }
       const stBtn = e.target.closest("[data-stock-action]");
-      if (stBtn) {
-        handleStockAction(stBtn.dataset.stockAction, stBtn.dataset.id);
+      if (stBtn && stBtn.dataset.stockAction === "audit") {
+        openAuditModal(stBtn.dataset.id);
         return;
       }
       const presetBtn = e.target.closest("[data-preset-idx]");
@@ -2540,129 +2587,12 @@
       }
     });
 
-    // ============ المخزون والجرد الفعلي ============
-    document.getElementById("stockAddBtn").addEventListener("click", () => {
-      if (!assertWritable()) return;
-      document.getElementById("stockItemForm").reset();
-      openModal("stockItemModal");
-    });
-
-    document.getElementById("stockItemForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!assertWritable()) return;
-      const name = document.getElementById("stName").value.trim();
-      const unit = document.getElementById("stUnit").value;
-      const qty = parseFloat(document.getElementById("stQty").value) || 0;
-      if (!name) return;
-
-      try {
-        const itemId = db.ref().push().key;
-        const nowMs = Date.now();
-        const updates = {};
-        updates[`live/stock_state/stock/${itemId}`] = { name, unit, qty, createdAt: nowMs };
-        updates[`live/stock_state/updatedAt`] = nowMs;
-        await db.ref(`tenants/${state.cafeId}`).update(updates);
-        closeModal("stockItemModal");
-        showToast("تمت إضافة الصنف إلى المخزون.");
-      } catch (err) {
-        showToast("فشل الحفظ: " + err.message, "err");
-      }
-    });
-
-    async function handleStockAction(action, itemId) {
-      if (!assertWritable()) return;
-      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
-      const item = stockObj[itemId];
-      if (!item) return;
-
-      if (action === "delete") {
-        if (!confirm(`حذف صنف «${item.name}» من قائمة المخزون؟`)) return;
-        try {
-          await db.ref(`tenants/${state.cafeId}/live/stock_state/stock/${itemId}`).remove();
-          showToast("تم حذف الصنف.");
-        } catch (err) {
-          showToast("فشل الحذف: " + err.message, "err");
-        }
-      } else if (action === "audit") {
-        state.auditItemId = itemId;
-        document.getElementById("auditItemInfo").innerHTML = `
-          <div class="kv-row"><span>الصنف:</span><strong>${escapeHtml(item.name)}</strong></div>
-          <div class="kv-row"><span>الرصيد النظري المسجّل:</span><strong style="color: var(--primary);">${formatQty(item.qty, item.unit)}</strong></div>
-        `;
-        document.getElementById("auditActualQty").value = Number(item.qty) || 0;
-        document.getElementById("auditNote").value = "";
-        updateAuditDiffHint();
-        openModal("auditModal");
-      }
-    }
-
-    function updateAuditDiffHint() {
-      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
-      const item = stockObj[state.auditItemId];
-      if (!item) return;
-      const actual = parseFloat(document.getElementById("auditActualQty").value);
-      const theo = Number(item.qty) || 0;
-      const el = document.getElementById("auditDiffHint");
-      if (isNaN(actual)) { el.textContent = ""; return; }
-      const diff = Number((actual - theo).toFixed(3));
-      if (diff === 0) {
-        el.textContent = "✅ الرصيد الفعلي مطابق تماماً للنظري.";
-        el.style.color = "var(--success)";
-      } else if (diff < 0) {
-        el.textContent = `⚠️ عجز في المخزون قدره ${formatQty(Math.abs(diff), item.unit)}`;
-        el.style.color = "var(--danger)";
-      } else {
-        el.textContent = `ℹ️ فائض في المخزون قدره +${formatQty(diff, item.unit)}`;
-        el.style.color = "var(--info)";
-      }
-    }
-
-    document.getElementById("auditActualQty").addEventListener("input", updateAuditDiffHint);
-
-    document.getElementById("auditForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!assertWritable() || !state.auditItemId) return;
-      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
-      const item = stockObj[state.auditItemId];
-      if (!item) return;
-
-      const actualQty = parseFloat(document.getElementById("auditActualQty").value) || 0;
-      const theoQty = Number(item.qty) || 0;
-      const diff = Number((actualQty - theoQty).toFixed(3));
-      const note = document.getElementById("auditNote").value.trim();
-      const nowMs = Date.now();
-      const auditId = db.ref().push().key;
-
-      const updates = {};
-      updates[`live/stock_state/stock/${state.auditItemId}/qty`] = actualQty;
-      updates[`live/stock_state/updatedAt`] = nowMs;
-      updates[`admin/${state.selectedMonth}/stock_audits/${auditId}`] = {
-        itemId: state.auditItemId,
-        itemName: item.name,
-        unit: item.unit,
-        theoreticalQty: theoQty,
-        actualQty,
-        diff,
-        date: getTodayDateStr(),
-        note,
-        createdAt: nowMs
-      };
-
-      try {
-        await db.ref(`tenants/${state.cafeId}`).update(updates);
-        closeModal("auditModal");
-        showToast("تم اعتماد الجرد وتحديث رصيد المخزون.");
-      } catch (err) {
-        showToast("فشل الحفظ: " + err.message, "err");
-      }
-    });
-
     // ============ المصاريف الثابتة والإعدادات والتقرير ============
     document.getElementById("fixedExpForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!assertWritable()) return;
       const name = document.getElementById("fExpName").value.trim();
-      const amount = toMillimes(document.getElementById("fExpAmount").value);
+      const amount = Math.max(0, toMillimes(document.getElementById("fExpAmount").value));
       if (!name || amount <= 0) {
         showToast("أدخل بيان المصروف ومبلغاً صحيحاً.", "err");
         return;
@@ -2712,9 +2642,7 @@
       txt += `المصاريف اليومية: ${formatDT(m.approvedDailyExp)}\n`;
       txt += `فواتير المشتريات: ${formatDT(m.approvedInvoicesTotal)}\n`;
       txt += `المصاريف الثابتة: ${formatDT(m.fixedTotal)}\n`;
-      if (isTeamMode()) {
-        txt += `أجور العامل: ${formatDT(m.approvedWages)}\n`;
-      }
+      if (isTeamMode()) txt += `أجور العامل: ${formatDT(m.approvedWages)}\n`;
       txt += `——————————————\n`;
       txt += `✅ صافي الربح: ${formatDT(m.netProfit)}\n`;
       if (isTeamMode() && m.workerNetDue !== 0) {
@@ -2731,25 +2659,17 @@
     document.getElementById("configForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!assertWritable()) return;
-
-      const tagsRaw = document.getElementById("cfgQuickTags").value;
-      const tags = tagsRaw.split(/[،,]/).map((s) => s.trim()).filter(Boolean);
-
       const patch = {
         cafeName: document.getElementById("cfgCafeName").value.trim(),
-        ownerName: document.getElementById("cfgOwnerName").value.trim() || "الإدارة",
-        lowStockWeightLimit: Math.max(0, parseInt(document.getElementById("cfgLowWeight").value, 10) || 0),
-        lowStockUnitLimit: Math.max(0, parseInt(document.getElementById("cfgLowUnit").value, 10) || 0),
-        consumableQuickTags: tags
+        ownerName: document.getElementById("cfgOwnerName").value.trim() || "الإدارة"
       };
       if (isTeamMode()) {
         patch.workerName = document.getElementById("cfgWorkerName").value.trim() || "العامل";
         patch.defaultDailyWage = Math.max(0, toMillimes(document.getElementById("cfgDailyWage").value));
       }
-
       try {
         await db.ref(`tenants/${state.cafeId}/config`).update(patch);
-        showToast("تم حفظ إعدادات المقهى.");
+        showToast("تم حفظ بيانات التشغيل.");
       } catch (err) {
         showToast("فشل الحفظ: " + err.message, "err");
       }
