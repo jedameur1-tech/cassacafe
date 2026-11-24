@@ -29,97 +29,69 @@
       line-height: 1.5;
       min-height: 100vh;
     }
-
     .hidden { display: none !important; }
 
-    /* Login Screen */
-    .login-wrap {
+    /* Auth */
+    .center-wrap {
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 16px;
     }
-    .login-card {
+    .auth-card {
       width: 100%;
       max-width: 400px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 28px 24px;
+      padding: 28px 22px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     }
-    .brand {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    .brand h1 {
-      font-size: 1.6rem;
-      color: var(--primary);
-      letter-spacing: 0.5px;
-    }
-    .brand p {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-top: 4px;
-    }
+    .brand { text-align: center; margin-bottom: 22px; }
+    .brand h1 { font-size: 1.6rem; color: var(--primary); }
+    .brand p { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
 
-    /* Layout */
+    /* Header */
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 14px 16px;
+      padding: 12px 16px;
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 40;
     }
     .header-inner {
-      max-width: 1100px;
+      max-width: 1080px;
       margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
     }
-    .header-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .header-title h1 {
-      font-size: 1.2rem;
-      color: var(--primary);
-    }
-    .badge-admin {
-      font-size: 0.75rem;
-      background: rgba(245, 158, 11, 0.15);
-      color: var(--primary);
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      padding: 2px 8px;
-      border-radius: 999px;
-    }
-    .header-actions {
+    .title-wrap {
       display: flex;
       align-items: center;
       gap: 8px;
     }
+    .title-wrap h1 { font-size: 1.25rem; color: var(--primary); }
 
     main {
-      max-width: 1100px;
+      max-width: 1080px;
       margin: 0 auto;
-      padding: 16px;
+      padding: 16px 14px 36px;
     }
 
     /* Stats */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
-    @media (max-width: 680px) {
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    @media (min-width: 700px) {
+      .stats-grid { grid-template-columns: repeat(4, 1fr); }
     }
     .stat-card {
       background: var(--surface);
@@ -127,25 +99,11 @@
       border-radius: var(--radius);
       padding: 14px;
     }
-    .stat-card .label { font-size: 0.8rem; color: var(--muted); }
-    .stat-card .value { font-size: 1.6rem; font-weight: 700; margin-top: 4px; }
-    .stat-card.ok .value { color: var(--success); }
-    .stat-card.warn .value { color: var(--warning); }
-    .stat-card.err .value { color: var(--danger); }
+    .stat-label { font-size: 0.82rem; color: var(--muted); }
+    .stat-val { font-size: 1.8rem; font-weight: 800; margin-top: 4px; direction: ltr; text-align: right; }
 
-    /* Toolbar */
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 14px;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .search-box {
-      flex: 1;
-      min-width: 220px;
-    }
+    /* Search & Filters */
+    .search-box { margin-bottom: 10px; }
     .filters {
       display: flex;
       gap: 6px;
@@ -159,7 +117,6 @@
       padding: 6px 12px;
       border-radius: 999px;
       font-size: 0.82rem;
-      cursor: pointer;
     }
     .filter-pill.active {
       background: var(--primary);
@@ -168,298 +125,275 @@
       font-weight: 700;
     }
 
-    /* Forms & Inputs */
-    .form-group { margin-bottom: 14px; }
-    label {
-      display: block;
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 5px;
+    /* Cafes List */
+    .cafes-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
     }
+    @media (min-width: 760px) {
+      .cafes-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .cafe-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .cafe-card.suspended { border-color: rgba(239, 68, 68, 0.55); opacity: 0.85; }
+    .cafe-card.expired { border-color: rgba(249, 115, 22, 0.6); }
+    .cafe-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .cafe-name { font-size: 1.05rem; font-weight: 800; color: var(--text); }
+    .cafe-meta {
+      font-size: 0.83rem;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .cafe-meta strong { color: var(--text); }
+    .cafe-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Pills */
+    .pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+      display: inline-block;
+    }
+    .pill-ok { background: rgba(16, 185, 129, 0.18); color: var(--success); }
+    .pill-warn { background: rgba(249, 115, 22, 0.2); color: var(--warning); }
+    .pill-err { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+    .pill-info { background: rgba(56, 189, 248, 0.18); color: var(--info); }
+    .pill-muted { background: rgba(148, 163, 184, 0.18); color: #cbd5e1; }
+    .pill-primary { background: rgba(245, 158, 11, 0.18); color: var(--primary); border: 1px solid rgba(245, 158, 11, 0.4); }
+    .pill-hot { background: rgba(234, 88, 12, 0.22); color: #fdba74; }
+    .pill-cold { background: rgba(2, 132, 199, 0.22); color: #7dd3fc; }
+    .pill-food { background: rgba(5, 150, 105, 0.22); color: #6ee7b7; }
+    .pill-fun { background: rgba(124, 58, 237, 0.24); color: #c4b5fd; }
+
+    /* Buttons */
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      border-radius: 9px;
+      padding: 9px 13px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: var(--primary); color: #0f172a; }
+    .btn-secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+    .btn-success { background: rgba(16, 185, 129, 0.18); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); }
+    .btn-danger { background: rgba(239, 68, 68, 0.16); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.4); }
+    .btn-info { background: rgba(56, 189, 248, 0.16); color: var(--info); border: 1px solid rgba(56, 189, 248, 0.4); }
+    .btn-sm { padding: 6px 10px; font-size: 0.8rem; }
+    .btn-full { width: 100%; }
+
+    /* Forms */
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-size: 0.83rem; color: var(--muted); margin-bottom: 4px; }
     input, select, textarea {
       width: 100%;
       background: var(--bg);
       color: var(--text);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 0.95rem;
+      padding: 9px 11px;
+      font-size: 0.92rem;
       font-family: inherit;
     }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    .input-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    @media (max-width: 600px) {
-      .grid-2 { grid-template-columns: 1fr; }
-    }
-    .hint {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    /* Buttons */
-    button, .btn {
-      font-family: inherit;
-      cursor: pointer;
-      border: none;
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .row-flex { display: flex; gap: 8px; align-items: center; }
+    .hint { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }
+    .error-msg {
+      color: #fca5a5;
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 9px 12px;
       border-radius: 8px;
-      padding: 9px 14px;
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+    .empty-box {
+      text-align: center;
+      padding: 26px 14px;
+      color: var(--muted);
       font-size: 0.9rem;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: opacity 0.15s, background 0.15s;
-    }
-    button:disabled { opacity: 0.55; cursor: not-allowed; }
-    .btn-primary { background: var(--primary); color: #0f172a; }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
-    .btn-success { background: rgba(16, 185, 129, 0.16); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); }
-    .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.4); }
-    .btn-info { background: rgba(56, 189, 248, 0.15); color: var(--info); border: 1px solid rgba(56, 189, 248, 0.35); }
-    .btn-sm { padding: 6px 10px; font-size: 0.8rem; }
-    .btn-full { width: 100%; }
-
-    /* Cafe Cards */
-    .cafes-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 12px;
-    }
-    .cafe-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1px dashed var(--border);
       border-radius: var(--radius);
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      grid-column: 1 / -1;
     }
-    .cafe-card.suspended { border-color: rgba(239, 68, 68, 0.55); opacity: 0.88; }
-    .cafe-card.expired { border-color: rgba(249, 115, 22, 0.55); }
-    .cafe-head {
+
+    /* Segmented Tabs inside Setup Modal */
+    .seg-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 12px;
+    }
+    .seg-btn {
+      background: transparent;
+      color: var(--muted);
+      padding: 8px 4px;
+      border-radius: 7px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .seg-btn.active { background: var(--primary); color: #0f172a; }
+
+    .list-stack { display: flex; flex-direction: column; gap: 8px; }
+    .item-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px;
+    }
+    .item-card.inactive { opacity: 0.6; border-style: dashed; }
+    .item-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 8px;
+      margin-bottom: 6px;
     }
-    .cafe-name { font-size: 1.08rem; font-weight: 700; }
-    .cafe-code {
-      font-family: monospace;
-      font-size: 0.85rem;
-      color: var(--primary);
-      background: rgba(245, 158, 11, 0.12);
-      padding: 2px 7px;
-      border-radius: 6px;
-      display: inline-block;
-      margin-top: 3px;
-    }
-    .badges {
+    .item-actions {
       display: flex;
-      gap: 6px;
       flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-    .pill {
-      font-size: 0.74rem;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 999px;
-      white-space: nowrap;
-    }
-    .pill-ok { background: rgba(16, 185, 129, 0.18); color: var(--success); }
-    .pill-warn { background: rgba(249, 115, 22, 0.2); color: var(--warning); }
-    .pill-err { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-    .pill-solo { background: rgba(148, 163, 184, 0.18); color: #e2e8f0; }
-    .pill-team { background: rgba(56, 189, 248, 0.18); color: var(--info); }
-
-    .cafe-meta {
-      font-size: 0.85rem;
-      color: var(--muted);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+      gap: 6px;
+      margin-top: 8px;
+      padding-top: 8px;
       border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 8px 0;
     }
-    .cafe-meta strong { color: var(--text); font-weight: 600; }
-    .cafe-meta a { color: var(--info); text-decoration: none; }
-    .cafe-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    /* Mode Selector Cards */
-    .mode-choices {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .mode-choice {
-      border: 2px solid var(--border);
+    .section-box {
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 12px;
-      cursor: pointer;
-      background: var(--bg);
-      text-align: center;
+      padding: 11px;
+      margin-bottom: 12px;
     }
-    .mode-choice.selected {
-      border-color: var(--primary);
-      background: rgba(245, 158, 11, 0.1);
-    }
-    .mode-choice .title { font-weight: 700; font-size: 0.95rem; }
-    .mode-choice .desc { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }
+    .section-box h3 { font-size: 0.88rem; color: var(--primary); margin-bottom: 8px; }
 
     /* Modals */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(2, 6, 23, 0.78);
+      background: rgba(2, 6, 23, 0.82);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 14px;
+      padding: 12px;
       z-index: 100;
-      overflow-y: auto;
     }
+    .modal-backdrop.sub-modal { z-index: 125; }
     .modal {
       width: 100%;
       max-width: 560px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 20px;
+      padding: 18px;
       max-height: 92vh;
       overflow-y: auto;
     }
+    .modal-lg { max-width: 680px; }
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
       border-bottom: 1px solid var(--border);
     }
-    .modal-header h2 { font-size: 1.1rem; color: var(--primary); }
+    .modal-header h2 { font-size: 1.05rem; color: var(--primary); }
     .close-btn {
       background: transparent;
       color: var(--muted);
-      font-size: 1.3rem;
-      padding: 2px 8px;
-    }
-    .section-box {
-      background: rgba(15, 23, 42, 0.55);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 14px;
-    }
-    .section-box h3 {
-      font-size: 0.9rem;
-      color: var(--primary);
-      margin-bottom: 10px;
-    }
-    .cred-box {
-      background: var(--bg);
-      border: 1px dashed var(--primary);
-      border-radius: 10px;
-      padding: 14px;
-      white-space: pre-wrap;
-      font-size: 0.9rem;
-      margin-bottom: 14px;
-      user-select: all;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 40px 16px;
-      color: var(--muted);
-      background: var(--surface);
-      border: 1px dashed var(--border);
-      border-radius: var(--radius);
+      font-size: 1.45rem;
+      padding: 0 6px;
     }
 
     /* Toast */
     .toast {
       position: fixed;
-      bottom: 20px;
+      bottom: 18px;
       left: 50%;
       transform: translateX(-50%);
       background: #020617;
       color: var(--text);
       border: 1px solid var(--border);
-      padding: 10px 18px;
+      padding: 10px 16px;
       border-radius: 10px;
-      font-size: 0.9rem;
+      font-size: 0.86rem;
       z-index: 200;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       max-width: 92vw;
       text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
     .toast.ok { border-color: var(--success); color: var(--success); }
     .toast.err { border-color: var(--danger); color: #fca5a5; }
-    .error-msg {
-      color: #fca5a5;
-      background: rgba(239, 68, 68, 0.12);
-      border: 1px solid rgba(239, 68, 68, 0.35);
-      padding: 9px 12px;
-      border-radius: 8px;
-      font-size: 0.86rem;
-      margin-bottom: 12px;
-    }
   </style>
 </head>
 <body>
 
-  <!-- 1. شاشة تسجيل الدخول -->
-  <section id="loginView" class="login-wrap">
-    <div class="login-card">
+  <!-- 1. شاشة دخول المشرف العام -->
+  <section id="loginView" class="center-wrap">
+    <div class="auth-card">
       <div class="brand">
         <h1>☕ CassaCafe</h1>
-        <p>لوحة المشرف العام (إدارة المقاهي والاشتراكات)</p>
+        <p>لوحة المشرف العام (تجهيز وإدارة الحرفاء)</p>
       </div>
       <div id="loginError" class="error-msg hidden"></div>
       <form id="loginForm">
         <div class="form-group">
-          <label for="loginEmail">البريد الإلكتروني للمشرف</label>
-          <input id="loginEmail" type="email" required autocomplete="username" placeholder="example@domain.com" />
+          <label for="loginEmail">بريد المشرف العام</label>
+          <input id="loginEmail" type="email" required autocomplete="username" dir="ltr" />
         </div>
         <div class="form-group">
           <label for="loginPass">كلمة السر</label>
-          <input id="loginPass" type="password" required autocomplete="current-password" placeholder="••••••••" />
+          <input id="loginPass" type="password" required autocomplete="current-password" dir="ltr" />
         </div>
-        <button id="loginBtn" type="submit" class="btn-primary btn-full">دخول إلى لوحة التحكم</button>
+        <button id="loginBtn" type="submit" class="btn-primary btn-full">دخول</button>
       </form>
     </div>
   </section>
 
-  <!-- 2. لوحة التحكم الرئيسية -->
+  <!-- 2. شاشة التطبيق الرئيسي -->
   <section id="appView" class="hidden">
     <header>
       <div class="header-inner">
-        <div class="header-title">
+        <div class="title-wrap">
           <h1>☕ CassaCafe</h1>
-          <span class="badge-admin">المشرف العام</span>
+          <span class="pill pill-primary">المشرف العام</span>
         </div>
-        <div class="header-actions">
-          <button id="openCreateBtn" class="btn-primary btn-sm">+ إضافة مقهى</button>
+        <div class="row-flex">
+          <button id="addCafeBtn" class="btn-primary btn-sm">+ إضافة مقهى</button>
           <button id="logoutBtn" class="btn-secondary btn-sm">خروج</button>
         </div>
       </div>
@@ -468,30 +402,28 @@
     <main>
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="label">إجمالي المقاهي</div>
-          <div id="statTotal" class="value">0</div>
+          <div class="stat-label">إجمالي المقاهي</div>
+          <div id="stTotal" class="stat-val">0</div>
         </div>
-        <div class="stat-card ok">
-          <div class="label">نشطة حالياً</div>
-          <div id="statActive" class="value">0</div>
+        <div class="stat-card">
+          <div class="stat-label">نشطة حالياً</div>
+          <div id="stActive" class="stat-val" style="color: var(--success);">0</div>
         </div>
-        <div class="stat-card warn">
-          <div class="label">منتهية / تنتهي خلال 7 أيام</div>
-          <div id="statExpiring" class="value">0</div>
+        <div class="stat-card">
+          <div class="stat-label">منتهية / تنتهي خلال 7 أيام</div>
+          <div id="stExpiring" class="stat-val" style="color: var(--warning);">0</div>
         </div>
-        <div class="stat-card err">
-          <div class="label">موقوفة يدوياً</div>
-          <div id="statSuspended" class="value">0</div>
-        </div>
-      </div>
-
-      <div class="toolbar">
-        <div class="search-box">
-          <input id="searchInput" type="search" placeholder="ابحث باسم المقهى، الرمز، بريد المالك أو الهاتف..." />
+        <div class="stat-card">
+          <div class="stat-label">موقوفة يدوياً</div>
+          <div id="stSuspended" class="stat-val" style="color: var(--danger);">0</div>
         </div>
       </div>
 
-      <div class="filters" id="filterBar">
+      <div class="search-box">
+        <input id="searchInput" type="search" placeholder="ابحث باسم المقهى، الرمز، بريد المالك أو الهاتف..." />
+      </div>
+
+      <div id="filterBar" class="filters">
         <button class="filter-pill active" data-filter="all">الكل</button>
         <button class="filter-pill" data-filter="active">نشط</button>
         <button class="filter-pill" data-filter="expiring">قريب / منتهٍ</button>
@@ -500,249 +432,318 @@
         <button class="filter-pill" data-filter="team">فريق (Team)</button>
       </div>
 
-      <div id="cafesList" class="cafes-grid"></div>
-      <div id="emptyState" class="empty-state hidden">لا توجد مقاهٍ مطابقة حالياً. اضغط على «+ إضافة مقهى» لإنشاء أول حريف.</div>
+      <div id="cafesGrid" class="cafes-grid"></div>
     </main>
   </section>
 
-  <!-- 3. نافذة إنشاء مقهى جديد -->
-  <div id="createModal" class="modal-backdrop hidden">
+  <!-- نافذة إضافة مقهى جديد -->
+  <div id="addCafeModal" class="modal-backdrop hidden">
     <div class="modal">
       <div class="modal-header">
-        <h2>+ إضافة مقهى جديد</h2>
-        <button class="close-btn" data-close="createModal">&times;</button>
+        <h2>+ إضافة مقهى (حريف جديد)</h2>
+        <button class="close-btn" data-close="addCafeModal">&times;</button>
       </div>
-      <div id="createError" class="error-msg hidden"></div>
-      <form id="createForm">
-        <div class="mode-choices" id="createModeChoices">
-          <div class="mode-choice selected" data-mode="solo">
-            <div class="title">👤 مالك يخدم وحده</div>
-            <div class="desc">هاتف واحد — بدون تسوية عامل</div>
+      <form id="addCafeForm">
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="acName">اسم المقهى *</label>
+            <input id="acName" type="text" required placeholder="مثال: مقهى الياسمين" />
           </div>
-          <div class="mode-choice" data-mode="team">
-            <div class="title">👥 مالك + عامل</div>
-            <div class="desc">هاتفان — يوميات وفواتير وتسوية</div>
+          <div class="form-group">
+            <label for="acCode">رمز المقهى (إنجليزي/أرقام) *</label>
+            <input id="acCode" type="text" required dir="ltr" placeholder="مثال: 101 أو yasmine" />
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="acOwnerName">اسم المالك *</label>
+            <input id="acOwnerName" type="text" required placeholder="مثال: أحمد" />
+          </div>
+          <div class="form-group">
+            <label for="acPhone">رقم الهاتف</label>
+            <input id="acPhone" type="tel" dir="ltr" placeholder="20123456" />
           </div>
         </div>
 
         <div class="section-box">
-          <h3>بيانات المقهى</h3>
-          <div class="grid-2">
-            <div class="form-group">
-              <label for="cName">اسم المقهى *</label>
-              <input id="cName" type="text" required placeholder="مثال: مقهى النخيل" />
-            </div>
-            <div class="form-group">
-              <label for="cCode">رمز المقهى (حروف أو أرقام إنجليزية) *</label>
-              <input id="cCode" type="text" required placeholder="مثال: 101" dir="ltr" />
-              <div class="hint">يُستخدم لإنشاء معرّف المقهى ودخول العامل</div>
-            </div>
+          <h3>حساب المالك (للدخول إلى index.html)</h3>
+          <div class="form-group">
+            <label for="acOwnerEmail">البريد الإلكتروني للمالك *</label>
+            <input id="acOwnerEmail" type="email" required dir="ltr" placeholder="owner@gmail.com" />
           </div>
-          <div class="grid-2">
-            <div class="form-group">
-              <label for="cDuration">مدة الاشتراك الأولية</label>
-              <select id="cDuration">
-                <option value="7">7 أيام (فترة تجريبية)</option>
-                <option value="30" selected>30 يوماً (شهر واحد)</option>
-                <option value="90">90 يوماً (3 أشهر)</option>
-                <option value="180">180 يوماً (6 أشهر)</option>
-                <option value="365">365 يوماً (سنة)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="cOwnerPhone">هاتف المالك (للتواصل والمتابعة)</label>
-              <input id="cOwnerPhone" type="tel" placeholder="مثال: 20123456" dir="ltr" />
+          <div class="form-group">
+            <label for="acOwnerPass">كلمة السر (6 أحرف فأكثر) *</label>
+            <div class="row-flex">
+              <input id="acOwnerPass" type="text" required minlength="6" dir="ltr" />
+              <button type="button" id="acGenPassBtn" class="btn-secondary btn-sm">🎲 توليد</button>
             </div>
           </div>
         </div>
 
-        <div class="section-box">
-          <h3>حساب المالك (الإدارة)</h3>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="acMode">نمط التشغيل *</label>
+            <select id="acMode">
+              <option value="solo">👤 فردي (Solo — المالك فقط)</option>
+              <option value="team">👥 فريق (Team — مالك + عامل)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="acDays">مدة الاشتراك المبدئية (أيام) *</label>
+            <input id="acDays" type="number" min="1" value="30" required dir="ltr" />
+          </div>
+        </div>
+
+        <div id="acWorkerFields" class="section-box hidden">
+          <h3>حساب العامل (للدخول إلى worker.html)</h3>
           <div class="grid-2">
             <div class="form-group">
-              <label for="cOwnerName">اسم المالك (للعرض داخل التطبيق)</label>
-              <input id="cOwnerName" type="text" value="الإدارة" placeholder="الإدارة" />
+              <label for="acWorkerName">اسم العامل</label>
+              <input id="acWorkerName" type="text" value="العامل" />
             </div>
             <div class="form-group">
-              <label for="cOwnerEmail">بريد المالك الإلكتروني *</label>
-              <input id="cOwnerEmail" type="email" required placeholder="owner@gmail.com" dir="ltr" />
+              <label for="acDailyWage">الأجر اليومي الافتراضي (د)</label>
+              <input id="acDailyWage" type="text" inputmode="decimal" dir="ltr" value="25.000" />
             </div>
           </div>
           <div class="form-group">
-            <label for="cOwnerPass">كلمة سر المالك (6 أحرف على الأقل) *</label>
-            <div class="input-row">
-              <input id="cOwnerPass" type="text" required minlength="6" dir="ltr" />
-              <button type="button" id="genOwnerPassBtn" class="btn-secondary btn-sm">توليد</button>
+            <label for="acWorkerPin">الرمز السري للعامل PIN (6 أرقام فأكثر) *</label>
+            <div class="row-flex">
+              <input id="acWorkerPin" type="text" dir="ltr" placeholder="123456" />
+              <button type="button" id="acGenPinBtn" class="btn-secondary btn-sm">🎲 توليد</button>
             </div>
           </div>
         </div>
 
-        <div id="workerFieldsBox" class="section-box hidden">
-          <h3>حساب العامل (وضع الفريق)</h3>
-          <div class="grid-2">
-            <div class="form-group">
-              <label for="cWorkerName">اسم العامل</label>
-              <input id="cWorkerName" type="text" value="العامل" placeholder="اسم العامل" />
-            </div>
-            <div class="form-group">
-              <label for="cDailyWage">الأجر اليومي (بالدينار التونسي)</label>
-              <input id="cDailyWage" type="number" step="0.5" min="0" value="25" dir="ltr" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="cWorkerPin">الرمز السري للعامل (6 أرقام أو أكثر) *</label>
-            <div class="input-row">
-              <input id="cWorkerPin" type="text" minlength="6" dir="ltr" placeholder="مثال: 482910" />
-              <button type="button" id="genWorkerPinBtn" class="btn-secondary btn-sm">توليد</button>
-            </div>
-            <div class="hint">يدخل العامل برمز المقهى + هذا الرمز السري فقط (دون بريد إلكتروني).</div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="cNotes">ملاحظات داخلية (المدينة، الاتفاق المالي...)</label>
-          <textarea id="cNotes" rows="2" placeholder="اختياري..."></textarea>
-        </div>
-
-        <div class="input-row">
-          <button id="createSubmitBtn" type="submit" class="btn-primary btn-full">إنشاء المقهى والحسابات</button>
-          <button type="button" class="btn-secondary" data-close="createModal">إلغاء</button>
+        <div class="row-flex">
+          <button id="acSubmitBtn" type="submit" class="btn-primary btn-full">إنشاء المقهى</button>
+          <button type="button" class="btn-secondary" data-close="addCafeModal">إلغاء</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- 4. نافذة عرض ونسخ بيانات الدخول بعد الإنشاء -->
-  <div id="credModal" class="modal-backdrop hidden">
+  <!-- نافذة تعديل النمط / العامل -->
+  <div id="modeModal" class="modal-backdrop hidden">
     <div class="modal">
       <div class="modal-header">
-        <h2>✅ تم الحفظ — بيانات الدخول الجاهزة للإرسال</h2>
-        <button class="close-btn" data-close="credModal">&times;</button>
+        <h2 id="mmCafeTitle">النمط وحساب العامل</h2>
+        <button class="close-btn" data-close="modeModal">&times;</button>
       </div>
-      <div class="hint" style="margin-bottom: 10px;">
-        احتفظ بهذه البيانات أو انسخها لإرسالها لصاحب المقهى الآن؛ كلمات السر لا تُخزّن في قاعدة البيانات لأسباب أمنية.
-      </div>
-      <div id="credText" class="cred-box"></div>
-      <div class="input-row">
-        <button id="copyCredBtn" class="btn-primary btn-full">📋 نسخ الرسالة لإرسالها</button>
-        <button class="btn-secondary" data-close="credModal">إغلاق</button>
-      </div>
+      <form id="modeForm">
+        <div class="form-group">
+          <label for="mmMode">نمط التشغيل</label>
+          <select id="mmMode">
+            <option value="solo">👤 فردي (Solo)</option>
+            <option value="team">👥 فريق (Team)</option>
+          </select>
+        </div>
+        <div id="mmWorkerFields" class="section-box hidden">
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="mmWorkerName">اسم العامل</label>
+              <input id="mmWorkerName" type="text" />
+            </div>
+            <div class="form-group">
+              <label for="mmDailyWage">الأجر اليومي (د)</label>
+              <input id="mmDailyWage" type="text" inputmode="decimal" dir="ltr" />
+            </div>
+          </div>
+          <div id="mmPinWrap" class="form-group hidden">
+            <label for="mmWorkerPin">الرمز السري للعامل PIN (6 أرقام فأكثر) *</label>
+            <div class="row-flex">
+              <input id="mmWorkerPin" type="text" dir="ltr" />
+              <button type="button" id="mmGenPinBtn" class="btn-secondary btn-sm">🎲 توليد</button>
+            </div>
+            <div class="hint">يُنشئ حساب العامل تلقائياً بهذا الرمز السري.</div>
+          </div>
+          <div id="mmExistingWorkerHint" class="hint hidden" style="color: var(--info);"></div>
+        </div>
+        <div class="row-flex">
+          <button id="mmSubmitBtn" type="submit" class="btn-primary btn-full">حفظ التغييرات</button>
+          <button type="button" class="btn-secondary" data-close="modeModal">إلغاء</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <!-- 5. نافذة تمديد الاشتراك -->
+  <!-- نافذة تجديد الاشتراك -->
   <div id="renewModal" class="modal-backdrop hidden">
     <div class="modal">
       <div class="modal-header">
-        <h2>تجديد / تعديل الاشتراك</h2>
+        <h2 id="rmCafeTitle">تجديد الاشتراك</h2>
         <button class="close-btn" data-close="renewModal">&times;</button>
       </div>
-      <div id="renewInfo" class="hint" style="margin-bottom: 14px;"></div>
-      <div class="input-row" style="flex-wrap: wrap; margin-bottom: 14px;">
-        <button type="button" class="btn-success btn-sm" data-add-days="7">+7 أيام</button>
-        <button type="button" class="btn-success btn-sm" data-add-days="30">+30 يوم</button>
-        <button type="button" class="btn-success btn-sm" data-add-days="90">+3 أشهر</button>
-        <button type="button" class="btn-success btn-sm" data-add-days="365">+سنة</button>
+      <div id="rmCurrentEnd" class="hint" style="margin-bottom: 12px; font-size: 0.88rem;"></div>
+      <div class="row-flex" style="flex-wrap: wrap; margin-bottom: 12px;">
+        <button type="button" class="btn-success btn-sm" data-add-days="30">+ 30 يوم</button>
+        <button type="button" class="btn-success btn-sm" data-add-days="90">+ 3 أشهر</button>
+        <button type="button" class="btn-success btn-sm" data-add-days="180">+ 6 أشهر</button>
+        <button type="button" class="btn-info btn-sm" data-add-days="365">+ سنة</button>
       </div>
-      <form id="renewDateForm">
+      <form id="renewForm">
         <div class="form-group">
-          <label for="renewExactDate">أو تحديد تاريخ انتهاء مخصص:</label>
-          <input id="renewExactDate" type="date" required />
+          <label for="rmCustomDate">أو حدّد تاريخ الانتهاء مباشرةً:</label>
+          <input id="rmCustomDate" type="date" required />
         </div>
-        <div class="input-row">
-          <button type="submit" class="btn-primary btn-full">حفظ التاريخ الجديد</button>
+        <div class="row-flex">
+          <button id="rmSubmitBtn" type="submit" class="btn-primary btn-full">حفظ تاريخ الاشتراك</button>
           <button type="button" class="btn-secondary" data-close="renewModal">إلغاء</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- 6. نافذة تبديل النمط (Solo / Team) وإدارة العامل -->
-  <div id="modeModal" class="modal-backdrop hidden">
-    <div class="modal">
+  <!-- نافذة تجهيز المقهى: السلع والأسعار + مواد المخزون + إعدادات التشغيل -->
+  <div id="setupModal" class="modal-backdrop hidden">
+    <div class="modal modal-lg">
       <div class="modal-header">
-        <h2>تبديل نمط التشغيل وإدارة العامل</h2>
-        <button class="close-btn" data-close="modeModal">&times;</button>
-      </div>
-      <div id="modeError" class="error-msg hidden"></div>
-      <div id="modeSummary" class="hint" style="margin-bottom: 14px;"></div>
-
-      <div id="switchToSoloSection" class="section-box hidden">
-        <h3>التحويل إلى وضع «مالك يخدم وحده» (Solo)</h3>
-        <p class="hint" style="margin-bottom: 10px;">
-          سيتم تعطيل دخول حساب العامل مؤقتاً، وإخفاء شاشات التسوية، وتفعيل تسجيل اليومية مباشرة للمالك دون فقدان أي بيانات سابقة.
-        </p>
-        <button id="confirmSoloBtn" type="button" class="btn-primary btn-full">تأكيد التحويل إلى فردي (Solo)</button>
+        <h2 id="setupCafeTitle">⚙️ تجهيز المقهى</h2>
+        <button class="close-btn" data-close="setupModal">&times;</button>
       </div>
 
-      <div id="switchToTeamExistingSection" class="section-box hidden">
-        <h3>إعادة تفعيل وضع «مالك + عامل» (Team)</h3>
-        <p class="hint" style="margin-bottom: 10px;">
-          يوجد حساب عامل مسجّل سابقاً لهذا المقهى. يمكنك إعادة تفعيله بنفس الرمز السري القديم.
-        </p>
-        <button id="confirmTeamExistingBtn" type="button" class="btn-primary btn-full">إعادة تفعيل حساب العامل الحالي</button>
+      <div class="seg-bar">
+        <button type="button" id="setupSubProds" class="seg-btn active" data-setup-tab="prods">☕ السلع والأسعار</button>
+        <button type="button" id="setupSubStock" class="seg-btn" data-setup-tab="stock">📦 مواد المخزون</button>
+        <button type="button" id="setupSubOpts" class="seg-btn" data-setup-tab="opts">⚙️ المصاريف والعتبات</button>
       </div>
 
-      <div id="createWorkerSection" class="section-box hidden">
-        <h3 id="createWorkerTitle">تفعيل وضع الفريق وإنشاء حساب عامل</h3>
-        <form id="createWorkerForm">
+      <!-- القسم 1: قائمة البيع والأسعار -->
+      <div id="sp-prods">
+        <div class="row-flex" style="justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap;">
+          <span class="hint" style="margin: 0;">أضف السلع التي يبيعها هذا المقهى وحدّد أسعارها وربطها بالمخزون.</span>
+          <div class="row-flex">
+            <button type="button" id="spSeedBtn" class="btn-secondary btn-sm">⚡ قائمة مبدئية</button>
+            <button type="button" id="spAddProdBtn" class="btn-primary btn-sm">+ إضافة سلعة</button>
+          </div>
+        </div>
+        <div id="spProdList" class="list-stack"></div>
+      </div>
+
+      <!-- القسم 2: مواد المخزون -->
+      <div id="sp-stock" class="hidden">
+        <div class="row-flex" style="justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap;">
+          <span class="hint" style="margin: 0;">جهّز مواد المخزن (بن، مياه، قازوز...) ووحدة الشراء لكل مادة.</span>
+          <button type="button" id="spAddStockBtn" class="btn-primary btn-sm">+ إضافة مادة مخزن</button>
+        </div>
+        <div id="spStockList" class="list-stack"></div>
+      </div>
+
+      <!-- القسم 3: قائمة المصاريف اليومية وعتبات التنبيه -->
+      <div id="sp-opts" class="hidden">
+        <form id="spOptsForm">
           <div class="grid-2">
             <div class="form-group">
-              <label for="mWorkerName">اسم العامل</label>
-              <input id="mWorkerName" type="text" value="العامل" required />
+              <label for="spLowWeight">عتبة تنبيه نقص الوزن (غرام)</label>
+              <input id="spLowWeight" type="number" min="0" dir="ltr" />
             </div>
             <div class="form-group">
-              <label for="mDailyWage">الأجر اليومي (بالدينار)</label>
-              <input id="mDailyWage" type="number" step="0.5" min="0" value="25" dir="ltr" required />
+              <label for="spLowUnit">عتبة تنبيه نقص الوحدات (قطعة)</label>
+              <input id="spLowUnit" type="number" min="0" dir="ltr" />
             </div>
           </div>
           <div class="form-group">
-            <label for="mWorkerPin">الرمز السري الجديد للعامل (6 أرقام أو أكثر)</label>
-            <div class="input-row">
-              <input id="mWorkerPin" type="text" minlength="6" required dir="ltr" />
-              <button type="button" id="genModalWorkerPinBtn" class="btn-secondary btn-sm">توليد</button>
-            </div>
-            <div id="recreateWorkerNote" class="hint hidden">
-              ملاحظة: لإعادة إنشاء حساب عامل برمز جديد لحساب موجود مسبقاً، احذف أولاً البريد الخاص بالعامل من Firebase Authentication ثم اضغط حفظ هنا.
-            </div>
+            <label for="spQuickTags">قائمة المصاريف اليومية (تظهر للعامل في القائمة المنسدلة — افصل بفاصلة)</label>
+            <textarea id="spQuickTags" rows="3"></textarea>
           </div>
-          <button id="createWorkerSubmitBtn" type="submit" class="btn-primary btn-full">إنشاء حساب العامل وتفعيل وضع الفريق</button>
+          <button type="submit" class="btn-primary btn-full">حفظ إعدادات التشغيل</button>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- 7. نافذة تعديل بيانات المقهى وملاحظاته -->
-  <div id="editModal" class="modal-backdrop hidden">
+  <!-- نافذة فرعية: إضافة / تعديل سلعة بيع -->
+  <div id="saProdModal" class="modal-backdrop sub-modal hidden">
     <div class="modal">
       <div class="modal-header">
-        <h2>تعديل معلومات المقهى</h2>
-        <button class="close-btn" data-close="editModal">&times;</button>
+        <h2 id="saProdTitle">☕ إضافة سلعة للبيع</h2>
+        <button class="close-btn" data-close="saProdModal">&times;</button>
       </div>
-      <form id="editForm">
+      <form id="saProdForm">
         <div class="form-group">
-          <label for="eName">اسم المقهى</label>
-          <input id="eName" type="text" required />
+          <label for="saPName">اسم السلعة / المشروب *</label>
+          <input id="saPName" type="text" required placeholder="مثال: إكسبراس، تاي بالبندق، ماء 0.5ل..." />
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="saPCategory">الفئة (لون الزر) *</label>
+            <select id="saPCategory">
+              <option value="hot">☕ مشروبات ساخنة</option>
+              <option value="cold">🧊 مشروبات باردة</option>
+              <option value="food">🥐 مأكولات</option>
+              <option value="fun">🎯 ترفيه</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="saPPrice">سعر البيع (بالدينار) *</label>
+            <input id="saPPrice" type="text" inputmode="decimal" required dir="ltr" placeholder="1.200" />
+          </div>
+        </div>
+        <div class="section-box">
+          <h3>الربط بالمخزون وحجب الكونتور</h3>
+          <div class="form-group">
+            <label for="saPStockItem">مادة المخزون المرتبطة</label>
+            <select id="saPStockItem"></select>
+            <div class="hint">
+              • <strong>تحضير مباشر:</strong> عدّاد هذه السلعة محجوب عن العامل.<br/>
+              • <strong>مرتبط بمادة مخزن:</strong> يُخصم آلياً وتظهر كبسولة الرصيد المتبقي للعامل.
+            </div>
+          </div>
+          <div id="saPDeductWrap" class="form-group hidden">
+            <label id="saPDeductLbl" for="saPDeduct">الكمية المخصومة لكل بيعة *</label>
+            <input id="saPDeduct" type="number" step="any" min="0" dir="ltr" placeholder="مثال: 7 للقهوة أو 1 للقارورة" />
+          </div>
         </div>
         <div class="form-group">
-          <label for="ePhone">هاتف المالك</label>
-          <input id="ePhone" type="tel" dir="ltr" />
+          <label style="display: flex; align-items: center; gap: 8px; color: var(--text); cursor: pointer;">
+            <input id="saPActive" type="checkbox" checked style="width: auto;" />
+            <span>السلعة مفعّلة وتظهر للعامل</span>
+          </label>
         </div>
-        <div class="form-group">
-          <label for="eNotes">ملاحظات داخلية</label>
-          <textarea id="eNotes" rows="3"></textarea>
-        </div>
-        <div class="input-row" style="margin-bottom: 12px;">
-          <button type="submit" class="btn-primary btn-full">حفظ التعديلات</button>
-          <button type="button" class="btn-secondary" data-close="editModal">إلغاء</button>
+        <div class="row-flex">
+          <button type="submit" class="btn-primary btn-full">حفظ السلعة</button>
+          <button type="button" class="btn-secondary" data-close="saProdModal">إلغاء</button>
         </div>
       </form>
-      <div class="section-box" style="margin-bottom: 0;">
-        <h3>أدوات حساب المالك</h3>
-        <button id="sendResetEmailBtn" type="button" class="btn-info btn-sm btn-full">
-          📧 إرسال رابط إعادة تعيين كلمة سر المالك إلى بريده
-        </button>
+    </div>
+  </div>
+
+  <!-- نافذة فرعية: إضافة / تعديل مادة مخزون -->
+  <div id="saStockModal" class="modal-backdrop sub-modal hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="saStockTitle">📦 إضافة مادة مخزون</h2>
+        <button class="close-btn" data-close="saStockModal">&times;</button>
       </div>
+      <form id="saStockForm">
+        <div class="form-group">
+          <label for="saStName">اسم المادة *</label>
+          <input id="saStName" type="text" required placeholder="مثال: البن (قهوة)، ماء 0.5ل..." />
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="saStUnit">وحدة الجرد *</label>
+            <select id="saStUnit">
+              <option value="unit">بالوحدة / القارورة / العلبة</option>
+              <option value="g">بالوزن (غرام)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="saStPackSize">وحدة الشراء في الفواتير</label>
+            <select id="saStPackSize"></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label id="saStQtyLbl" for="saStQty">الرصيد الحالي *</label>
+          <input id="saStQty" type="number" step="any" min="0" required dir="ltr" value="0" />
+          <div class="hint">أدخل الرصيد بالغرام للموزون أو بالقطعة للوحدات.</div>
+        </div>
+        <div class="row-flex">
+          <button type="submit" class="btn-primary btn-full">حفظ المادة</button>
+          <button type="button" class="btn-secondary" data-close="saStockModal">إلغاء</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -768,26 +769,53 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // نسخة ثانوية مخصصة لإنشاء حسابات الحرفاء دون تسجيل خروج المشرف العام
-    const provisioningApp = firebase.initializeApp(firebaseConfig, "ProvisioningApp");
-    const provAuth = provisioningApp.auth();
+    const APP_BASE_URL = "https://jedameur1-tech.github.io/cassacafe";
 
-    // الحالة الداخلية للتطبيق
-    let cafesMap = {};
-    let currentFilter = "all";
-    let selectedCreateMode = "solo";
-    let activeModalCafeId = null;
-    let tenantsRefListener = null;
+    const CATEGORY_INFO = {
+      hot: { label: "☕ ساخن", pill: "pill-hot" },
+      cold: { label: "🧊 بارد", pill: "pill-cold" },
+      food: { label: "🥐 مأكولات", pill: "pill-food" },
+      fun: { label: "🎯 ترفيه", pill: "pill-fun" }
+    };
 
-    // عناصر الواجهة
-    const loginView = document.getElementById("loginView");
-    const appView = document.getElementById("appView");
-    const loginError = document.getElementById("loginError");
-    const cafesListEl = document.getElementById("cafesList");
-    const emptyStateEl = document.getElementById("emptyState");
-    const toastEl = document.getElementById("toast");
+    const PACK_OPTIONS = {
+      g: [
+        { size: 1000, label: "كيلوغرام (×1000 غ)" },
+        { size: 500, label: "نصف كيلو (×500 غ)" },
+        { size: 1, label: "غرام (×1 غ)" }
+      ],
+      unit: [
+        { size: 1, label: "قطعة / وحدة (×1)" },
+        { size: 6, label: "ستيكة (×6)" },
+        { size: 12, label: "ستيكة (×12)" }
+      ]
+    };
 
-    // أدوات مساعدة
+    const state = {
+      user: null,
+      tenants: {},
+      filter: "all",
+      search: "",
+      activeCafeId: null,
+      setupCafeId: null,
+      setupTab: "prods",
+      editingProdId: null,
+      editingStockId: null
+    };
+
+    let tenantsRef = null;
+
+    function getSecondaryAuth() {
+      const name = "secondary-creator-app";
+      const existing = firebase.apps.find((a) => a.name === name);
+      const app = existing || firebase.initializeApp(firebaseConfig, name);
+      return app.auth();
+    }
+
+    function getCurrentMonthKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    }
     function escapeHtml(str) {
       return String(str == null ? "" : str)
         .replace(/&/g, "&amp;")
@@ -796,126 +824,99 @@
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
     }
-
-    let toastTimer = null;
-    function showToast(msg, type = "ok") {
-      toastEl.textContent = msg;
-      toastEl.className = "toast " + (type === "err" ? "err" : "ok");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toastEl.classList.add("hidden"), 3600);
+    function toMillimes(val) {
+      const cleaned = String(val == null ? "" : val).replace(/,/g, ".").trim();
+      const num = parseFloat(cleaned);
+      if (isNaN(num) || num < 0) return 0;
+      return Math.round(num * 1000);
     }
-
-    function openModal(id) {
-      document.getElementById(id).classList.remove("hidden");
+    function formatDT(millimes) {
+      const n = Number(millimes) || 0;
+      return `${(n / 1000).toFixed(3)} د`;
     }
-    function closeModal(id) {
-      document.getElementById(id).classList.add("hidden");
+    function formatQty(qty, unit) {
+      const n = Number(qty) || 0;
+      const f = Number.isInteger(n) ? String(n) : n.toFixed(1);
+      return unit === "g" ? `${f} غ` : `${f} وحدة`;
     }
-
-    document.querySelectorAll("[data-close]").forEach((btn) => {
-      btn.addEventListener("click", () => closeModal(btn.dataset.close));
-    });
-
     function formatDate(ms) {
       if (!ms) return "—";
       const d = new Date(ms);
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${y}-${m}-${day}`;
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     }
-
-    function getCurrentMonthKey() {
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    }
-
-    function endOfDayMs(dateStr) {
-      const parts = dateStr.split("-").map(Number);
-      return new Date(parts[0], parts[1] - 1, parts[2], 23, 59, 59, 999).getTime();
-    }
-
-    function addDaysEndOfDay(baseMs, days) {
-      const start = Math.max(baseMs || 0, Date.now());
-      const d = new Date(start);
-      d.setDate(d.getDate() + days);
-      d.setHours(23, 59, 59, 999);
-      return d.getTime();
-    }
-
-    function daysLeft(ms) {
-      return Math.ceil((ms - Date.now()) / 86400000);
-    }
-
-    function generateRandomString(chars, length) {
-      const arr = new Uint32Array(length);
-      crypto.getRandomValues(arr);
+    function randomPass(len = 8) {
+      const chars = "abcdefghjkmnpqrstuvwxyz23456789";
       let out = "";
-      for (let i = 0; i < length; i++) {
-        out += chars[arr[i] % chars.length];
-      }
+      for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+      return out;
+    }
+    function randomPin(len = 6) {
+      let out = "";
+      for (let i = 0; i < len; i++) out += Math.floor(Math.random() * 10);
       return out;
     }
 
-    function generatePassword() {
-      return generateRandomString("ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789", 10);
+    let toastTimer = null;
+    function showToast(msg, type = "ok") {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.className = "toast " + (type === "err" ? "err" : "ok");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.add("hidden"), 3500);
     }
 
-    function generatePin() {
-      return generateRandomString("0123456789", 6);
-    }
-
-    function getNextCafeCode() {
-      let maxNum = 100;
-      Object.values(cafesMap).forEach((c) => {
-        if (/^\d+$/.test(String(c.cafeCode || ""))) {
-          const n = parseInt(c.cafeCode, 10);
-          if (n > maxNum) maxNum = n;
-        }
-      });
-      return String(maxNum + 1);
-    }
+    function openModal(id) { document.getElementById(id).classList.remove("hidden"); }
+    function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
+    document.querySelectorAll("[data-close]").forEach((b) => {
+      b.addEventListener("click", () => closeModal(b.dataset.close));
+    });
 
     function translateAuthError(err) {
-      const code = err && err.code ? err.code : "";
       const map = {
-        "auth/invalid-email": "صيغة البريد الإلكتروني غير صحيحة.",
-        "auth/email-already-in-use": "هذا البريد الإلكتروني (أو رمز المقهى) مستخدم مسبقاً في Firebase.",
-        "auth/weak-password": "كلمة السر أو الرمز السري ضعيف (يجب أن لا يقل عن 6 أحرف/أرقام).",
+        "auth/invalid-email": "البريد الإلكتروني غير صالح.",
         "auth/wrong-password": "كلمة السر غير صحيحة.",
         "auth/invalid-credential": "البريد الإلكتروني أو كلمة السر غير صحيحة.",
-        "auth/user-not-found": "الحساب غير موجود.",
-        "auth/network-request-failed": "تعذّر الاتصال بالإنترنت.",
-        "auth/too-many-requests": "محاولات كثيرة متتالية، انتظر قليلاً ثم أعد المحاولة."
+        "auth/email-already-in-use": "هذا البريد الإلكتروني مستخدم بالفعل لحساب آخر.",
+        "auth/weak-password": "كلمة السر أو الرمز السري يجب أن يكون 6 أحرف/أرقام على الأقل.",
+        "auth/too-many-requests": "محاولات كثيرة متتالية، انتظر قليلاً.",
+        "auth/network-request-failed": "تحقّق من الاتصال بالإنترنت."
       };
-      return map[code] || (err && err.message ? err.message : "حدث خطأ غير متوقع.");
+      return (err && map[err.code]) || (err && err.message) || "حدث خطأ غير متوقع.";
     }
 
-    // المصادقة والتحقق من صلاحية المشرف العام
+    // المصادقة
     auth.onAuthStateChanged(async (user) => {
+      if (tenantsRef) {
+        tenantsRef.off();
+        tenantsRef = null;
+      }
+      state.user = user;
+
+      const loginView = document.getElementById("loginView");
+      const appView = document.getElementById("appView");
+      const errEl = document.getElementById("loginError");
+
       if (!user) {
-        detachListener();
         appView.classList.add("hidden");
         loginView.classList.remove("hidden");
         return;
       }
 
       try {
-        const snap = await db.ref("super_admins/" + user.uid).once("value");
+        const snap = await db.ref(`super_admins/${user.uid}`).once("value");
         if (snap.val() !== true) {
           await auth.signOut();
-          loginError.textContent = "هذا الحساب لا يملك صلاحية المشرف العام (super_admins).";
-          loginError.classList.remove("hidden");
+          errEl.textContent = "هذا الحساب لا يملك صلاحية المشرف العام.";
+          errEl.classList.remove("hidden");
           return;
         }
-        loginError.classList.add("hidden");
+
         loginView.classList.add("hidden");
         appView.classList.remove("hidden");
-        attachListener();
+        startListeningTenants();
       } catch (err) {
-        await auth.signOut();
-        loginError.textContent = "فشل التحقق من صلاحية المشرف: " + translateAuthError(err);
-        loginError.classList.remove("hidden");
+        errEl.textContent = "تعذّر التحقق من الصلاحية: " + translateAuthError(err);
+        errEl.classList.remove("hidden");
       }
     });
 
@@ -923,684 +924,889 @@
       e.preventDefault();
       const email = document.getElementById("loginEmail").value.trim();
       const pass = document.getElementById("loginPass").value;
+      const errEl = document.getElementById("loginError");
       const btn = document.getElementById("loginBtn");
-
-      loginError.classList.add("hidden");
+      errEl.classList.add("hidden");
       btn.disabled = true;
-      btn.textContent = "جارٍ التحقق...";
+      btn.textContent = "جارٍ الدخول...";
       try {
         await auth.signInWithEmailAndPassword(email, pass);
       } catch (err) {
-        loginError.textContent = translateAuthError(err);
-        loginError.classList.remove("hidden");
+        errEl.textContent = translateAuthError(err);
+        errEl.classList.remove("hidden");
       } finally {
         btn.disabled = false;
-        btn.textContent = "دخول إلى لوحة التحكم";
+        btn.textContent = "دخول";
       }
     });
 
     document.getElementById("logoutBtn").addEventListener("click", () => auth.signOut());
 
-    // الاستماع لفهرس المقاهي
-    function attachListener() {
-      detachListener();
-      tenantsRefListener = db.ref("tenants_index");
-      tenantsRefListener.on("value", (snap) => {
-        cafesMap = snap.val() || {};
-        renderStats();
-        renderCafes();
+    function startListeningTenants() {
+      tenantsRef = db.ref("tenants");
+      tenantsRef.on("value", (snap) => {
+        state.tenants = snap.val() || {};
+        renderDashboard();
+        if (state.setupCafeId && !document.getElementById("setupModal").classList.contains("hidden")) {
+          renderSetupLists();
+        }
       }, (err) => {
-        showToast("خطأ في قراءة البيانات: " + err.message, "err");
+        showToast("خطأ في قراءة المقاهي: " + err.message, "err");
       });
     }
 
-    function detachListener() {
-      if (tenantsRefListener) {
-        tenantsRefListener.off();
-        tenantsRefListener = null;
-      }
-      cafesMap = {};
-    }
-
-    // عرض الإحصائيات
-    function renderStats() {
-      const list = Object.values(cafesMap);
-      let active = 0, expiring = 0, suspended = 0;
+    // العرض والإحصائيات
+    function renderDashboard() {
       const now = Date.now();
-      const weekMs = 7 * 86400000;
+      const entries = Object.entries(state.tenants).map(([id, data]) => {
+        const meta = data.meta || {};
+        const config = data.config || {};
+        const live = data.live || {};
+        const subUntil = Number(meta.subscriptionUntil) || 0;
+        const daysLeft = Math.ceil((subUntil - now) / 86400000);
+        const mode = config.operationMode || "solo";
+        const prodCount = config.products ? Object.keys(config.products).length : 0;
+        const stockCount = (live.stock_state && live.stock_state.stock) ? Object.keys(live.stock_state.stock).length : 0;
+        return { id, meta, config, live, subUntil, daysLeft, mode, prodCount, stockCount };
+      }).sort((a, b) => (b.meta.createdAt || 0) - (a.meta.createdAt || 0));
 
-      list.forEach((c) => {
-        if (!c.active) {
-          suspended++;
-        } else if ((c.subscriptionUntil || 0) <= now) {
-          expiring++;
-        } else {
-          active++;
-          if (c.subscriptionUntil - now <= weekMs) expiring++;
+      let activeCnt = 0, expCnt = 0, suspCnt = 0;
+      entries.forEach((c) => {
+        if (c.meta.active !== true) suspCnt++;
+        else if (c.daysLeft <= 0) expCnt++;
+        else {
+          activeCnt++;
+          if (c.daysLeft <= 7) expCnt++;
         }
       });
 
-      document.getElementById("statTotal").textContent = list.length;
-      document.getElementById("statActive").textContent = active;
-      document.getElementById("statExpiring").textContent = expiring;
-      document.getElementById("statSuspended").textContent = suspended;
-    }
+      document.getElementById("stTotal").textContent = entries.length;
+      document.getElementById("stActive").textContent = activeCnt;
+      document.getElementById("stExpiring").textContent = expCnt;
+      document.getElementById("stSuspended").textContent = suspCnt;
 
-    // عرض بطاقات المقاهي
-    function renderCafes() {
-      const q = document.getElementById("searchInput").value.trim().toLowerCase();
-      const now = Date.now();
-      const weekMs = 7 * 86400000;
+      const q = state.search.trim().toLowerCase();
+      const filtered = entries.filter((c) => {
+        if (state.filter === "active" && !(c.meta.active === true && c.daysLeft > 0)) return false;
+        if (state.filter === "expiring" && !(c.meta.active === true && c.daysLeft <= 7)) return false;
+        if (state.filter === "suspended" && c.meta.active === true) return false;
+        if (state.filter === "solo" && c.mode !== "solo") return false;
+        if (state.filter === "team" && c.mode !== "team") return false;
+        if (q) {
+          const hay = [c.meta.name, c.config.cafeName, c.meta.code, c.meta.ownerEmail, c.meta.phone, c.meta.ownerName]
+            .join(" ").toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
 
-      const list = Object.values(cafesMap)
-        .filter((c) => {
-          const isSuspended = !c.active;
-          const isExpired = c.active && (c.subscriptionUntil || 0) <= now;
-          const isSoon = c.active && !isExpired && (c.subscriptionUntil - now) <= weekMs;
-
-          if (currentFilter === "active" && (isSuspended || isExpired)) return false;
-          if (currentFilter === "expiring" && !(isExpired || isSoon)) return false;
-          if (currentFilter === "suspended" && !isSuspended) return false;
-          if (currentFilter === "solo" && c.operationMode !== "solo") return false;
-          if (currentFilter === "team" && c.operationMode !== "team") return false;
-
-          if (q) {
-            const hay = `${c.name || ""} ${c.cafeCode || ""} ${c.ownerEmail || ""} ${c.ownerPhone || ""} ${c.notes || ""}`.toLowerCase();
-            if (!hay.includes(q)) return false;
-          }
-          return true;
-        })
-        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-      if (!list.length) {
-        cafesListEl.innerHTML = "";
-        emptyStateEl.classList.remove("hidden");
+      const grid = document.getElementById("cafesGrid");
+      if (!filtered.length) {
+        grid.innerHTML = `<div class="empty-box">لا توجد مقاهٍ مطابقة حالياً. اضغط على «+ إضافة مقهى» لإنشاء حريف جديد.</div>`;
         return;
       }
 
-      emptyStateEl.classList.add("hidden");
-      cafesListEl.innerHTML = list.map((c) => {
-        const left = daysLeft(c.subscriptionUntil || 0);
-        const isSuspended = !c.active;
-        const isExpired = c.active && left <= 0;
-        const isSoon = c.active && left > 0 && left <= 7;
-
-        let statusPill = `<span class="pill pill-ok">نشط (${left} يوم)</span>`;
-        let cardClass = "cafe-card";
-        if (isSuspended) {
-          statusPill = `<span class="pill pill-err">موقوف</span>`;
-          cardClass += " suspended";
-        } else if (isExpired) {
-          statusPill = `<span class="pill pill-warn">منتهي الاشتراك</span>`;
-          cardClass += " expired";
-        } else if (isSoon) {
-          statusPill = `<span class="pill pill-warn">ينتهي خلال ${left} أيام</span>`;
+      grid.innerHTML = filtered.map((c) => {
+        let statusBadge = `<span class="pill pill-ok">نشط (${c.daysLeft} يوم)</span>`;
+        let cardCls = "cafe-card";
+        if (c.meta.active !== true) {
+          statusBadge = `<span class="pill pill-err">موقوف يدوياً</span>`;
+          cardCls += " suspended";
+        } else if (c.daysLeft <= 0) {
+          statusBadge = `<span class="pill pill-err">منتهي الاشتراك</span>`;
+          cardCls += " expired";
+        } else if (c.daysLeft <= 7) {
+          statusBadge = `<span class="pill pill-warn">ينتهي خلال ${c.daysLeft} يوم</span>`;
         }
 
-        const modePill = c.operationMode === "team"
-          ? `<span class="pill pill-team">👥 فريق</span>`
-          : `<span class="pill pill-solo">👤 فردي</span>`;
-
-        const phoneHtml = c.ownerPhone
-          ? `<div>الهاتف: <a href="tel:${escapeHtml(c.ownerPhone)}" dir="ltr">${escapeHtml(c.ownerPhone)}</a></div>`
-          : "";
-
-        const workerHtml = c.operationMode === "team"
-          ? `<div>العامل: <strong>${escapeHtml(c.workerName || "العامل")}</strong> (أجر يومي: ${(Number(c.defaultDailyWage || 0) / 1000).toFixed(3)} د)</div>`
-          : "";
-
-        const notesHtml = c.notes
-          ? `<div>ملاحظات: <strong>${escapeHtml(c.notes)}</strong></div>`
-          : "";
+        const modeBadge = c.mode === "team"
+          ? `<span class="pill pill-info">👥 فريق</span>`
+          : `<span class="pill pill-muted">👤 فردي</span>`;
 
         return `
-          <article class="${cardClass}">
-            <div class="cafe-head">
+          <div class="${cardCls}">
+            <div class="cafe-top">
               <div>
-                <div class="cafe-name">${escapeHtml(c.name)}</div>
-                <span class="cafe-code">#${escapeHtml(c.cafeCode)}</span>
-              </div>
-              <div class="badges">
-                ${modePill}
-                ${statusPill}
+                <div class="cafe-name">${escapeHtml(c.config.cafeName || c.meta.name || "بدون اسم")}</div>
+                <div style="margin-top: 4px; display: flex; gap: 5px; flex-wrap: wrap;">
+                  ${statusBadge}
+                  ${modeBadge}
+                  <span class="pill pill-muted" dir="ltr">#${escapeHtml(c.meta.code || "—")}</span>
+                </div>
               </div>
             </div>
-
             <div class="cafe-meta">
-              <div>المالك: <strong dir="ltr">${escapeHtml(c.ownerEmail)}</strong></div>
-              ${phoneHtml}
-              ${workerHtml}
-              <div>نهاية الاشتراك: <strong dir="ltr">${formatDate(c.subscriptionUntil)}</strong></div>
-              ${notesHtml}
+              <div>المالك: <strong>${escapeHtml(c.config.ownerName || c.meta.ownerName || "—")}</strong> (<span dir="ltr">${escapeHtml(c.meta.ownerEmail || "—")}</span>)</div>
+              ${c.meta.phone ? `<div>الهاتف: <strong dir="ltr">${escapeHtml(c.meta.phone)}</strong></div>` : ""}
+              <div>ينتهي الاشتراك في: <strong dir="ltr">${formatDate(c.subUntil)}</strong></div>
+              <div>التجهيز: <strong>${c.prodCount}</strong> سلعة بيع • <strong>${c.stockCount}</strong> مادة مخزون</div>
             </div>
-
             <div class="cafe-actions">
-              <button class="btn-success btn-sm" data-action="quick30" data-id="${escapeHtml(c.cafeId)}">+30 يوم</button>
-              <button class="btn-secondary btn-sm" data-action="renew" data-id="${escapeHtml(c.cafeId)}">تجديد</button>
-              <button class="btn-info btn-sm" data-action="mode" data-id="${escapeHtml(c.cafeId)}">النمط / العامل</button>
-              <button class="btn-secondary btn-sm" data-action="edit" data-id="${escapeHtml(c.cafeId)}">تعديل</button>
-              <button class="${isSuspended ? "btn-success" : "btn-danger"} btn-sm" data-action="toggle" data-id="${escapeHtml(c.cafeId)}">
-                ${isSuspended ? "تفعيل" : "إيقاف"}
+              <button class="btn-primary btn-sm" data-action="setup" data-id="${escapeHtml(c.id)}">⚙️ السلع والمخزون</button>
+              <button class="btn-info btn-sm" data-action="mode" data-id="${escapeHtml(c.id)}">👥 النمط / العامل</button>
+              <button class="btn-success btn-sm" data-action="renew" data-id="${escapeHtml(c.id)}">⏳ الاشتراك</button>
+              <button class="btn-secondary btn-sm" data-action="copy" data-id="${escapeHtml(c.id)}">📋 الروابط</button>
+              <button class="btn-secondary btn-sm" data-action="reset-pass" data-id="${escapeHtml(c.id)}">🔑 استعادة السر</button>
+              <button class="${c.meta.active === true ? "btn-danger" : "btn-success"} btn-sm" data-action="toggle" data-id="${escapeHtml(c.id)}">
+                ${c.meta.active === true ? "⛔ إيقاف" : "✅ تفعيل"}
               </button>
             </div>
-          </article>
+          </div>
         `;
       }).join("");
     }
 
-    // البحث والتصفية
-    document.getElementById("searchInput").addEventListener("input", renderCafes);
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+      state.search = e.target.value;
+      renderDashboard();
+    });
     document.getElementById("filterBar").addEventListener("click", (e) => {
       const btn = e.target.closest("[data-filter]");
       if (!btn) return;
-      currentFilter = btn.dataset.filter;
-      document.querySelectorAll(".filter-pill").forEach((p) => p.classList.remove("active"));
-      btn.classList.add("active");
-      renderCafes();
+      state.filter = btn.dataset.filter;
+      document.querySelectorAll("[data-filter]").forEach((b) => b.classList.toggle("active", b === btn));
+      renderDashboard();
     });
 
-    // اختيار النمط في نافذة الإنشاء
-    function setCreateMode(mode) {
-      selectedCreateMode = mode;
-      document.querySelectorAll("#createModeChoices .mode-choice").forEach((el) => {
-        el.classList.toggle("selected", el.dataset.mode === mode);
-      });
-      const workerBox = document.getElementById("workerFieldsBox");
-      const pinInput = document.getElementById("cWorkerPin");
-      if (mode === "team") {
-        workerBox.classList.remove("hidden");
-        pinInput.required = true;
-        if (!pinInput.value) pinInput.value = generatePin();
-      } else {
-        workerBox.classList.add("hidden");
-        pinInput.required = false;
-      }
+    // ============ 1. إضافة مقهى جديد ============
+    function syncAddCafeMode() {
+      const isTeam = document.getElementById("acMode").value === "team";
+      document.getElementById("acWorkerFields").classList.toggle("hidden", !isTeam);
+      document.getElementById("acWorkerPin").required = isTeam;
     }
-
-    document.getElementById("createModeChoices").addEventListener("click", (e) => {
-      const choice = e.target.closest("[data-mode]");
-      if (choice) setCreateMode(choice.dataset.mode);
+    document.getElementById("acMode").addEventListener("change", syncAddCafeMode);
+    document.getElementById("acGenPassBtn").addEventListener("click", () => {
+      document.getElementById("acOwnerPass").value = randomPass(8);
+    });
+    document.getElementById("acGenPinBtn").addEventListener("click", () => {
+      document.getElementById("acWorkerPin").value = randomPin(6);
     });
 
-    document.getElementById("openCreateBtn").addEventListener("click", () => {
-      document.getElementById("createForm").reset();
-      document.getElementById("createError").classList.add("hidden");
-      document.getElementById("cCode").value = getNextCafeCode();
-      document.getElementById("cOwnerPass").value = generatePassword();
-      document.getElementById("cOwnerName").value = "الإدارة";
-      document.getElementById("cWorkerName").value = "العامل";
-      document.getElementById("cDailyWage").value = "25";
-      setCreateMode("solo");
-      openModal("createModal");
+    document.getElementById("addCafeBtn").addEventListener("click", () => {
+      document.getElementById("addCafeForm").reset();
+      document.getElementById("acOwnerPass").value = randomPass(8);
+      document.getElementById("acWorkerPin").value = randomPin(6);
+      document.getElementById("acDays").value = "30";
+      document.getElementById("acWorkerName").value = "العامل";
+      document.getElementById("acDailyWage").value = "25.000";
+      syncAddCafeMode();
+      openModal("addCafeModal");
     });
 
-    document.getElementById("genOwnerPassBtn").addEventListener("click", () => {
-      document.getElementById("cOwnerPass").value = generatePassword();
-    });
-    document.getElementById("genWorkerPinBtn").addEventListener("click", () => {
-      document.getElementById("cWorkerPin").value = generatePin();
-    });
-    document.getElementById("genModalWorkerPinBtn").addEventListener("click", () => {
-      document.getElementById("mWorkerPin").value = generatePin();
-    });
-
-    // إنشاء مقهى جديد
-    document.getElementById("createForm").addEventListener("submit", async (e) => {
+    document.getElementById("addCafeForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const errBox = document.getElementById("createError");
-      const btn = document.getElementById("createSubmitBtn");
-      errBox.classList.add("hidden");
+      const name = document.getElementById("acName").value.trim();
+      const code = document.getElementById("acCode").value.trim().toLowerCase();
+      const ownerName = document.getElementById("acOwnerName").value.trim();
+      const phone = document.getElementById("acPhone").value.trim();
+      const ownerEmail = document.getElementById("acOwnerEmail").value.trim();
+      const ownerPass = document.getElementById("acOwnerPass").value.trim();
+      const mode = document.getElementById("acMode").value;
+      const days = Math.max(1, parseInt(document.getElementById("acDays").value, 10) || 30);
+      const workerName = document.getElementById("acWorkerName").value.trim() || "العامل";
+      const dailyWage = toMillimes(document.getElementById("acDailyWage").value);
+      const workerPin = document.getElementById("acWorkerPin").value.trim();
 
-      const cafeName = document.getElementById("cName").value.trim();
-      const cafeCode = document.getElementById("cCode").value.trim().toLowerCase();
-      const durationDays = parseInt(document.getElementById("cDuration").value, 10) || 30;
-      const ownerPhone = document.getElementById("cOwnerPhone").value.trim();
-      const ownerName = document.getElementById("cOwnerName").value.trim() || "الإدارة";
-      const ownerEmail = document.getElementById("cOwnerEmail").value.trim().toLowerCase();
-      const ownerPass = document.getElementById("cOwnerPass").value;
-      const notes = document.getElementById("cNotes").value.trim();
-
-      const workerName = selectedCreateMode === "team" ? (document.getElementById("cWorkerName").value.trim() || "العامل") : "";
-      const dailyWageDt = selectedCreateMode === "team" ? (parseFloat(document.getElementById("cDailyWage").value) || 0) : 0;
-      const dailyWageMillimes = Math.max(0, Math.round(dailyWageDt * 1000));
-      const workerPin = selectedCreateMode === "team" ? document.getElementById("cWorkerPin").value.trim() : "";
-
-      if (!/^[a-z0-9]{3,12}$/.test(cafeCode)) {
-        errBox.textContent = "رمز المقهى يجب أن يتكون من 3 إلى 12 حرفاً أو رقماً إنجليزياً فقط بدون مسافات.";
-        errBox.classList.remove("hidden");
+      if (!/^[a-z0-9]{3,12}$/.test(code)) {
+        showToast("رمز المقهى يجب أن يكون من 3 إلى 12 حرفاً/رقماً إنجليزياً بدون مسافات.", "err");
         return;
       }
-
-      const cafeId = "cafe_" + cafeCode;
-      if (cafesMap[cafeId] || Object.values(cafesMap).some((c) => String(c.cafeCode).toLowerCase() === cafeCode)) {
-        errBox.textContent = `رمز المقهى (${cafeCode}) مستخدم بالفعل لمقهى آخر.`;
-        errBox.classList.remove("hidden");
+      const codeExists = Object.values(state.tenants).some((t) => t.meta && String(t.meta.code || "").toLowerCase() === code);
+      if (codeExists) {
+        showToast("رمز المقهى هذا مستخدم بالفعل لمقهى آخر.", "err");
         return;
       }
-
       if (ownerPass.length < 6) {
-        errBox.textContent = "كلمة سر المالك يجب أن لا تقل عن 6 أحرف.";
-        errBox.classList.remove("hidden");
+        showToast("كلمة سر المالك يجب أن تكون 6 أحرف على الأقل.", "err");
+        return;
+      }
+      if (mode === "team" && workerPin.length < 6) {
+        showToast("الرمز السري للعامل (PIN) يجب أن يكون 6 أرقام/أحرف على الأقل.", "err");
         return;
       }
 
-      if (selectedCreateMode === "team" && workerPin.length < 6) {
-        errBox.textContent = "الرمز السري للعامل يجب أن لا يقل عن 6 أرقام/أحرف.";
-        errBox.classList.remove("hidden");
-        return;
-      }
-
+      const btn = document.getElementById("acSubmitBtn");
       btn.disabled = true;
-      btn.textContent = "جارٍ إنشاء الحسابات...";
-
-      let ownerCred = null;
-      let workerCred = null;
-      const workerEmail = selectedCreateMode === "team" ? `w_${cafeCode}@cassacafe.app` : null;
-
+      btn.textContent = "جارٍ الإنشاء...";
+      const secAuth = getSecondaryAuth();
       try {
-        await provAuth.setPersistence(firebase.auth.Auth.Persistence.NONE);
-        ownerCred = await provAuth.createUserWithEmailAndPassword(ownerEmail, ownerPass);
+        const ownerCred = await secAuth.createUserWithEmailAndPassword(ownerEmail, ownerPass);
+        const ownerUid = ownerCred.user.uid;
+        await secAuth.signOut();
 
-        if (selectedCreateMode === "team") {
-          try {
-            workerCred = await provAuth.createUserWithEmailAndPassword(workerEmail, workerPin);
-          } catch (wErr) {
-            // تراجع تلقائي لحذف حساب المالك إذا فشل إنشاء حساب العامل
-            try { await ownerCred.user.delete(); } catch (_) {}
-            throw wErr;
-          }
+        let workerUid = null;
+        let workerEmail = null;
+        if (mode === "team") {
+          workerEmail = `w_${code}@cassacafe.app`;
+          const wCred = await secAuth.createUserWithEmailAndPassword(workerEmail, workerPin);
+          workerUid = wCred.user.uid;
+          await secAuth.signOut();
         }
 
         const nowMs = Date.now();
-        const subUntilMs = addDaysEndOfDay(nowMs, durationDays);
-        const ownerUid = ownerCred.user.uid;
-        const workerUid = workerCred ? workerCred.user.uid : null;
-
+        const subUntil = nowMs + days * 86400000;
+        const cafeId = `cafe_${code}_${nowMs.toString(36)}`;
         const updates = {};
 
         updates[`users/${ownerUid}`] = {
-          cafeId: cafeId,
           role: "owner",
+          cafeId,
           active: true,
           email: ownerEmail,
+          name: ownerName,
           createdAt: nowMs
         };
-
         if (workerUid) {
           updates[`users/${workerUid}`] = {
-            cafeId: cafeId,
             role: "worker",
+            cafeId,
             active: true,
             email: workerEmail,
-            cafeCode: cafeCode,
+            name: workerName,
             createdAt: nowMs
           };
         }
 
         updates[`tenants/${cafeId}/meta`] = {
-          cafeId: cafeId,
-          name: cafeName,
-          cafeCode: cafeCode,
-          ownerUid: ownerUid,
-          ownerEmail: ownerEmail,
-          ownerPhone: ownerPhone,
-          workerUid: workerUid,
-          workerEmail: workerEmail,
-          plan: selectedCreateMode,
+          name,
+          code,
+          phone,
+          ownerUid,
+          ownerEmail,
+          ownerName,
+          workerUid,
+          workerEmail,
           active: true,
-          createdAt: nowMs,
-          subscriptionUntil: subUntilMs,
-          notes: notes
+          subscriptionUntil: subUntil,
+          createdAt: nowMs
         };
 
         updates[`tenants/${cafeId}/config`] = {
-          cafeName: cafeName,
-          ownerName: ownerName,
-          operationMode: selectedCreateMode,
-          workerName: workerName,
-          defaultDailyWage: dailyWageMillimes,
-          fixedExpensePresets: [
-            { name: "كراء المقهى", amount: 500000 },
-            { name: "أنترنات", amount: 56000 },
-            { name: "بين سبورت", amount: 190000 }
-          ],
-          consumableQuickTags: [
-            "سكر", "حليب", "شكولين", "مواد تنظيف", "جافال", "سائل غسيل",
-            "شاي", "ماء زهر", "كؤوس ورقية كبيرة", "كؤوس ورقية صغيرة", "برتقال / ليمون"
-          ],
+          cafeName: name,
+          ownerName,
+          operationMode: mode,
+          workerName,
+          defaultDailyWage: dailyWage,
           lowStockWeightLimit: 1000,
-          lowStockUnitLimit: 10
+          lowStockUnitLimit: 10,
+          consumableQuickTags: ["حليب", "سكر", "ماء", "كؤوس", "مناديل", "مواد تنظيف"],
+          fixedExpensePresets: [
+            { name: "كراء المحل", amount: 0 },
+            { name: "فاتورة كهرباء", amount: 0 },
+            { name: "فاتورة ماء", amount: 0 },
+            { name: "أنترنت", amount: 0 }
+          ],
+          products: {}
         };
 
         updates[`tenants/${cafeId}/live`] = {
           active_month: getCurrentMonthKey(),
           last_invoice_number: 0,
-          stock_state: {
-            stock: {},
-            updatedAt: nowMs
-          }
-        };
-
-        updates[`tenants_index/${cafeId}`] = {
-          cafeId: cafeId,
-          name: cafeName,
-          cafeCode: cafeCode,
-          ownerUid: ownerUid,
-          ownerEmail: ownerEmail,
-          ownerPhone: ownerPhone,
-          workerUid: workerUid,
-          workerEmail: workerEmail,
-          workerName: workerName,
-          defaultDailyWage: dailyWageMillimes,
-          operationMode: selectedCreateMode,
-          active: true,
-          createdAt: nowMs,
-          subscriptionUntil: subUntilMs,
-          notes: notes
+          stock_state: { stock: {}, updatedAt: nowMs }
         };
 
         await db.ref().update(updates);
+        closeModal("addCafeModal");
+        showToast(`تم إنشاء «${name}». يمكنك الآن تجهيز سلعه ومخزونه.`);
 
-        closeModal("createModal");
-        showToast("تم إنشاء المقهى بنجاح.");
-
-        let msg = `☕ مرحباً بكم في منظومة CassaCafe\n`;
-        msg += `المقهى: ${cafeName}\n`;
-        msg += `رمز المقهى: ${cafeCode}\n`;
-        msg += `النمط: ${selectedCreateMode === "team" ? "مالك + عامل" : "مالك فردي"}\n`;
-        msg += `صالح إلى غاية: ${formatDate(subUntilMs)}\n\n`;
-        msg += `🔐 بيانات دخول المالك (الإدارة):\n`;
-        msg += `البريد: ${ownerEmail}\n`;
-        msg += `كلمة السر: ${ownerPass}\n`;
-        if (selectedCreateMode === "team") {
-          msg += `\n👷 بيانات دخول العامل:\n`;
-          msg += `رمز المقهى: ${cafeCode}\n`;
-          msg += `الرمز السري (PIN): ${workerPin}\n`;
+        let summary = `☕ بيانات دخول مقهى ${name}\n`;
+        summary += `رابط المالك: ${APP_BASE_URL}/\n`;
+        summary += `البريد: ${ownerEmail}\n`;
+        summary += `كلمة السر: ${ownerPass}\n`;
+        if (mode === "team") {
+          summary += `——————\nرابط العامل: ${APP_BASE_URL}/worker.html\n`;
+          summary += `رمز المقهى: ${code}\n`;
+          summary += `الرمز السري (PIN): ${workerPin}\n`;
         }
-        document.getElementById("credText").textContent = msg;
-        openModal("credModal");
+        try { await navigator.clipboard.writeText(summary); } catch (_) {}
+        alert(summary);
       } catch (err) {
-        errBox.textContent = translateAuthError(err);
-        errBox.classList.remove("hidden");
+        showToast("فشل الإنشاء: " + translateAuthError(err), "err");
       } finally {
-        try { await provAuth.signOut(); } catch (_) {}
+        secAuth.signOut().catch(() => {});
         btn.disabled = false;
-        btn.textContent = "إنشاء المقهى والحسابات";
+        btn.textContent = "إنشاء المقهى";
       }
     });
 
-    // نسخ بيانات الدخول
-    document.getElementById("copyCredBtn").addEventListener("click", async () => {
-      const text = document.getElementById("credText").textContent;
-      try {
-        await navigator.clipboard.writeText(text);
-        showToast("تم نسخ الرسالة بنجاح.");
-      } catch (_) {
-        showToast("حدّد النص أعلاه وانسخه يدوياً.", "err");
-      }
-    });
-
-    // التعامل مع أزرار البطاقات (Event Delegation)
-    cafesListEl.addEventListener("click", async (e) => {
+    // ============ 2. إجراءات بطاقة المقهى ============
+    document.getElementById("cafesGrid").addEventListener("click", async (e) => {
       const btn = e.target.closest("[data-action]");
       if (!btn) return;
       const action = btn.dataset.action;
       const cafeId = btn.dataset.id;
-      const cafe = cafesMap[cafeId];
-      if (!cafe) return;
+      const tenant = state.tenants[cafeId];
+      if (!tenant) return;
 
-      if (action === "quick30") {
-        const newUntil = addDaysEndOfDay(cafe.subscriptionUntil, 30);
-        if (!confirm(`تمديد اشتراك «${cafe.name}» بـ 30 يوماً ليصبح حتى ${formatDate(newUntil)}؟`)) return;
-        await updateSubscription(cafeId, newUntil);
+      if (action === "setup") {
+        openSetupModal(cafeId);
+      } else if (action === "mode") {
+        openModeModal(cafeId);
       } else if (action === "renew") {
-        activeModalCafeId = cafeId;
-        document.getElementById("renewInfo").textContent =
-          `المقهى: ${cafe.name} — تاريخ الانتهاء الحالي: ${formatDate(cafe.subscriptionUntil)}`;
-        document.getElementById("renewExactDate").value = formatDate(Math.max(cafe.subscriptionUntil || 0, Date.now()));
-        openModal("renewModal");
+        openRenewModal(cafeId);
       } else if (action === "toggle") {
-        const nextActive = !cafe.active;
-        const msg = nextActive
-          ? `تفعيل حساب مقهى «${cafe.name}» مجدداً؟`
-          : `إيقاف مقهى «${cafe.name}» فوراً؟ (سيُمنع المالك والعامل من الدخول حتى إعادة التفعيل)`;
-        if (!confirm(msg)) return;
+        const next = !(tenant.meta && tenant.meta.active === true);
+        if (!confirm(next ? "إعادة تفعيل هذا المقهى؟" : "إيقاف حساب هذا المقهى مؤقتاً؟")) return;
         try {
-          const updates = {};
-          updates[`tenants/${cafeId}/meta/active`] = nextActive;
-          updates[`tenants_index/${cafeId}/active`] = nextActive;
-          await db.ref().update(updates);
-          showToast(nextActive ? "تم تفعيل المقهى." : "تم إيقاف المقهى.");
+          await db.ref(`tenants/${cafeId}/meta/active`).set(next);
+          showToast(next ? "تم تفعيل المقهى." : "تم إيقاف المقهى.");
         } catch (err) {
           showToast("فشل التحديث: " + err.message, "err");
         }
-      } else if (action === "mode") {
-        openModeModal(cafe);
-      } else if (action === "edit") {
-        activeModalCafeId = cafeId;
-        document.getElementById("eName").value = cafe.name || "";
-        document.getElementById("ePhone").value = cafe.ownerPhone || "";
-        document.getElementById("eNotes").value = cafe.notes || "";
-        openModal("editModal");
+      } else if (action === "reset-pass") {
+        const email = tenant.meta && tenant.meta.ownerEmail;
+        if (!email) return;
+        if (!confirm(`إرسال رابط إعادة تعيين كلمة السر إلى ${email}؟`)) return;
+        try {
+          await auth.sendPasswordResetEmail(email);
+          showToast("تم إرسال رابط استعادة كلمة السر للمالك.");
+        } catch (err) {
+          showToast(translateAuthError(err), "err");
+        }
+      } else if (action === "copy") {
+        const name = (tenant.config && tenant.config.cafeName) || (tenant.meta && tenant.meta.name) || "";
+        const code = (tenant.meta && tenant.meta.code) || "";
+        const mode = (tenant.config && tenant.config.operationMode) || "solo";
+        let txt = `☕ روابط تطبيق ${name}\n`;
+        txt += `• تطبيق المالك: ${APP_BASE_URL}/\n`;
+        txt += `  البريد: ${(tenant.meta && tenant.meta.ownerEmail) || ""}\n`;
+        if (mode === "team") {
+          txt += `• تطبيق العامل: ${APP_BASE_URL}/worker.html\n`;
+          txt += `  رمز المقهى: ${code}\n`;
+        }
+        try {
+          await navigator.clipboard.writeText(txt);
+          showToast("تم نسخ الروابط وبيانات الدخول.");
+        } catch (_) {
+          alert(txt);
+        }
       }
     });
 
-    async function updateSubscription(cafeId, newUntilMs) {
-      try {
-        const updates = {};
-        updates[`tenants/${cafeId}/meta/subscriptionUntil`] = newUntilMs;
-        updates[`tenants_index/${cafeId}/subscriptionUntil`] = newUntilMs;
-        await db.ref().update(updates);
-        showToast(`تم تحديث الاشتراك حتى ${formatDate(newUntilMs)}.`);
-        closeModal("renewModal");
-      } catch (err) {
-        showToast("فشل تحديث الاشتراك: " + err.message, "err");
+    // ============ 3. نافذة النمط / العامل ============
+    function syncModeModalFields() {
+      const tenant = state.tenants[state.activeCafeId];
+      const isTeam = document.getElementById("mmMode").value === "team";
+      const hasWorker = Boolean(tenant && tenant.meta && tenant.meta.workerUid);
+
+      document.getElementById("mmWorkerFields").classList.toggle("hidden", !isTeam);
+      document.getElementById("mmPinWrap").classList.toggle("hidden", !isTeam || hasWorker);
+      document.getElementById("mmWorkerPin").required = isTeam && !hasWorker;
+
+      const hint = document.getElementById("mmExistingWorkerHint");
+      if (isTeam && hasWorker) {
+        hint.textContent = `حساب العامل منشأ بالفعل — رمز المقهى للدخول: ${tenant.meta.code}`;
+        hint.classList.remove("hidden");
+      } else {
+        hint.classList.add("hidden");
       }
     }
 
-    document.querySelectorAll("[data-add-days]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const cafe = cafesMap[activeModalCafeId];
-        if (!cafe) return;
-        const days = parseInt(btn.dataset.addDays, 10);
-        const newUntil = addDaysEndOfDay(cafe.subscriptionUntil, days);
-        await updateSubscription(activeModalCafeId, newUntil);
-      });
+    document.getElementById("mmMode").addEventListener("change", syncModeModalFields);
+    document.getElementById("mmGenPinBtn").addEventListener("click", () => {
+      document.getElementById("mmWorkerPin").value = randomPin(6);
     });
 
-    document.getElementById("renewDateForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!activeModalCafeId) return;
-      const dateStr = document.getElementById("renewExactDate").value;
-      if (!dateStr) return;
-      await updateSubscription(activeModalCafeId, endOfDayMs(dateStr));
-    });
-
-    // نافذة تبديل النمط وإدارة العامل
-    function openModeModal(cafe) {
-      activeModalCafeId = cafe.cafeId;
-      document.getElementById("modeError").classList.add("hidden");
-      document.getElementById("modeSummary").textContent =
-        `المقهى: ${cafe.name} (#${cafe.cafeCode}) — النمط الحالي: ${cafe.operationMode === "team" ? "فريق (مالك + عامل)" : "فردي (مالك وحده)"}`;
-
-      const soloSec = document.getElementById("switchToSoloSection");
-      const teamExistSec = document.getElementById("switchToTeamExistingSection");
-      const createWSec = document.getElementById("createWorkerSection");
-      const recreateNote = document.getElementById("recreateWorkerNote");
-      const titleEl = document.getElementById("createWorkerTitle");
-
-      soloSec.classList.add("hidden");
-      teamExistSec.classList.add("hidden");
-      createWSec.classList.add("hidden");
-      recreateNote.classList.add("hidden");
-
-      document.getElementById("mWorkerName").value = cafe.workerName || "العامل";
-      document.getElementById("mDailyWage").value = cafe.defaultDailyWage ? (cafe.defaultDailyWage / 1000) : 25;
-      document.getElementById("mWorkerPin").value = generatePin();
-
-      if (cafe.operationMode === "team") {
-        soloSec.classList.remove("hidden");
-        createWSec.classList.remove("hidden");
-        recreateNote.classList.remove("hidden");
-        titleEl.textContent = "تجديد / استبدال حساب العامل (بعد حذفه من Authentication)";
-      } else {
-        if (cafe.workerUid) {
-          teamExistSec.classList.remove("hidden");
-          createWSec.classList.remove("hidden");
-          recreateNote.classList.remove("hidden");
-          titleEl.textContent = "أو إنشاء حساب عامل جديد برمز جديد";
-        } else {
-          createWSec.classList.remove("hidden");
-          titleEl.textContent = "تفعيل وضع الفريق وإنشاء حساب عامل";
-        }
-      }
+    function openModeModal(cafeId) {
+      state.activeCafeId = cafeId;
+      const tenant = state.tenants[cafeId];
+      const cfg = tenant.config || {};
+      document.getElementById("mmCafeTitle").textContent = `النمط / العامل — ${cfg.cafeName || (tenant.meta && tenant.meta.name) || ""}`;
+      document.getElementById("mmMode").value = cfg.operationMode || "solo";
+      document.getElementById("mmWorkerName").value = cfg.workerName || "العامل";
+      document.getElementById("mmDailyWage").value = ((Number(cfg.defaultDailyWage) || 0) / 1000).toFixed(3);
+      document.getElementById("mmWorkerPin").value = randomPin(6);
+      syncModeModalFields();
       openModal("modeModal");
     }
 
-    document.getElementById("confirmSoloBtn").addEventListener("click", async () => {
-      const cafe = cafesMap[activeModalCafeId];
-      if (!cafe) return;
-      try {
-        const updates = {};
-        updates[`tenants/${cafe.cafeId}/meta/plan`] = "solo";
-        updates[`tenants/${cafe.cafeId}/config/operationMode`] = "solo";
-        updates[`tenants_index/${cafe.cafeId}/operationMode`] = "solo";
-        if (cafe.workerUid) {
-          updates[`users/${cafe.workerUid}/active`] = false;
-        }
-        await db.ref().update(updates);
-        closeModal("modeModal");
-        showToast("تم التحويل إلى وضع المالك الفردي (Solo).");
-      } catch (err) {
-        showToast("فشل التحويل: " + err.message, "err");
-      }
-    });
-
-    document.getElementById("confirmTeamExistingBtn").addEventListener("click", async () => {
-      const cafe = cafesMap[activeModalCafeId];
-      if (!cafe || !cafe.workerUid) return;
-      try {
-        const updates = {};
-        updates[`tenants/${cafe.cafeId}/meta/plan`] = "team";
-        updates[`tenants/${cafe.cafeId}/config/operationMode`] = "team";
-        updates[`tenants_index/${cafe.cafeId}/operationMode`] = "team";
-        updates[`users/${cafe.workerUid}/active`] = true;
-        await db.ref().update(updates);
-        closeModal("modeModal");
-        showToast("تمت إعادة تفعيل وضع الفريق وحساب العامل.");
-      } catch (err) {
-        showToast("فشل التفعيل: " + err.message, "err");
-      }
-    });
-
-    document.getElementById("createWorkerForm").addEventListener("submit", async (e) => {
+    document.getElementById("modeForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const cafe = cafesMap[activeModalCafeId];
-      if (!cafe) return;
+      const cafeId = state.activeCafeId;
+      const tenant = state.tenants[cafeId];
+      if (!tenant) return;
 
-      const errBox = document.getElementById("modeError");
-      const btn = document.getElementById("createWorkerSubmitBtn");
-      errBox.classList.add("hidden");
+      const mode = document.getElementById("mmMode").value;
+      const workerName = document.getElementById("mmWorkerName").value.trim() || "العامل";
+      const dailyWage = toMillimes(document.getElementById("mmDailyWage").value);
+      const hasWorker = Boolean(tenant.meta && tenant.meta.workerUid);
+      const pin = document.getElementById("mmWorkerPin").value.trim();
 
-      const workerName = document.getElementById("mWorkerName").value.trim() || "العامل";
-      const dailyWageMillimes = Math.max(0, Math.round((parseFloat(document.getElementById("mDailyWage").value) || 0) * 1000));
-      const workerPin = document.getElementById("mWorkerPin").value.trim();
-
-      if (workerPin.length < 6) {
-        errBox.textContent = "الرمز السري للعامل يجب أن لا يقل عن 6 أرقام/أحرف.";
-        errBox.classList.remove("hidden");
+      if (mode === "team" && !hasWorker && pin.length < 6) {
+        showToast("الرمز السري للعامل (PIN) يجب أن يكون 6 أرقام/أحرف على الأقل.", "err");
         return;
       }
 
-      const workerEmail = `w_${cafe.cafeCode}@cassacafe.app`;
+      const btn = document.getElementById("mmSubmitBtn");
       btn.disabled = true;
-      btn.textContent = "جارٍ إنشاء حساب العامل...";
-
+      const secAuth = getSecondaryAuth();
       try {
-        await provAuth.setPersistence(firebase.auth.Auth.Persistence.NONE);
-        const wCred = await provAuth.createUserWithEmailAndPassword(workerEmail, workerPin);
-        const newWorkerUid = wCred.user.uid;
-        const nowMs = Date.now();
-
         const updates = {};
-        if (cafe.workerUid && cafe.workerUid !== newWorkerUid) {
-          updates[`users/${cafe.workerUid}/active`] = false;
+        updates[`tenants/${cafeId}/config/operationMode`] = mode;
+        updates[`tenants/${cafeId}/config/workerName`] = workerName;
+        updates[`tenants/${cafeId}/config/defaultDailyWage`] = dailyWage;
+
+        let createdMsg = "";
+        if (mode === "team" && !hasWorker) {
+          const code = String(tenant.meta.code || "").toLowerCase();
+          const workerEmail = `w_${code}@cassacafe.app`;
+          const wCred = await secAuth.createUserWithEmailAndPassword(workerEmail, pin);
+          const wUid = wCred.user.uid;
+          await secAuth.signOut();
+
+          updates[`users/${wUid}`] = {
+            role: "worker",
+            cafeId,
+            active: true,
+            email: workerEmail,
+            name: workerName,
+            createdAt: Date.now()
+          };
+          updates[`tenants/${cafeId}/meta/workerUid`] = wUid;
+          updates[`tenants/${cafeId}/meta/workerEmail`] = workerEmail;
+          createdMsg = `تم إنشاء حساب العامل:\nالرابط: ${APP_BASE_URL}/worker.html\nرمز المقهى: ${code}\nالرمز السري (PIN): ${pin}`;
+        } else if (hasWorker) {
+          updates[`users/${tenant.meta.workerUid}/active`] = (mode === "team");
         }
-        updates[`users/${newWorkerUid}`] = {
-          cafeId: cafe.cafeId,
-          role: "worker",
-          active: true,
-          email: workerEmail,
-          cafeCode: cafe.cafeCode,
-          createdAt: nowMs
-        };
-        updates[`tenants/${cafe.cafeId}/meta/plan`] = "team";
-        updates[`tenants/${cafe.cafeId}/meta/workerUid`] = newWorkerUid;
-        updates[`tenants/${cafe.cafeId}/meta/workerEmail`] = workerEmail;
-        updates[`tenants/${cafe.cafeId}/config/operationMode`] = "team";
-        updates[`tenants/${cafe.cafeId}/config/workerName`] = workerName;
-        updates[`tenants/${cafe.cafeId}/config/defaultDailyWage`] = dailyWageMillimes;
-        updates[`tenants_index/${cafe.cafeId}/operationMode`] = "team";
-        updates[`tenants_index/${cafe.cafeId}/workerUid`] = newWorkerUid;
-        updates[`tenants_index/${cafe.cafeId}/workerEmail`] = workerEmail;
-        updates[`tenants_index/${cafe.cafeId}/workerName`] = workerName;
-        updates[`tenants_index/${cafe.cafeId}/defaultDailyWage`] = dailyWageMillimes;
 
         await db.ref().update(updates);
         closeModal("modeModal");
-        showToast("تم إنشاء حساب العامل وتفعيل وضع الفريق.");
-
-        let msg = `👷 بيانات دخول العامل — ${cafe.name}\n`;
-        msg += `رمز المقهى: ${cafe.cafeCode}\n`;
-        msg += `الرمز السري (PIN): ${workerPin}\n`;
-        document.getElementById("credText").textContent = msg;
-        openModal("credModal");
+        showToast("تم تحديث نمط التشغيل بنجاح.");
+        if (createdMsg) alert(createdMsg);
       } catch (err) {
-        errBox.textContent = translateAuthError(err);
-        errBox.classList.remove("hidden");
+        showToast("فشل التحديث: " + translateAuthError(err), "err");
       } finally {
-        try { await provAuth.signOut(); } catch (_) {}
+        secAuth.signOut().catch(() => {});
         btn.disabled = false;
-        btn.textContent = "إنشاء حساب العامل وتفعيل وضع الفريق";
       }
     });
 
-    // تعديل معلومات المقهى وإرسال رابط استعادة كلمة السر
-    document.getElementById("editForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const cafe = cafesMap[activeModalCafeId];
-      if (!cafe) return;
+    // ============ 4. نافذة تجديد الاشتراك ============
+    function openRenewModal(cafeId) {
+      state.activeCafeId = cafeId;
+      const tenant = state.tenants[cafeId];
+      const cur = (tenant.meta && tenant.meta.subscriptionUntil) || Date.now();
+      document.getElementById("rmCafeTitle").textContent = `الاشتراك — ${(tenant.config && tenant.config.cafeName) || (tenant.meta && tenant.meta.name) || ""}`;
+      document.getElementById("rmCurrentEnd").textContent = `تاريخ الانتهاء الحالي: ${formatDate(cur)}`;
+      const base = Math.max(Date.now(), cur);
+      document.getElementById("rmCustomDate").value = formatDate(base + 30 * 86400000);
+      openModal("renewModal");
+    }
 
-      const name = document.getElementById("eName").value.trim();
-      const phone = document.getElementById("ePhone").value.trim();
-      const notes = document.getElementById("eNotes").value.trim();
+    document.querySelectorAll("[data-add-days]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const tenant = state.tenants[state.activeCafeId];
+        if (!tenant) return;
+        const cur = (tenant.meta && tenant.meta.subscriptionUntil) || 0;
+        const base = Math.max(Date.now(), cur);
+        const days = parseInt(btn.dataset.addDays, 10) || 30;
+        document.getElementById("rmCustomDate").value = formatDate(base + days * 86400000);
+      });
+    });
+
+    document.getElementById("renewForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const cafeId = state.activeCafeId;
+      const dateStr = document.getElementById("rmCustomDate").value;
+      if (!cafeId || !dateStr) return;
+      const ts = new Date(`${dateStr}T23:59:59`).getTime();
+      try {
+        await db.ref(`tenants/${cafeId}/meta/subscriptionUntil`).set(ts);
+        closeModal("renewModal");
+        showToast(`تم تحديث الاشتراك حتى ${dateStr}.`);
+      } catch (err) {
+        showToast("فشل التحديث: " + err.message, "err");
+      }
+    });
+
+    // ============ 5. استوديو تجهيز المقهى (السلع والأسعار + المخزون + المصاريف) ============
+    function getTenantStock(cafeId) {
+      const t = state.tenants[cafeId];
+      return (t && t.live && t.live.stock_state && t.live.stock_state.stock) || {};
+    }
+    function getTenantProducts(cafeId) {
+      const t = state.tenants[cafeId];
+      const raw = t && t.config && t.config.products;
+      if (!raw) return [];
+      const arr = [];
+      if (Array.isArray(raw)) {
+        raw.forEach((p, i) => { if (p) arr.push({ ...p, id: p.id || String(i) }); });
+      } else if (typeof raw === "object") {
+        Object.entries(raw).forEach(([k, p]) => { if (p) arr.push({ ...p, id: k }); });
+      }
+      const order = { hot: 1, cold: 2, food: 3, fun: 4 };
+      return arr.sort((a, b) => (order[a.category] || 9) - (order[b.category] || 9) || (a.createdAt || 0) - (b.createdAt || 0));
+    }
+
+    function switchSetupTab(tab) {
+      state.setupTab = tab;
+      document.getElementById("sp-prods").classList.toggle("hidden", tab !== "prods");
+      document.getElementById("sp-stock").classList.toggle("hidden", tab !== "stock");
+      document.getElementById("sp-opts").classList.toggle("hidden", tab !== "opts");
+      document.querySelectorAll("[data-setup-tab]").forEach((b) => {
+        b.classList.toggle("active", b.dataset.setupTab === tab);
+      });
+    }
+    document.querySelectorAll("[data-setup-tab]").forEach((b) => {
+      b.addEventListener("click", () => switchSetupTab(b.dataset.setupTab));
+    });
+
+    function openSetupModal(cafeId) {
+      state.setupCafeId = cafeId;
+      const t = state.tenants[cafeId];
+      const cfg = (t && t.config) || {};
+      document.getElementById("setupCafeTitle").textContent = `⚙️ تجهيز: ${cfg.cafeName || (t.meta && t.meta.name) || ""}`;
+
+      document.getElementById("spLowWeight").value = cfg.lowStockWeightLimit != null ? cfg.lowStockWeightLimit : 1000;
+      document.getElementById("spLowUnit").value = cfg.lowStockUnitLimit != null ? cfg.lowStockUnitLimit : 10;
+      document.getElementById("spQuickTags").value = (cfg.consumableQuickTags || []).join("، ");
+
+      switchSetupTab("prods");
+      renderSetupLists();
+      openModal("setupModal");
+    }
+
+    function renderSetupLists() {
+      const cafeId = state.setupCafeId;
+      if (!cafeId || !state.tenants[cafeId]) return;
+      const stockObj = getTenantStock(cafeId);
+      const prods = getTenantProducts(cafeId);
+
+      // قائمة السلع والأسعار
+      const prodEl = document.getElementById("spProdList");
+      if (!prods.length) {
+        prodEl.innerHTML = `<div class="empty-box">لا توجد سلع بيع بعد لهذا المقهى.<br/>اضغط <strong>«+ إضافة سلعة»</strong> أو <strong>«⚡ قائمة مبدئية»</strong> لتجهيز التطبيق فوراً.</div>`;
+      } else {
+        prodEl.innerHTML = prods.map((p) => {
+          const cat = CATEGORY_INFO[p.category] || CATEGORY_INFO.hot;
+          const isActive = p.active !== false;
+          const st = p.stockItemId ? stockObj[p.stockItemId] : null;
+          let linkTxt = "🔒 تحضير مباشر (الكونتور محجوب عن العامل)";
+          if (st && Number(p.stockDeduct) > 0) {
+            linkTxt = `📦 يخصم <strong>${formatQty(p.stockDeduct, st.unit)}</strong> من <strong>${escapeHtml(st.name)}</strong>`;
+          } else if (p.stockItemId && !st) {
+            linkTxt = "⚠️ مرتبط بمادة مخزن محذوفة";
+          }
+          return `
+            <div class="item-card ${isActive ? "" : "inactive"}">
+              <div class="item-top">
+                <div>
+                  <strong>${escapeHtml(p.name)}</strong>
+                  <div style="margin-top: 4px; display: flex; gap: 5px; flex-wrap: wrap;">
+                    <span class="pill ${cat.pill}">${cat.label}</span>
+                    ${isActive ? "" : `<span class="pill pill-muted">مخفية</span>`}
+                  </div>
+                </div>
+                <strong style="color: var(--primary); direction: ltr;">${formatDT(p.price)}</strong>
+              </div>
+              <div class="hint" style="color: #cbd5e1;">${linkTxt}</div>
+              <div class="item-actions">
+                <button type="button" class="btn-secondary btn-sm" data-sa-prod="edit" data-id="${escapeHtml(p.id)}">✏️ تعديل</button>
+                <button type="button" class="btn-info btn-sm" data-sa-prod="toggle" data-id="${escapeHtml(p.id)}">${isActive ? "إخفاء" : "إظهار"}</button>
+                <button type="button" class="btn-danger btn-sm" data-sa-prod="delete" data-id="${escapeHtml(p.id)}">حذف</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      // قائمة مواد المخزون
+      const stockArr = Object.entries(stockObj)
+        .map(([id, it]) => ({ id, ...it }))
+        .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "ar"));
+      const stockEl = document.getElementById("spStockList");
+      if (!stockArr.length) {
+        stockEl.innerHTML = `<div class="empty-box">لا توجد مواد مخزون بعد لهذا المقهى. أضف البن والمياه والمشروبات لربطها بالسلع والفواتير.</div>`;
+      } else {
+        stockEl.innerHTML = stockArr.map((it) => {
+          const packLbl = it.packLabel || (it.unit === "g" ? "كيلوغرام" : (it.packSize === 12 ? "ستيكة 12" : (it.packSize === 6 ? "ستيكة 6" : "قطعة")));
+          return `
+            <div class="item-card">
+              <div class="item-top">
+                <div>
+                  <strong>${escapeHtml(it.name)}</strong>
+                  <div class="hint">الجرد: ${it.unit === "g" ? "بالغرام" : "بالوحدة"} • الشراء: ${escapeHtml(packLbl)}</div>
+                </div>
+                <span class="pill pill-ok">${formatQty(it.qty, it.unit)}</span>
+              </div>
+              <div class="item-actions">
+                <button type="button" class="btn-secondary btn-sm" data-sa-stock="edit" data-id="${escapeHtml(it.id)}">✏️ تعديل</button>
+                <button type="button" class="btn-danger btn-sm" data-sa-stock="delete" data-id="${escapeHtml(it.id)}">حذف</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+    }
+
+    // توليد قائمة مبدئية لمقهى معيّن
+    document.getElementById("spSeedBtn").addEventListener("click", async () => {
+      const cafeId = state.setupCafeId;
+      if (!cafeId) return;
+      if (!confirm("توليد قائمة مبدئية جاهزة (مواد مخزون أساسية + مشروبات بأسعار ابتدائية) لهذا المقهى؟ يمكنك تعديلها أو حذف أي صنف بعدها.")) return;
+
+      const nowMs = Date.now();
+      const stCoffee = db.ref().push().key;
+      const stW05 = db.ref().push().key;
+      const stW15 = db.ref().push().key;
+      const stSoda = db.ref().push().key;
+
+      const updates = {};
+      updates[`live/stock_state/stock/${stCoffee}`] = { name: "البن (قهوة)", unit: "g", packSize: 1000, packLabel: "كيلوغرام", qty: 0, createdAt: nowMs };
+      updates[`live/stock_state/stock/${stW05}`] = { name: "ماء 0.5ل", unit: "unit", packSize: 12, packLabel: "ستيكة 12", qty: 0, createdAt: nowMs + 1 };
+      updates[`live/stock_state/stock/${stW15}`] = { name: "ماء 1.5ل", unit: "unit", packSize: 6, packLabel: "ستيكة 6", qty: 0, createdAt: nowMs + 2 };
+      updates[`live/stock_state/stock/${stSoda}`] = { name: "قازوز / مشروبات غازية", unit: "unit", packSize: 12, packLabel: "ستيكة 12", qty: 0, createdAt: nowMs + 3 };
+      updates[`live/stock_state/updatedAt`] = nowMs;
+
+      const starterProds = [
+        { name: "إكسبراس", category: "hot", price: 1200, stockItemId: stCoffee, stockDeduct: 7 },
+        { name: "كابوسان", category: "hot", price: 1500, stockItemId: stCoffee, stockDeduct: 7 },
+        { name: "ديركت", category: "hot", price: 1800, stockItemId: stCoffee, stockDeduct: 7 },
+        { name: "تاي", category: "hot", price: 1200, stockItemId: "", stockDeduct: 0 },
+        { name: "ماء 0.5ل", category: "cold", price: 1000, stockItemId: stW05, stockDeduct: 1 },
+        { name: "ماء 1.5ل", category: "cold", price: 1500, stockItemId: stW15, stockDeduct: 1 },
+        { name: "قازوز", category: "cold", price: 2000, stockItemId: stSoda, stockDeduct: 1 },
+        { name: "كرواسون", category: "food", price: 1200, stockItemId: "", stockDeduct: 0 },
+        { name: "شيشة", category: "fun", price: 4000, stockItemId: "", stockDeduct: 0 }
+      ];
+
+      starterProds.forEach((p, idx) => {
+        const pid = db.ref().push().key;
+        updates[`config/products/${pid}`] = { id: pid, ...p, active: true, createdAt: nowMs + idx };
+      });
 
       try {
-        const updates = {};
-        updates[`tenants/${cafe.cafeId}/meta/name`] = name;
-        updates[`tenants/${cafe.cafeId}/meta/ownerPhone`] = phone;
-        updates[`tenants/${cafe.cafeId}/meta/notes`] = notes;
-        updates[`tenants/${cafe.cafeId}/config/cafeName`] = name;
-        updates[`tenants_index/${cafe.cafeId}/name`] = name;
-        updates[`tenants_index/${cafe.cafeId}/ownerPhone`] = phone;
-        updates[`tenants_index/${cafe.cafeId}/notes`] = notes;
-        await db.ref().update(updates);
-        closeModal("editModal");
-        showToast("تم حفظ التعديلات.");
+        await db.ref(`tenants/${cafeId}`).update(updates);
+        showToast("تم تجهيز القائمة المبدئية ومواد المخزون بنجاح.");
+      } catch (err) {
+        showToast("فشل العملية: " + err.message, "err");
+      }
+    });
+
+    // إضافة / تعديل سلعة بيع
+    function syncSaProdDeduct() {
+      const stockObj = getTenantStock(state.setupCafeId);
+      const sid = document.getElementById("saPStockItem").value;
+      const wrap = document.getElementById("saPDeductWrap");
+      const lbl = document.getElementById("saPDeductLbl");
+      const inp = document.getElementById("saPDeduct");
+
+      if (!sid || !stockObj[sid]) {
+        wrap.classList.add("hidden");
+        inp.required = false;
+      } else {
+        const st = stockObj[sid];
+        wrap.classList.remove("hidden");
+        inp.required = true;
+        lbl.textContent = st.unit === "g"
+          ? `الكمية المخصومة لكل بيعة من «${st.name}» (بالغرام) *`
+          : `الكمية المخصومة لكل بيعة من «${st.name}» (بالوحدة) *`;
+        if (!inp.value || Number(inp.value) <= 0) inp.value = st.unit === "g" ? "7" : "1";
+      }
+    }
+    document.getElementById("saPStockItem").addEventListener("change", syncSaProdDeduct);
+
+    function openSaProdModal(prodId = null) {
+      state.editingProdId = prodId;
+      document.getElementById("saProdForm").reset();
+      const stockObj = getTenantStock(state.setupCafeId);
+      const sel = document.getElementById("saPStockItem");
+      sel.innerHTML = `<option value="">🔒 تحضير مباشر (الكونتور محجوب عن العامل)</option>` +
+        Object.entries(stockObj).map(([id, st]) =>
+          `<option value="${escapeHtml(id)}">📦 ${escapeHtml(st.name)} (${st.unit === "g" ? "غرام" : "وحدة"})</option>`
+        ).join("");
+
+      if (prodId) {
+        const prod = getTenantProducts(state.setupCafeId).find((p) => p.id === prodId);
+        if (!prod) return;
+        document.getElementById("saProdTitle").textContent = "✏️ تعديل سلعة بيع";
+        document.getElementById("saPName").value = prod.name || "";
+        document.getElementById("saPCategory").value = prod.category || "hot";
+        document.getElementById("saPPrice").value = ((Number(prod.price) || 0) / 1000).toFixed(3);
+        sel.value = prod.stockItemId && stockObj[prod.stockItemId] ? prod.stockItemId : "";
+        document.getElementById("saPDeduct").value = prod.stockDeduct || "";
+        document.getElementById("saPActive").checked = prod.active !== false;
+      } else {
+        document.getElementById("saProdTitle").textContent = "☕ إضافة سلعة للبيع";
+        document.getElementById("saPActive").checked = true;
+      }
+      syncSaProdDeduct();
+      openModal("saProdModal");
+    }
+
+    document.getElementById("spAddProdBtn").addEventListener("click", () => openSaProdModal(null));
+
+    document.getElementById("saProdForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const cafeId = state.setupCafeId;
+      if (!cafeId) return;
+
+      const name = document.getElementById("saPName").value.trim();
+      const category = document.getElementById("saPCategory").value;
+      const price = toMillimes(document.getElementById("saPPrice").value);
+      const stockItemId = document.getElementById("saPStockItem").value;
+      const stockDeduct = stockItemId ? (parseFloat(document.getElementById("saPDeduct").value) || 0) : 0;
+      const active = document.getElementById("saPActive").checked;
+
+      if (!name || price <= 0) {
+        showToast("أدخل اسم السلعة وسعر بيع صحيحاً.", "err");
+        return;
+      }
+      if (stockItemId && stockDeduct <= 0) {
+        showToast("أدخل الكمية المخصومة لكل بيعة.", "err");
+        return;
+      }
+
+      const id = state.editingProdId || db.ref().push().key;
+      const existing = state.editingProdId ? getTenantProducts(cafeId).find((p) => p.id === id) : null;
+
+      try {
+        await db.ref(`tenants/${cafeId}/config/products/${id}`).set({
+          id,
+          name,
+          category,
+          price,
+          stockItemId: stockItemId || "",
+          stockDeduct: stockItemId ? stockDeduct : 0,
+          active,
+          createdAt: (existing && existing.createdAt) || Date.now()
+        });
+        closeModal("saProdModal");
+        showToast(state.editingProdId ? "تم تعديل السلعة." : "تمت إضافة السلعة.");
       } catch (err) {
         showToast("فشل الحفظ: " + err.message, "err");
       }
     });
 
-    document.getElementById("sendResetEmailBtn").addEventListener("click", async () => {
-      const cafe = cafesMap[activeModalCafeId];
-      if (!cafe || !cafe.ownerEmail) return;
-      if (!confirm(`إرسال رابط إعادة تعيين كلمة السر إلى ${cafe.ownerEmail}؟`)) return;
+    // إضافة / تعديل مادة مخزون
+    function syncSaStockPack(selectedSize = null) {
+      const unit = document.getElementById("saStUnit").value;
+      const opts = PACK_OPTIONS[unit] || PACK_OPTIONS.unit;
+      const sel = document.getElementById("saStPackSize");
+      sel.innerHTML = opts.map((o) => `<option value="${o.size}">${escapeHtml(o.label)}</option>`).join("");
+      sel.value = (selectedSize != null && opts.some((o) => o.size === Number(selectedSize)))
+        ? String(selectedSize)
+        : String(opts[0].size);
+      document.getElementById("saStQtyLbl").textContent = unit === "g" ? "الرصيد الحالي (بالغرام) *" : "الرصيد الحالي (بالوحدة) *";
+    }
+    document.getElementById("saStUnit").addEventListener("change", () => syncSaStockPack());
+
+    function openSaStockModal(itemId = null) {
+      state.editingStockId = itemId;
+      document.getElementById("saStockForm").reset();
+      const stockObj = getTenantStock(state.setupCafeId);
+
+      if (itemId && stockObj[itemId]) {
+        const it = stockObj[itemId];
+        document.getElementById("saStockTitle").textContent = "✏️ تعديل مادة مخزون";
+        document.getElementById("saStName").value = it.name || "";
+        document.getElementById("saStUnit").value = it.unit || "unit";
+        syncSaStockPack(it.packSize);
+        document.getElementById("saStQty").value = Number(it.qty) || 0;
+      } else {
+        document.getElementById("saStockTitle").textContent = "📦 إضافة مادة مخزون";
+        document.getElementById("saStUnit").value = "unit";
+        syncSaStockPack();
+        document.getElementById("saStQty").value = "0";
+      }
+      openModal("saStockModal");
+    }
+
+    document.getElementById("spAddStockBtn").addEventListener("click", () => openSaStockModal(null));
+
+    document.getElementById("saStockForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const cafeId = state.setupCafeId;
+      if (!cafeId) return;
+
+      const name = document.getElementById("saStName").value.trim();
+      const unit = document.getElementById("saStUnit").value;
+      const packSize = Number(document.getElementById("saStPackSize").value) || (unit === "g" ? 1000 : 1);
+      const packOpt = (PACK_OPTIONS[unit] || []).find((o) => o.size === packSize);
+      const packLabel = packOpt ? packOpt.label.split(" (")[0] : (unit === "g" ? "كيلوغرام" : "قطعة");
+      const qty = parseFloat(document.getElementById("saStQty").value) || 0;
+      if (!name) return;
+
+      const nowMs = Date.now();
+      const itemId = state.editingStockId || db.ref().push().key;
+      const existing = state.editingStockId ? getTenantStock(cafeId)[itemId] : null;
+
       try {
-        await auth.sendPasswordResetEmail(cafe.ownerEmail);
-        showToast("تم إرسال رابط إعادة التعيين إلى بريد المالك.");
+        const updates = {};
+        updates[`live/stock_state/stock/${itemId}`] = {
+          name,
+          unit,
+          packSize,
+          packLabel,
+          qty,
+          createdAt: (existing && existing.createdAt) || nowMs
+        };
+        updates[`live/stock_state/updatedAt`] = nowMs;
+        await db.ref(`tenants/${cafeId}`).update(updates);
+        closeModal("saStockModal");
+        showToast(state.editingStockId ? "تم تحديث مادة المخزون." : "تمت إضافة المادة للمخزون.");
       } catch (err) {
-        showToast(translateAuthError(err), "err");
+        showToast("فشل الحفظ: " + err.message, "err");
+      }
+    });
+
+    // تفويض نقرات قوائم التجهيز (سلع + مخزون)
+    document.getElementById("setupModal").addEventListener("click", async (e) => {
+      const cafeId = state.setupCafeId;
+      if (!cafeId) return;
+
+      const pBtn = e.target.closest("[data-sa-prod]");
+      if (pBtn) {
+        const act = pBtn.dataset.saProd;
+        const pid = pBtn.dataset.id;
+        const prod = getTenantProducts(cafeId).find((p) => p.id === pid);
+        if (!prod) return;
+
+        if (act === "edit") openSaProdModal(pid);
+        else if (act === "toggle") {
+          const next = prod.active === false;
+          await db.ref(`tenants/${cafeId}/config/products/${pid}/active`).set(next);
+          showToast(next ? "تم إظهار السلعة." : "تم إخفاء السلعة.");
+        } else if (act === "delete") {
+          if (!confirm(`حذف سلعة «${prod.name}»؟`)) return;
+          await db.ref(`tenants/${cafeId}/config/products/${pid}`).remove();
+          showToast("تم حذف السلعة.");
+        }
+        return;
+      }
+
+      const sBtn = e.target.closest("[data-sa-stock]");
+      if (sBtn) {
+        const act = sBtn.dataset.saStock;
+        const sid = sBtn.dataset.id;
+        const st = getTenantStock(cafeId)[sid];
+        if (!st) return;
+
+        if (act === "edit") openSaStockModal(sid);
+        else if (act === "delete") {
+          if (!confirm(`حذف مادة «${st.name}» من المخزون؟`)) return;
+          await db.ref(`tenants/${cafeId}/live/stock_state/stock/${sid}`).remove();
+          showToast("تم حذف المادة.");
+        }
+      }
+    });
+
+    // حفظ إعدادات المصاريف اليومية والعتبات
+    document.getElementById("spOptsForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const cafeId = state.setupCafeId;
+      if (!cafeId) return;
+      const tags = document.getElementById("spQuickTags").value.split(/[،,]/).map((s) => s.trim()).filter(Boolean);
+      const patch = {
+        lowStockWeightLimit: Math.max(0, parseInt(document.getElementById("spLowWeight").value, 10) || 0),
+        lowStockUnitLimit: Math.max(0, parseInt(document.getElementById("spLowUnit").value, 10) || 0),
+        consumableQuickTags: tags
+      };
+      try {
+        await db.ref(`tenants/${cafeId}/config`).update(patch);
+        showToast("تم حفظ إعدادات التشغيل للمقهى.");
+      } catch (err) {
+        showToast("فشل الحفظ: " + err.message, "err");
       }
     });
   </script>
