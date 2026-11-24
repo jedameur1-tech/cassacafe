@@ -1,0 +1,2759 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CassaCafe — إدارة المقهى</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-2: #273449;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --primary: #f59e0b;
+      --primary-hover: #d97706;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f97316;
+      --info: #38bdf8;
+      --radius: 12px;
+      --nav-h: 64px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .hidden { display: none !important; }
+
+    /* Auth & Blocked Views */
+    .center-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 22px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+    .brand { text-align: center; margin-bottom: 22px; }
+    .brand h1 { font-size: 1.6rem; color: var(--primary); }
+    .brand p { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .cafe-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .cafe-title-wrap h1 {
+      font-size: 1.05rem;
+      color: var(--primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .month-picker {
+      width: auto;
+      padding: 5px 8px;
+      font-size: 0.84rem;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    /* Main Container */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 14px 14px calc(var(--nav-h) + 22px);
+    }
+
+    /* Banners */
+    .banner {
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      margin-bottom: 12px;
+      border: 1px solid;
+    }
+    .banner-err {
+      background: rgba(239, 68, 68, 0.14);
+      border-color: rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+    }
+    .banner-warn {
+      background: rgba(249, 115, 22, 0.14);
+      border-color: rgba(249, 115, 22, 0.45);
+      color: #fdba74;
+    }
+
+    /* Pills & Badges */
+    .pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+      display: inline-block;
+    }
+    .pill-ok { background: rgba(16, 185, 129, 0.18); color: var(--success); }
+    .pill-warn { background: rgba(249, 115, 22, 0.2); color: var(--warning); }
+    .pill-err { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+    .pill-info { background: rgba(56, 189, 248, 0.18); color: var(--info); }
+    .pill-muted { background: rgba(148, 163, 184, 0.18); color: #cbd5e1; }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .card-title {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Hero Profit Card */
+    .hero-card {
+      background: linear-gradient(145deg, #1e293b 0%, #172033 100%);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 16px;
+      padding: 18px 16px;
+      margin-bottom: 14px;
+    }
+    .hero-label {
+      font-size: 0.84rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .hero-value {
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 6px 0 4px;
+      direction: ltr;
+      text-align: right;
+    }
+    .hero-value.pos { color: var(--success); }
+    .hero-value.neg { color: var(--danger); }
+
+    details.breakdown {
+      margin-top: 10px;
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+    }
+    details.breakdown summary {
+      cursor: pointer;
+      color: var(--primary);
+      font-size: 0.84rem;
+      font-weight: 600;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    details.breakdown summary::-webkit-details-marker { display: none; }
+    .kv-list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.88rem;
+    }
+    .kv-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .kv-row span:first-child { color: var(--muted); }
+    .kv-row strong { direction: ltr; }
+
+    /* Action Bar */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    /* Buttons */
+    button, .btn {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      border-radius: 9px;
+      padding: 9px 13px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: opacity 0.15s;
+    }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: var(--primary); color: #0f172a; }
+    .btn-secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+    .btn-success { background: rgba(16, 185, 129, 0.18); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); }
+    .btn-danger { background: rgba(239, 68, 68, 0.16); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.4); }
+    .btn-info { background: rgba(56, 189, 248, 0.16); color: var(--info); border: 1px solid rgba(56, 189, 248, 0.4); }
+    .btn-sm { padding: 6px 10px; font-size: 0.8rem; }
+    .btn-full { width: 100%; }
+
+    /* Filters */
+    .filters {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .filter-pill {
+      background: var(--surface);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+    }
+    .filter-pill.active {
+      background: var(--primary);
+      color: #0f172a;
+      border-color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* List Items */
+    .list-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .item-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 13px;
+    }
+    .item-card.pending { border-color: rgba(245, 158, 11, 0.55); }
+    .item-card.low { border-color: rgba(239, 68, 68, 0.55); }
+    .item-card.rejected { opacity: 0.65; border-style: dashed; }
+    .item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .item-sub {
+      font-size: 0.83rem;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .item-sub strong { color: var(--text); }
+    .item-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Forms */
+    .form-group { margin-bottom: 12px; }
+    label {
+      display: block;
+      font-size: 0.83rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    input, select, textarea {
+      width: 100%;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 11px;
+      font-size: 0.92rem;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .row-flex {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .hint { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }
+    .error-msg {
+      color: #fca5a5;
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+    .empty-box {
+      text-align: center;
+      padding: 24px 12px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+    }
+
+    /* Tags & Dynamic Rows */
+    .tags-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .tag-btn {
+      background: var(--surface-2);
+      color: #e2e8f0;
+      border: 1px solid var(--border);
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+    .dyn-row {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .dyn-row-top {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    /* Settlement Summary Box */
+    .due-box {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: var(--radius);
+      padding: 13px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .due-box .amount {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--info);
+      direction: ltr;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-h);
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      z-index: 50;
+    }
+    .nav-btn {
+      background: transparent;
+      color: var(--muted);
+      border-radius: 0;
+      flex-direction: column;
+      gap: 2px;
+      padding: 6px 2px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      position: relative;
+    }
+    .nav-btn .ico { font-size: 1.15rem; line-height: 1; }
+    .nav-btn.active { color: var(--primary); }
+    .nav-badge {
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(6px);
+      background: var(--danger);
+      color: #fff;
+      font-size: 0.65rem;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      z-index: 100;
+    }
+    .modal {
+      width: 100%;
+      max-width: 520px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h2 { font-size: 1.05rem; color: var(--primary); }
+    .close-btn {
+      background: transparent;
+      color: var(--muted);
+      font-size: 1.4rem;
+      padding: 0 6px;
+    }
+    .section-box {
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px;
+      margin-bottom: 12px;
+    }
+    .section-box h3 {
+      font-size: 0.88rem;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: calc(var(--nav-h) + 14px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #020617;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      z-index: 200;
+      max-width: 92vw;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .toast.ok { border-color: var(--success); color: var(--success); }
+    .toast.err { border-color: var(--danger); color: #fca5a5; }
+  </style>
+</head>
+<body>
+
+  <!-- 1. شاشة تسجيل الدخول -->
+  <section id="loginView" class="center-wrap">
+    <div class="auth-card">
+      <div class="brand">
+        <h1>☕ CassaCafe</h1>
+        <p>بوابة المالك (الإدارة والمحاسبة)</p>
+      </div>
+      <div id="loginError" class="error-msg hidden"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">البريد الإلكتروني</label>
+          <input id="loginEmail" type="email" required autocomplete="username" dir="ltr" placeholder="owner@domain.com" />
+        </div>
+        <div class="form-group">
+          <label for="loginPass">كلمة السر</label>
+          <input id="loginPass" type="password" required autocomplete="current-password" dir="ltr" placeholder="••••••••" />
+        </div>
+        <button id="loginBtn" type="submit" class="btn-primary btn-full" style="margin-bottom: 10px;">دخول</button>
+        <button id="forgotPassBtn" type="button" class="btn-secondary btn-sm btn-full">نسيت كلمة السر؟ إرسال رابط الاستعادة</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- 2. شاشة الحظر / عدم الصلاحية -->
+  <section id="blockedView" class="center-wrap hidden">
+    <div class="auth-card" style="text-align: center;">
+      <h2 style="color: var(--danger); margin-bottom: 10px;">⚠️ تعذّر فتح الحساب</h2>
+      <p id="blockedMsg" style="color: var(--muted); font-size: 0.92rem; margin-bottom: 18px;"></p>
+      <button id="blockedLogoutBtn" class="btn-secondary btn-full">تسجيل الخروج</button>
+    </div>
+  </section>
+
+  <!-- 3. التطبيق الرئيسي -->
+  <section id="appView" class="hidden">
+    <header>
+      <div class="header-inner">
+        <div class="cafe-title-wrap">
+          <h1 id="hdrCafeName">CassaCafe</h1>
+          <span id="hdrModeBadge" class="pill pill-muted"></span>
+        </div>
+        <div class="header-controls">
+          <input id="monthPicker" type="month" class="month-picker" />
+          <button id="logoutBtn" class="btn-secondary btn-sm">خروج</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div id="expiredBanner" class="banner banner-err hidden">
+        🔒 انتهى اشتراك المقهى — التطبيق في <strong>وضع القراءة فقط</strong>. تواصل مع المشرف لتجديد الاشتراك واستئناف الحفظ.
+      </div>
+      <div id="expiringBanner" class="banner banner-warn hidden"></div>
+
+      <!-- تبويب 1: الرئيسية -->
+      <div id="tab-dashboard" class="tab-panel">
+        <div class="hero-card">
+          <div class="hero-label">
+            <span>صافي الربح (<span id="dashMonthLabel"></span>)</span>
+            <span id="dashDaysCount" class="pill pill-muted">0 يوم</span>
+          </div>
+          <div id="dashNetProfit" class="hero-value pos">0.000 د</div>
+          <details class="breakdown">
+            <summary>
+              <span>عرض التفصيل المالي للشهر</span>
+              <span>▾</span>
+            </summary>
+            <div class="kv-list">
+              <div class="kv-row"><span>إجمالي المداخيل المعتمدة</span><strong id="bdSales" style="color: var(--success);">0.000 د</strong></div>
+              <div class="kv-row"><span>المصاريف اليومية</span><strong id="bdDailyExp">0.000 د</strong></div>
+              <div class="kv-row"><span>فواتير المشتريات المعتمدة</span><strong id="bdInvoices">0.000 د</strong></div>
+              <div class="kv-row"><span>المصاريف الثابتة</span><strong id="bdFixedExp">0.000 د</strong></div>
+              <div id="bdWagesRow" class="kv-row"><span>أجور العامل المعتمدة</span><strong id="bdWages">0.000 د</strong></div>
+            </div>
+          </details>
+        </div>
+
+        <div class="quick-actions">
+          <button id="qaAddDayBtn" class="btn-primary">+ تسجيل يومية</button>
+          <button id="qaAddInvBtn" class="btn-secondary">+ فاتورة مشتريات</button>
+          <button id="qaSettleBtn" class="btn-info hidden">💰 تسوية مع العامل</button>
+        </div>
+
+        <!-- ملخص المستحق من العامل (وضع الفريق فقط) -->
+        <div id="dashWorkerDueBox" class="due-box hidden">
+          <div>
+            <div style="font-size: 0.82rem; color: var(--muted);">المستحق استلامه من <strong id="dashWorkerNameLbl">العامل</strong> (غير مسوّى)</div>
+            <div id="dashWorkerDueVal" class="amount">0.000 د</div>
+          </div>
+          <button id="dashOpenSettleBtn" class="btn-info btn-sm">تسوية الآن</button>
+        </div>
+
+        <!-- تنبيه نقص المخزون -->
+        <div id="dashLowStockBox" class="card hidden" style="border-color: rgba(239, 68, 68, 0.5);">
+          <div class="card-header" style="margin-bottom: 6px;">
+            <span class="card-title" style="color: #fca5a5;">⚠️ تنبيه نقص المخزون</span>
+            <button class="btn-secondary btn-sm" data-goto="stock">المخزون</button>
+          </div>
+          <div id="dashLowStockList" class="item-sub"></div>
+        </div>
+
+        <!-- فواتير مكتوبة بانتظار الاعتماد -->
+        <div id="dashPendingInvBox" class="card hidden" style="border-color: rgba(245, 158, 11, 0.55);">
+          <div class="card-header">
+            <span class="card-title">🧾 فواتير بانتظار الاعتماد (لم تُضف للمخزون بعد)</span>
+            <span id="dashPendingInvCount" class="pill pill-warn">0</span>
+          </div>
+          <div id="dashPendingInvList" class="list-stack"></div>
+        </div>
+
+        <!-- اليوميات غير المسواة / الأخيرة -->
+        <div class="card">
+          <div class="card-header">
+            <span id="dashDaysTitle" class="card-title">اليوميات غير المسوّاة</span>
+            <button class="btn-secondary btn-sm" data-goto="days">عرض الكل</button>
+          </div>
+          <div id="dashDaysList" class="list-stack"></div>
+        </div>
+      </div>
+
+      <!-- تبويب 2: اليوميات -->
+      <div id="tab-days" class="tab-panel hidden">
+        <div class="row-flex" style="justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap;">
+          <h2 style="font-size: 1.05rem;">سجل اليوميات</h2>
+          <div class="row-flex">
+            <button id="daysSettleBtn" class="btn-info btn-sm hidden">💰 تسوية</button>
+            <button id="daysAddBtn" class="btn-primary btn-sm">+ تسجيل يومية</button>
+          </div>
+        </div>
+        <div id="daysFilters" class="filters"></div>
+        <div id="daysList" class="list-stack"></div>
+
+        <details id="settlementsArchiveBox" class="card hidden" style="margin-top: 14px;">
+          <summary style="cursor: pointer; font-weight: 700; color: var(--info);">سجل التسويات السابقة مع العامل ▾</summary>
+          <div id="settlementsList" class="list-stack" style="margin-top: 10px;"></div>
+        </details>
+      </div>
+
+      <!-- تبويب 3: الفواتير -->
+      <div id="tab-invoices" class="tab-panel hidden">
+        <div class="row-flex" style="justify-content: space-between; margin-bottom: 10px;">
+          <h2 style="font-size: 1.05rem;">الفواتير المكتوبة</h2>
+          <button id="invAddBtn" class="btn-primary btn-sm">+ فاتورة جديدة</button>
+        </div>
+        <div id="invFilters" class="filters">
+          <button class="filter-pill active" data-inv-filter="all">الكل</button>
+          <button class="filter-pill" data-inv-filter="pending">بانتظار الاعتماد</button>
+          <button class="filter-pill" data-inv-filter="approved">معتمدة</button>
+          <button class="filter-pill" data-inv-filter="rejected">مرفوضة</button>
+        </div>
+        <div id="invoicesList" class="list-stack"></div>
+      </div>
+
+      <!-- تبويب 4: المخزون -->
+      <div id="tab-stock" class="tab-panel hidden">
+        <div class="row-flex" style="justify-content: space-between; margin-bottom: 10px;">
+          <h2 style="font-size: 1.05rem;">المخزون والجرد الفعلي</h2>
+          <button id="stockAddBtn" class="btn-primary btn-sm">+ إضافة صنف</button>
+        </div>
+        <div id="stockList" class="list-stack"></div>
+
+        <details class="card" style="margin-top: 14px;">
+          <summary style="cursor: pointer; font-weight: 700; color: var(--primary);">سجل عمليات الجرد الفعلي لهذا الشهر ▾</summary>
+          <div id="auditsList" class="list-stack" style="margin-top: 10px;"></div>
+        </details>
+      </div>
+
+      <!-- تبويب 5: المصاريف والإعدادات -->
+      <div id="tab-settings" class="tab-panel hidden">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">المصاريف الثابتة للشهر (<span id="fixedMonthLbl"></span>)</span>
+            <strong id="fixedTotalLbl" style="color: var(--warning); direction: ltr;">0.000 د</strong>
+          </div>
+          <div id="fixedPresetsWrap" class="tags-wrap"></div>
+          <form id="fixedExpForm" class="section-box" style="margin-top: 8px;">
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="fExpName">بيان المصروف *</label>
+                <input id="fExpName" type="text" required placeholder="مثال: فاتورة كهرباء" />
+              </div>
+              <div class="form-group">
+                <label for="fExpAmount">المبلغ (بالدينار) *</label>
+                <input id="fExpAmount" type="text" inputmode="decimal" required dir="ltr" placeholder="120.000" />
+              </div>
+            </div>
+            <button type="submit" class="btn-primary btn-sm btn-full">+ إضافة مصروف ثابت</button>
+          </form>
+          <div id="fixedExpList" class="list-stack"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">التقرير الشهري والشهر النشط</span>
+          </div>
+          <div class="row-flex" style="flex-wrap: wrap;">
+            <button id="copyReportBtn" class="btn-info btn-sm">📋 نسخ التقرير المالي للشهر</button>
+            <button id="setActiveMonthBtn" class="btn-secondary btn-sm">📌 اعتماد هذا الشهر كشهر نشط</button>
+          </div>
+          <div id="activeMonthHint" class="hint" style="margin-top: 6px;"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">إعدادات المقهى</span>
+          </div>
+          <form id="configForm">
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="cfgCafeName">اسم المقهى</label>
+                <input id="cfgCafeName" type="text" required />
+              </div>
+              <div class="form-group">
+                <label for="cfgOwnerName">اسم الإدارة</label>
+                <input id="cfgOwnerName" type="text" required />
+              </div>
+            </div>
+            <div id="cfgTeamFields" class="grid-2 hidden">
+              <div class="form-group">
+                <label for="cfgWorkerName">اسم العامل</label>
+                <input id="cfgWorkerName" type="text" />
+              </div>
+              <div class="form-group">
+                <label for="cfgDailyWage">الأجر اليومي الافتراضي (د)</label>
+                <input id="cfgDailyWage" type="text" inputmode="decimal" dir="ltr" />
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="cfgLowWeight">عتبة نقص الوزن (غرام)</label>
+                <input id="cfgLowWeight" type="number" min="0" dir="ltr" />
+              </div>
+              <div class="form-group">
+                <label for="cfgLowUnit">عتبة نقص الوحدات (قطعة)</label>
+                <input id="cfgLowUnit" type="number" min="0" dir="ltr" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="cfgQuickTags">وسوم المصاريف اليومية السريعة (افصل بفاصلة)</label>
+              <textarea id="cfgQuickTags" rows="2"></textarea>
+            </div>
+            <button type="submit" class="btn-primary btn-full">حفظ الإعدادات</button>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <!-- شريط التنقل السفلي -->
+    <nav class="bottom-nav" id="bottomNav">
+      <button class="nav-btn active" data-tab="dashboard"><span class="ico">📊</span><span>الرئيسية</span></button>
+      <button class="nav-btn" data-tab="days"><span class="ico">📅</span><span>اليوميات</span><span id="badgeDays" class="nav-badge hidden">0</span></button>
+      <button class="nav-btn" data-tab="invoices"><span class="ico">🧾</span><span>الفواتير</span><span id="badgeInv" class="nav-badge hidden">0</span></button>
+      <button class="nav-btn" data-tab="stock"><span class="ico">📦</span><span>المخزون</span><span id="badgeStock" class="nav-badge hidden">0</span></button>
+      <button class="nav-btn" data-tab="settings"><span class="ico">⚙️</span><span>الإعدادات</span></button>
+    </nav>
+  </section>
+
+  <!-- نافذة تسجيل يومية جديدة -->
+  <div id="dayModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>+ تسجيل يومية جديدة</h2>
+        <button class="close-btn" data-close="dayModal">&times;</button>
+      </div>
+      <form id="dayForm">
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="dDate">التاريخ *</label>
+            <input id="dDate" type="date" required />
+          </div>
+          <div class="form-group">
+            <label for="dSales">إجمالي المداخيل / الكاسة (د) *</label>
+            <input id="dSales" type="text" inputmode="decimal" required dir="ltr" placeholder="185.500" />
+          </div>
+        </div>
+
+        <div id="dOwnerShiftWrap" class="form-group hidden">
+          <label style="display: flex; align-items: center; gap: 8px; color: var(--text); cursor: pointer;">
+            <input id="dOwnerShift" type="checkbox" checked style="width: auto;" />
+            <span>عملت أنا في هذه الوردية (تُعتمد فوراً بدون أجر عامل أو تسوية)</span>
+          </label>
+        </div>
+
+        <div class="section-box">
+          <div class="row-flex" style="justify-content: space-between; margin-bottom: 8px;">
+            <h3 style="margin: 0;">المصاريف اليومية (من الصندوق)</h3>
+            <button type="button" id="addDayExpRowBtn" class="btn-secondary btn-sm">+ سطر</button>
+          </div>
+          <div id="dayQuickTags" class="tags-wrap"></div>
+          <div id="dayExpRows"></div>
+        </div>
+
+        <div class="section-box">
+          <div class="row-flex" style="justify-content: space-between; margin-bottom: 8px;">
+            <h3 style="margin: 0;">استهلاك المخزون (اختياري)</h3>
+            <button type="button" id="addDayStockRowBtn" class="btn-secondary btn-sm">+ صنف</button>
+          </div>
+          <div id="dayStockRows"></div>
+          <div class="hint">يُخصم تلقائياً من رصيد المخزون عند الاعتماد.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="dNote">ملاحظات</label>
+          <input id="dNote" type="text" placeholder="اختياري..." />
+        </div>
+
+        <div class="row-flex">
+          <button id="daySubmitBtn" type="submit" class="btn-primary btn-full">حفظ اليومية</button>
+          <button type="button" class="btn-secondary" data-close="dayModal">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- نافذة مراجعة واعتماد يومية العامل (وضع الفريق) -->
+  <div id="reviewDayModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>مراجعة يومية العامل</h2>
+        <button class="close-btn" data-close="reviewDayModal">&times;</button>
+      </div>
+      <div id="reviewDaySummary" class="section-box"></div>
+      <form id="reviewDayForm">
+        <div class="form-group">
+          <label for="revWage">أجر العامل لهذا اليوم (بالدينار)</label>
+          <input id="revWage" type="text" inputmode="decimal" dir="ltr" required />
+          <div class="hint">يمكنك تعديله إلى 0 إذا لم يستحق أجراً كاملاً أو تغييره حسب الاتفاق.</div>
+        </div>
+        <div class="form-group">
+          <label for="revNote">ملاحظة الإدارة (تظهر للعامل)</label>
+          <input id="revNote" type="text" placeholder="اختياري..." />
+        </div>
+        <div class="list-stack">
+          <button type="submit" data-mode="approve" class="btn-success btn-full">✅ اعتماد اليومية (تبقى للتسوية)</button>
+          <button type="button" id="revApproveSettleBtn" class="btn-info btn-full">💰 اعتماد وتسوية نقدية فورية</button>
+          <button type="button" id="revRejectBtn" class="btn-danger btn-full">❌ رفض اليومية</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- نافذة التسوية المالية مع العامل -->
+  <div id="settleModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>💰 تسوية الحساب مع العامل</h2>
+        <button class="close-btn" data-close="settleModal">&times;</button>
+      </div>
+      <div id="settleBreakdown" class="section-box"></div>
+      <form id="settleForm">
+        <div class="form-group">
+          <label for="settleReceived">المبلغ المستلم فعلياً من العامل (بالدينار) *</label>
+          <input id="settleReceived" type="text" inputmode="decimal" dir="ltr" required />
+          <div id="settleDiffHint" class="hint"></div>
+        </div>
+        <div class="form-group">
+          <label for="settleNote">ملاحظة التسوية</label>
+          <input id="settleNote" type="text" placeholder="مثال: تسوية أسبوعية كاملة" />
+        </div>
+        <div class="row-flex">
+          <button id="settleSubmitBtn" type="submit" class="btn-primary btn-full">تأكيد التسوية وإغلاق المستحقات</button>
+          <button type="button" class="btn-secondary" data-close="settleModal">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- نافذة إضافة فاتورة مشتريات مكتوبة -->
+  <div id="invoiceModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>🧾 تسجيل فاتورة مشتريات مكتوبة</h2>
+        <button class="close-btn" data-close="invoiceModal">&times;</button>
+      </div>
+      <form id="invoiceForm">
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="iDate">التاريخ *</label>
+            <input id="iDate" type="date" required />
+          </div>
+          <div class="form-group">
+            <label for="iSupplier">المزوّد / المحل *</label>
+            <input id="iSupplier" type="text" required placeholder="مثال: شركة القهوة / الجملة" />
+          </div>
+        </div>
+        <div id="iPaySourceWrap" class="form-group hidden">
+          <label for="iPaySource">مصدر الدفع</label>
+          <select id="iPaySource">
+            <option value="owner">دفعها المالك مباشرة (صندوق الإدارة)</option>
+            <option value="worker_cash">دفعها العامل من مداخيل الكاسة (تُخصم من تسويته)</option>
+          </select>
+        </div>
+
+        <div class="section-box">
+          <div class="row-flex" style="justify-content: space-between; margin-bottom: 8px;">
+            <h3 style="margin: 0;">بنود الفاتورة</h3>
+            <button type="button" id="addInvLineBtn" class="btn-secondary btn-sm">+ بند</button>
+          </div>
+          <div id="invLineRows"></div>
+          <div class="kv-row" style="margin-top: 8px; border-top: 1px solid var(--border); padding-top: 8px;">
+            <span>إجمالي الفاتورة:</span>
+            <strong id="invCalcTotal" style="color: var(--primary); font-size: 1.05rem;">0.000 د</strong>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="iNote">ملاحظات</label>
+          <input id="iNote" type="text" placeholder="رقم وصل المزود أو ملاحظة..." />
+        </div>
+        <div class="hint" style="margin-bottom: 10px;">
+          سيتم اعتماد الفاتورة وإضافة الكميات المرتبطة بالمخزون فوراً بعد الحفظ.
+        </div>
+        <div class="row-flex">
+          <button id="invSubmitBtn" type="submit" class="btn-primary btn-full">حفظ واعتماد الفاتورة</button>
+          <button type="button" class="btn-secondary" data-close="invoiceModal">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- نافذة إضافة صنف للمخزون -->
+  <div id="stockItemModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>📦 إضافة صنف للمخزون</h2>
+        <button class="close-btn" data-close="stockItemModal">&times;</button>
+      </div>
+      <form id="stockItemForm">
+        <div class="form-group">
+          <label for="stName">اسم الصنف *</label>
+          <input id="stName" type="text" required placeholder="مثال: قهوة حبوب، ماء 0.5ل، كوكا كولا..." />
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="stUnit">وحدة القياس *</label>
+            <select id="stUnit">
+              <option value="unit">وحدة / قارورة / علبة</option>
+              <option value="g">وزن بالغرام (غ)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="stQty">الرصيد الابتدائي *</label>
+            <input id="stQty" type="number" step="any" min="0" required dir="ltr" value="0" />
+          </div>
+        </div>
+        <div class="row-flex">
+          <button type="submit" class="btn-primary btn-full">حفظ الصنف</button>
+          <button type="button" class="btn-secondary" data-close="stockItemModal">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- نافذة الجرد الفعلي للمخزون -->
+  <div id="auditModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>🔍 جرد وتصحيح الرصيد الفعلي</h2>
+        <button class="close-btn" data-close="auditModal">&times;</button>
+      </div>
+      <div id="auditItemInfo" class="section-box"></div>
+      <form id="auditForm">
+        <div class="form-group">
+          <label for="auditActualQty">الكمية الفعلية الموجودة حالياً *</label>
+          <input id="auditActualQty" type="number" step="any" min="0" required dir="ltr" />
+          <div id="auditDiffHint" class="hint"></div>
+        </div>
+        <div class="form-group">
+          <label for="auditNote">سبب الفارق / ملاحظة الجرد</label>
+          <input id="auditNote" type="text" placeholder="مثال: جرد نهاية الأسبوع / تلف..." />
+        </div>
+        <div class="row-flex">
+          <button type="submit" class="btn-primary btn-full">اعتماد الرصيد الفعلي وتسجيل الجرد</button>
+          <button type="button" class="btn-secondary" data-close="auditModal">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Firebase Compat SDK v10.12.2 -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC49QHKlszAR2objtwOGo9g5vEz8AY2AJQ",
+      authDomain: "cassacafe-12a0a.firebaseapp.com",
+      databaseURL: "https://cassacafe-12a0a-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "cassacafe-12a0a",
+      storageBucket: "cassacafe-12a0a.firebasestorage.app",
+      messagingSenderId: "986243350617",
+      appId: "1:986243350617:web:b8a31aa0c0095aba953148"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // الحالة العامة
+    const state = {
+      user: null,
+      userProfile: null,
+      cafeId: null,
+      meta: null,
+      config: {},
+      live: {},
+      selectedMonth: getCurrentMonthKey(),
+      submissions: { days: {}, invoices: {} },
+      admin: {
+        day_decisions: {},
+        invoice_decisions: {},
+        fixed_expenses: {},
+        settlements: {},
+        stock_audits: {}
+      },
+      activeTab: "dashboard",
+      dayFilter: "unsettled",
+      invFilter: "all",
+      reviewEntryId: null,
+      auditItemId: null,
+      pendingSettleData: null
+    };
+
+    let listeners = [];
+
+    // أدوات مساعدة
+    function getCurrentMonthKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    }
+    function getTodayDateStr() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    }
+    function escapeHtml(str) {
+      return String(str == null ? "" : str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+    function toMillimes(val) {
+      const cleaned = String(val == null ? "" : val).replace(",", ".").trim();
+      const num = parseFloat(cleaned);
+      if (isNaN(num)) return 0;
+      return Math.round(num * 1000);
+    }
+    function formatDT(millimes) {
+      const n = Number(millimes) || 0;
+      const sign = n < 0 ? "-" : "";
+      return `${sign}${(Math.abs(n) / 1000).toFixed(3)} د`;
+    }
+    function formatQty(qty, unit) {
+      const n = Number(qty) || 0;
+      const formatted = Number.isInteger(n) ? String(n) : n.toFixed(1);
+      return unit === "g" ? `${formatted} غ` : `${formatted} وحدة`;
+    }
+    function isTeamMode() {
+      return (state.config && state.config.operationMode) === "team";
+    }
+    function isReadOnly() {
+      return !state.meta || !state.meta.active || (state.meta.subscriptionUntil || 0) <= Date.now();
+    }
+    function assertWritable() {
+      if (isReadOnly()) {
+        showToast("الاشتراك منتهٍ: وضع القراءة فقط. جدّد الاشتراك لحفظ التعديلات.", "err");
+        return false;
+      }
+      return true;
+    }
+
+    let toastTimer = null;
+    function showToast(msg, type = "ok") {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.className = "toast " + (type === "err" ? "err" : "ok");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.add("hidden"), 3500);
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove("hidden"); }
+    function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
+    document.querySelectorAll("[data-close]").forEach((b) => {
+      b.addEventListener("click", () => closeModal(b.dataset.close));
+    });
+
+    function translateAuthError(err) {
+      const map = {
+        "auth/invalid-email": "البريد الإلكتروني غير صالح.",
+        "auth/wrong-password": "كلمة السر غير صحيحة.",
+        "auth/invalid-credential": "البريد الإلكتروني أو كلمة السر غير صحيحة.",
+        "auth/user-not-found": "هذا الحساب غير مسجّل.",
+        "auth/too-many-requests": "محاولات كثيرة متتالية، انتظر قليلاً.",
+        "auth/network-request-failed": "تحقّق من الاتصال بالإنترنت."
+      };
+      return (err && map[err.code]) || (err && err.message) || "حدث خطأ غير متوقع.";
+    }
+
+    function detachAllListeners() {
+      listeners.forEach(({ ref, cb }) => ref.off("value", cb));
+      listeners = [];
+    }
+    function listen(path, cb) {
+      const ref = db.ref(path);
+      ref.on("value", cb, (err) => {
+        console.error(path, err);
+      });
+      listeners.push({ ref, cb });
+    }
+
+    // المصادقة والتحميل
+    auth.onAuthStateChanged(async (user) => {
+      detachAllListeners();
+      state.user = user;
+
+      const loginView = document.getElementById("loginView");
+      const blockedView = document.getElementById("blockedView");
+      const appView = document.getElementById("appView");
+
+      if (!user) {
+        appView.classList.add("hidden");
+        blockedView.classList.add("hidden");
+        loginView.classList.remove("hidden");
+        return;
+      }
+
+      try {
+        const uSnap = await db.ref(`users/${user.uid}`).once("value");
+        const profile = uSnap.val();
+        if (!profile || profile.role !== "owner" || !profile.cafeId) {
+          showBlocked("هذا الحساب لا يملك صلاحية مالك مقهى. إذا كنت عاملاً، افتح رابط تطبيق العامل (worker.html).");
+          return;
+        }
+        if (profile.active !== true) {
+          showBlocked("تم تعطيل حساب المستخدم هذا مؤقتاً. تواصل مع المشرف.");
+          return;
+        }
+
+        const mSnap = await db.ref(`tenants/${profile.cafeId}/meta`).once("value");
+        const meta = mSnap.val();
+        if (!meta) {
+          showBlocked("بيانات المقهى غير موجودة.");
+          return;
+        }
+        if (meta.active !== true) {
+          showBlocked("تم إيقاف حساب المقهى مؤقتاً من قِبل الإدارة. تواصل مع المشرف لإعادة التفعيل.");
+          return;
+        }
+
+        state.userProfile = profile;
+        state.cafeId = profile.cafeId;
+        state.meta = meta;
+
+        loginView.classList.add("hidden");
+        blockedView.classList.add("hidden");
+        appView.classList.remove("hidden");
+
+        document.getElementById("monthPicker").value = state.selectedMonth;
+        startCafeListeners();
+      } catch (err) {
+        showBlocked("تعذّر تحميل بيانات الحساب: " + translateAuthError(err));
+      }
+    });
+
+    function showBlocked(msg) {
+      document.getElementById("loginView").classList.add("hidden");
+      document.getElementById("appView").classList.add("hidden");
+      document.getElementById("blockedMsg").textContent = msg;
+      document.getElementById("blockedView").classList.remove("hidden");
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const pass = document.getElementById("loginPass").value;
+      const errEl = document.getElementById("loginError");
+      const btn = document.getElementById("loginBtn");
+      errEl.classList.add("hidden");
+      btn.disabled = true;
+      btn.textContent = "جارٍ الدخول...";
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+      } catch (err) {
+        errEl.textContent = translateAuthError(err);
+        errEl.classList.remove("hidden");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "دخول";
+      }
+    });
+
+    document.getElementById("forgotPassBtn").addEventListener("click", async () => {
+      const email = document.getElementById("loginEmail").value.trim();
+      if (!email) {
+        showToast("اكتب بريدك الإلكتروني أولاً ثم اضغط على استعادة كلمة السر.", "err");
+        return;
+      }
+      try {
+        await auth.sendPasswordResetEmail(email);
+        showToast("تم إرسال رابط إعادة تعيين كلمة السر إلى بريدك.");
+      } catch (err) {
+        showToast(translateAuthError(err), "err");
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => auth.signOut());
+    document.getElementById("blockedLogoutBtn").addEventListener("click", () => auth.signOut());
+
+    // مستمعات بيانات المقهى
+    function startCafeListeners() {
+      detachAllListeners();
+      const base = `tenants/${state.cafeId}`;
+
+      listen(`${base}/meta`, (snap) => {
+        const meta = snap.val();
+        if (!meta || meta.active !== true) {
+          showBlocked("تم إيقاف حساب المقهى مؤقتاً.");
+          return;
+        }
+        state.meta = meta;
+        renderHeaderAndBanners();
+      });
+
+      listen(`${base}/config`, (snap) => {
+        state.config = snap.val() || {};
+        if (!isTeamMode() && state.dayFilter === "unsettled") {
+          state.dayFilter = "approved";
+        }
+        renderAll();
+      });
+
+      listen(`${base}/live`, (snap) => {
+        state.live = snap.val() || {};
+        renderAll();
+      });
+
+      attachMonthListeners();
+    }
+
+    let monthListeners = [];
+    function attachMonthListeners() {
+      monthListeners.forEach(({ ref, cb }) => ref.off("value", cb));
+      monthListeners = [];
+
+      const base = `tenants/${state.cafeId}`;
+      const m = state.selectedMonth;
+
+      const subRef = db.ref(`${base}/submissions/${m}`);
+      const subCb = (snap) => {
+        const val = snap.val() || {};
+        state.submissions = { days: val.days || {}, invoices: val.invoices || {} };
+        renderAll();
+      };
+      subRef.on("value", subCb);
+      monthListeners.push({ ref: subRef, cb: subCb });
+
+      const admRef = db.ref(`${base}/admin/${m}`);
+      const admCb = (snap) => {
+        const val = snap.val() || {};
+        state.admin = {
+          day_decisions: val.day_decisions || {},
+          invoice_decisions: val.invoice_decisions || {},
+          fixed_expenses: val.fixed_expenses || {},
+          settlements: val.settlements || {},
+          stock_audits: val.stock_audits || {}
+        };
+        renderAll();
+      };
+      admRef.on("value", admCb);
+      monthListeners.push({ ref: admRef, cb: admCb });
+    }
+
+    document.getElementById("monthPicker").addEventListener("change", (e) => {
+      if (!e.target.value) return;
+      state.selectedMonth = e.target.value;
+      attachMonthListeners();
+      renderAll();
+    });
+
+    // التنقل بين التبويبات
+    function switchTab(tab) {
+      state.activeTab = tab;
+      document.querySelectorAll(".tab-panel").forEach((p) => p.classList.add("hidden"));
+      document.getElementById(`tab-${tab}`).classList.remove("hidden");
+      document.querySelectorAll(".nav-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.tab === tab);
+      });
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+
+    document.getElementById("bottomNav").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-tab]");
+      if (btn) switchTab(btn.dataset.tab);
+    });
+    document.querySelectorAll("[data-goto]").forEach((b) => {
+      b.addEventListener("click", () => switchTab(b.dataset.goto));
+    });
+
+    // الحسابات المالية الموحدة للشهر المحدد
+    function computeMonthMetrics() {
+      const daysObj = state.submissions.days || {};
+      const dayDecs = state.admin.day_decisions || {};
+      const invsObj = state.submissions.invoices || {};
+      const invDecs = state.admin.invoice_decisions || {};
+      const fixedObj = state.admin.fixed_expenses || {};
+
+      let approvedSales = 0;
+      let approvedDailyExp = 0;
+      let approvedWages = 0;
+      let approvedDaysCount = 0;
+
+      let pendingDays = [];
+      let unsettledApprovedDays = [];
+      let allDays = [];
+
+      Object.entries(daysObj).forEach(([id, entry]) => {
+        const dec = dayDecs[id] || null;
+        const status = dec ? dec.status : "pending";
+        const settled = Boolean(dec && dec.settled);
+        const sales = Number(entry.sales) || 0;
+        const expTotal = Number(entry.expensesTotal) || 0;
+        const defaultWage = entry.submittedByRole === "owner" && entry.ownerShift ? 0 : (Number(state.config.defaultDailyWage) || 0);
+        const wage = dec && dec.dailyWage != null ? Number(dec.dailyWage) : (isTeamMode() ? defaultWage : 0);
+
+        const enriched = { id, entry, dec, status, settled, sales, expTotal, wage };
+        allDays.push(enriched);
+
+        if (status === "pending") {
+          pendingDays.push(enriched);
+        } else if (status === "approved") {
+          approvedDaysCount++;
+          approvedSales += sales;
+          approvedDailyExp += expTotal;
+          approvedWages += wage;
+          if (isTeamMode() && !settled) {
+            unsettledApprovedDays.push(enriched);
+          }
+        }
+      });
+
+      allDays.sort((a, b) => String(b.entry.date || "").localeCompare(String(a.entry.date || "")) || (b.entry.createdAt || 0) - (a.entry.createdAt || 0));
+
+      let approvedInvoicesTotal = 0;
+      let pendingInvoices = [];
+      let unsettledWorkerInvoices = [];
+      let allInvoices = [];
+
+      Object.entries(invsObj).forEach(([id, inv]) => {
+        const dec = invDecs[id] || null;
+        const status = dec ? dec.status : "pending";
+        const settled = Boolean(dec && dec.settled);
+        const total = Number(inv.totalAmount) || 0;
+        const enriched = { id, inv, dec, status, settled, total };
+        allInvoices.push(enriched);
+
+        if (status === "pending") {
+          pendingInvoices.push(enriched);
+        } else if (status === "approved") {
+          approvedInvoicesTotal += total;
+          if (isTeamMode() && inv.paymentSource === "worker_cash" && !settled) {
+            unsettledWorkerInvoices.push(enriched);
+          }
+        }
+      });
+
+      allInvoices.sort((a, b) => (b.inv.createdAt || 0) - (a.inv.createdAt || 0));
+
+      let fixedTotal = 0;
+      const fixedList = Object.entries(fixedObj).map(([id, fx]) => {
+        fixedTotal += Number(fx.amount) || 0;
+        return { id, ...fx };
+      }).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      const netProfit = approvedSales - approvedDailyExp - approvedInvoicesTotal - fixedTotal - approvedWages;
+
+      // حساب المستحق من العامل (أيام معتمدة غير مسواة - فواتير نقدية دفعها العامل غير مسواة)
+      let workerDaysNet = 0;
+      unsettledApprovedDays.forEach((d) => {
+        workerDaysNet += (d.sales - d.expTotal - d.wage);
+      });
+      let workerPaidInvs = 0;
+      unsettledWorkerInvoices.forEach((i) => {
+        workerPaidInvs += i.total;
+      });
+      const workerNetDue = workerDaysNet - workerPaidInvs;
+
+      // فحص المخزون المنخفض
+      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
+      const lowW = Number(state.config.lowStockWeightLimit != null ? state.config.lowStockWeightLimit : 1000);
+      const lowU = Number(state.config.lowStockUnitLimit != null ? state.config.lowStockUnitLimit : 10);
+      const lowStockItems = [];
+      Object.entries(stockObj).forEach(([id, item]) => {
+        const limit = item.unit === "g" ? lowW : lowU;
+        if ((Number(item.qty) || 0) <= limit) {
+          lowStockItems.push({ id, ...item, limit });
+        }
+      });
+
+      return {
+        approvedSales,
+        approvedDailyExp,
+        approvedInvoicesTotal,
+        fixedTotal,
+        approvedWages,
+        approvedDaysCount,
+        netProfit,
+        pendingDays,
+        unsettledApprovedDays,
+        allDays,
+        pendingInvoices,
+        unsettledWorkerInvoices,
+        allInvoices,
+        fixedList,
+        workerNetDue,
+        workerDaysNet,
+        workerPaidInvs,
+        stockObj,
+        lowStockItems
+      };
+    }
+
+    function renderHeaderAndBanners() {
+      document.getElementById("hdrCafeName").textContent = state.config.cafeName || (state.meta && state.meta.name) || "CassaCafe";
+      const badge = document.getElementById("hdrModeBadge");
+      if (isTeamMode()) {
+        badge.textContent = "👥 فريق";
+        badge.className = "pill pill-info";
+      } else {
+        badge.textContent = "👤 فردي";
+        badge.className = "pill pill-muted";
+      }
+
+      const expBanner = document.getElementById("expiredBanner");
+      const soonBanner = document.getElementById("expiringBanner");
+      const subUntil = (state.meta && state.meta.subscriptionUntil) || 0;
+      const daysLeft = Math.ceil((subUntil - Date.now()) / 86400000);
+
+      if (daysLeft <= 0) {
+        expBanner.classList.remove("hidden");
+        soonBanner.classList.add("hidden");
+      } else if (daysLeft <= 7) {
+        expBanner.classList.add("hidden");
+        soonBanner.textContent = `⏳ تنبيه: ينتهي اشتراك المقهى خلال ${daysLeft} يوم. يرجى التواصل مع المشرف للتجديد.`;
+        soonBanner.classList.remove("hidden");
+      } else {
+        expBanner.classList.add("hidden");
+        soonBanner.classList.add("hidden");
+      }
+    }
+
+    function renderAll() {
+      renderHeaderAndBanners();
+      const m = computeMonthMetrics();
+      renderBadges(m);
+      renderDashboard(m);
+      renderDaysTab(m);
+      renderInvoicesTab(m);
+      renderStockTab(m);
+      renderSettingsTab(m);
+    }
+
+    function renderBadges(m) {
+      const bDays = document.getElementById("badgeDays");
+      const pendingDayCount = isTeamMode() ? (m.pendingDays.length + m.unsettledApprovedDays.length) : 0;
+      bDays.textContent = pendingDayCount;
+      bDays.classList.toggle("hidden", pendingDayCount === 0);
+
+      const bInv = document.getElementById("badgeInv");
+      bInv.textContent = m.pendingInvoices.length;
+      bInv.classList.toggle("hidden", m.pendingInvoices.length === 0);
+
+      const bStock = document.getElementById("badgeStock");
+      bStock.textContent = m.lowStockItems.length;
+      bStock.classList.toggle("hidden", m.lowStockItems.length === 0);
+    }
+
+    function renderDashboard(m) {
+      document.getElementById("dashMonthLabel").textContent = state.selectedMonth;
+      document.getElementById("dashDaysCount").textContent = `${m.approvedDaysCount} يوم معتمد`;
+
+      const profitEl = document.getElementById("dashNetProfit");
+      profitEl.textContent = formatDT(m.netProfit);
+      profitEl.className = "hero-value " + (m.netProfit >= 0 ? "pos" : "neg");
+
+      document.getElementById("bdSales").textContent = formatDT(m.approvedSales);
+      document.getElementById("bdDailyExp").textContent = formatDT(m.approvedDailyExp);
+      document.getElementById("bdInvoices").textContent = formatDT(m.approvedInvoicesTotal);
+      document.getElementById("bdFixedExp").textContent = formatDT(m.fixedTotal);
+      document.getElementById("bdWages").textContent = formatDT(m.approvedWages);
+      document.getElementById("bdWagesRow").classList.toggle("hidden", !isTeamMode());
+
+      // زر التسوية وصندوق المستحقات في وضع الفريق
+      const hasUnsettled = isTeamMode() && (m.unsettledApprovedDays.length > 0 || m.unsettledWorkerInvoices.length > 0);
+      document.getElementById("qaSettleBtn").classList.toggle("hidden", !isTeamMode());
+      document.getElementById("dashWorkerDueBox").classList.toggle("hidden", !hasUnsettled);
+      if (hasUnsettled) {
+        document.getElementById("dashWorkerNameLbl").textContent = state.config.workerName || "العامل";
+        document.getElementById("dashWorkerDueVal").textContent = formatDT(m.workerNetDue);
+      }
+
+      // تنبيه نقص المخزون
+      const lowBox = document.getElementById("dashLowStockBox");
+      lowBox.classList.toggle("hidden", m.lowStockItems.length === 0);
+      if (m.lowStockItems.length > 0) {
+        document.getElementById("dashLowStockList").innerHTML = m.lowStockItems
+          .map((it) => `<div>• <strong>${escapeHtml(it.name)}</strong>: المتبقي <span style="color: var(--danger);">${formatQty(it.qty, it.unit)}</span></div>`)
+          .join("");
+      }
+
+      // الفواتير المعلقة
+      const pInvBox = document.getElementById("dashPendingInvBox");
+      pInvBox.classList.toggle("hidden", m.pendingInvoices.length === 0);
+      document.getElementById("dashPendingInvCount").textContent = m.pendingInvoices.length;
+      if (m.pendingInvoices.length > 0) {
+        document.getElementById("dashPendingInvList").innerHTML = m.pendingInvoices.map(renderInvoiceCardHtml).join("");
+      }
+
+      // اليوميات غير المسواة (أو الأخيرة في الفردي)
+      const dashDaysTitle = document.getElementById("dashDaysTitle");
+      const dashDaysList = document.getElementById("dashDaysList");
+      if (isTeamMode()) {
+        dashDaysTitle.textContent = "اليوميات بانتظار المراجعة أو التسوية";
+        const actionable = [...m.pendingDays, ...m.unsettledApprovedDays]
+          .sort((a, b) => String(b.entry.date || "").localeCompare(String(a.entry.date || "")));
+        if (!actionable.length) {
+          dashDaysList.innerHTML = `<div class="empty-box">لا توجد يوميات معلّقة أو غير مسوّاة في هذا الشهر.</div>`;
+        } else {
+          dashDaysList.innerHTML = actionable.map(renderDayCardHtml).join("");
+        }
+      } else {
+        dashDaysTitle.textContent = "آخر اليوميات المسجّلة";
+        const recent = m.allDays.filter((d) => d.status === "approved").slice(0, 5);
+        if (!recent.length) {
+          dashDaysList.innerHTML = `<div class="empty-box">لم تُسجّل أي يومية لهذا الشهر بعد. اضغط «+ تسجيل يومية».</div>`;
+        } else {
+          dashDaysList.innerHTML = recent.map(renderDayCardHtml).join("");
+        }
+      }
+    }
+
+    function renderDayCardHtml(d) {
+      const e = d.entry;
+      let statusPill = "";
+      let cardCls = "item-card";
+      if (d.status === "pending") {
+        statusPill = `<span class="pill pill-warn">بانتظار الاعتماد</span>`;
+        cardCls += " pending";
+      } else if (d.status === "rejected") {
+        statusPill = `<span class="pill pill-err">مرفوضة / ملغاة</span>`;
+        cardCls += " rejected";
+      } else if (isTeamMode() && !d.settled) {
+        statusPill = `<span class="pill pill-info">معتمدة — غير مسوّاة</span>`;
+      } else {
+        statusPill = `<span class="pill pill-ok">${isTeamMode() ? "مسوّاة" : "معتمدة"}</span>`;
+      }
+
+      const dayNet = d.sales - d.expTotal - (isTeamMode() ? d.wage : 0);
+      const expLines = Array.isArray(e.expenses) && e.expenses.length
+        ? `<div class="hint">المصاريف: ${e.expenses.map((x) => `${escapeHtml(x.label)} (${formatDT(x.amount)})`).join("، ")}</div>`
+        : "";
+      const stockLines = Array.isArray(e.stockUsage) && e.stockUsage.length
+        ? `<div class="hint">استهلاك المخزون: ${e.stockUsage.map((x) => `${escapeHtml(x.name)} (-${formatQty(x.qty, x.unit)})`).join("، ")}</div>`
+        : "";
+      const noteLine = e.note ? `<div class="hint">ملاحظة: ${escapeHtml(e.note)}</div>` : "";
+      const adminNoteLine = d.dec && d.dec.note ? `<div class="hint" style="color: var(--info);">ملاحظة الإدارة: ${escapeHtml(d.dec.note)}</div>` : "";
+
+      let actionsHtml = "";
+      if (d.status === "pending") {
+        actionsHtml = `
+          <div class="item-actions">
+            <button class="btn-success btn-sm" data-day-action="review" data-id="${escapeHtml(d.id)}">مراجعة واعتماد</button>
+            <button class="btn-danger btn-sm" data-day-action="quick-reject" data-id="${escapeHtml(d.id)}">رفض</button>
+          </div>
+        `;
+      } else if (d.status === "approved" && (!isTeamMode() || !d.settled)) {
+        actionsHtml = `
+          <div class="item-actions">
+            ${isTeamMode() ? `<button class="btn-info btn-sm" data-day-action="settle-one" data-id="${escapeHtml(d.id)}">تسوية هذا اليوم</button>` : ""}
+            <button class="btn-danger btn-sm" data-day-action="void" data-id="${escapeHtml(d.id)}">إلغاء اليومية</button>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="${cardCls}">
+          <div class="item-top">
+            <div>
+              <strong dir="ltr">${escapeHtml(e.date || "—")}</strong>
+              <span class="hint" style="margin-right: 6px;">${e.submittedByRole === "worker" ? `👷 ${escapeHtml(state.config.workerName || "العامل")}` : "👤 الإدارة"}</span>
+            </div>
+            ${statusPill}
+          </div>
+          <div class="item-sub">
+            <div class="kv-row"><span>المداخيل:</span><strong style="color: var(--success);">${formatDT(d.sales)}</strong></div>
+            <div class="kv-row"><span>المصاريف اليومية:</span><strong>${formatDT(d.expTotal)}</strong></div>
+            ${isTeamMode() ? `<div class="kv-row"><span>الأجر اليومي:</span><strong>${formatDT(d.wage)}</strong></div>` : ""}
+            <div class="kv-row"><span>${isTeamMode() ? "صافي اليوم للتسوية:" : "صافي اليوم:"}</span><strong style="color: var(--primary);">${formatDT(dayNet)}</strong></div>
+            ${expLines}
+            ${stockLines}
+            ${noteLine}
+            ${adminNoteLine}
+          </div>
+          ${actionsHtml}
+        </div>
+      `;
+    }
+
+    function renderDaysTab(m) {
+      const filtersEl = document.getElementById("daysFilters");
+      const filterDefs = isTeamMode()
+        ? [
+            { k: "unsettled", lbl: "غير مسوّاة" },
+            { k: "settled", lbl: "مسوّاة" },
+            { k: "rejected", lbl: "مرفوضة" },
+            { k: "all", lbl: "الكل" }
+          ]
+        : [
+            { k: "approved", lbl: "المعتمدة" },
+            { k: "rejected", lbl: "الملغاة" },
+            { k: "all", lbl: "الكل" }
+          ];
+
+      if (!filterDefs.some((f) => f.k === state.dayFilter)) {
+        state.dayFilter = filterDefs[0].k;
+      }
+
+      filtersEl.innerHTML = filterDefs.map((f) =>
+        `<button class="filter-pill ${state.dayFilter === f.k ? "active" : ""}" data-day-filter="${f.k}">${f.lbl}</button>`
+      ).join("");
+
+      const hasUnsettled = isTeamMode() && (m.unsettledApprovedDays.length > 0 || m.unsettledWorkerInvoices.length > 0);
+      document.getElementById("daysSettleBtn").classList.toggle("hidden", !hasUnsettled);
+
+      const filtered = m.allDays.filter((d) => {
+        if (state.dayFilter === "unsettled") return d.status === "pending" || (d.status === "approved" && !d.settled);
+        if (state.dayFilter === "settled") return d.status === "approved" && d.settled;
+        if (state.dayFilter === "approved") return d.status === "approved";
+        if (state.dayFilter === "rejected") return d.status === "rejected";
+        return true;
+      });
+
+      const listEl = document.getElementById("daysList");
+      listEl.innerHTML = filtered.length
+        ? filtered.map(renderDayCardHtml).join("")
+        : `<div class="empty-box">لا توجد يوميات ضمن هذا التصنيف.</div>`;
+
+      // أرشيف التسويات (وضع الفريق)
+      const archBox = document.getElementById("settlementsArchiveBox");
+      archBox.classList.toggle("hidden", !isTeamMode());
+      if (isTeamMode()) {
+        const sets = Object.entries(state.admin.settlements || {})
+          .map(([id, s]) => ({ id, ...s }))
+          .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        document.getElementById("settlementsList").innerHTML = sets.length
+          ? sets.map((s) => `
+              <div class="item-card">
+                <div class="item-top">
+                  <strong dir="ltr">${escapeHtml(s.date || "—")}</strong>
+                  <span class="pill ${s.diff === 0 ? "pill-ok" : (s.diff < 0 ? "pill-err" : "pill-info")}">
+                    ${s.diff === 0 ? "مطابقة تامة" : (s.diff < 0 ? `عجز ${formatDT(Math.abs(s.diff))}` : `فائض ${formatDT(s.diff)}`)}
+                  </span>
+                </div>
+                <div class="item-sub">
+                  <div class="kv-row"><span>المطلوب تسليمه:</span><strong>${formatDT(s.netDue)}</strong></div>
+                  <div class="kv-row"><span>المستلم فعلياً:</span><strong style="color: var(--success);">${formatDT(s.cashReceived)}</strong></div>
+                  <div class="hint">عدد اليوميات: ${(s.entryIds || []).length} ${s.note ? `— ${escapeHtml(s.note)}` : ""}</div>
+                </div>
+              </div>
+            `).join("")
+          : `<div class="empty-box">لا توجد تسويات مسجّلة في هذا الشهر.</div>`;
+      }
+    }
+
+    function renderInvoiceCardHtml(item) {
+      const inv = item.inv;
+      let pill = `<span class="pill pill-warn">بانتظار الاعتماد</span>`;
+      let cls = "item-card pending";
+      if (item.status === "approved") {
+        pill = `<span class="pill pill-ok">معتمدة (أُضيفت للمخزون)</span>`;
+        cls = "item-card";
+      } else if (item.status === "rejected") {
+        pill = `<span class="pill pill-err">مرفوضة</span>`;
+        cls = "item-card rejected";
+      }
+
+      const payLbl = inv.paymentSource === "worker_cash"
+        ? `صندوق العامل ${item.settled ? "(مسوّاة)" : "(تُخصم من التسوية)"}`
+        : "صندوق الإدارة";
+
+      const linesHtml = (inv.items || []).map((l) =>
+        `<div>• ${escapeHtml(l.name)}: <strong>${formatQty(l.qty, l.unit)}</strong> — <span dir="ltr">${formatDT(l.lineTotal)}</span></div>`
+      ).join("");
+
+      let actions = "";
+      if (item.status === "pending") {
+        actions = `
+          <div class="item-actions">
+            <button class="btn-success btn-sm" data-inv-action="approve" data-id="${escapeHtml(item.id)}">✅ اعتماد وتحديث المخزون</button>
+            <button class="btn-danger btn-sm" data-inv-action="reject" data-id="${escapeHtml(item.id)}">❌ رفض</button>
+          </div>
+        `;
+      } else if (item.status === "approved" && !item.settled) {
+        actions = `
+          <div class="item-actions">
+            <button class="btn-danger btn-sm" data-inv-action="void" data-id="${escapeHtml(item.id)}">إلغاء الفاتورة وعكس المخزون</button>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="${cls}">
+          <div class="item-top">
+            <div>
+              <strong>فاتورة #${escapeHtml(inv.invoiceNumber || "—")} — ${escapeHtml(inv.supplier || "مزوّد")}</strong>
+              <div class="hint" dir="ltr" style="text-align: right;">${escapeHtml(inv.date || "")}</div>
+            </div>
+            ${pill}
+          </div>
+          <div class="item-sub">
+            <div class="kv-row"><span>المجموع:</span><strong style="color: var(--primary);">${formatDT(item.total)}</strong></div>
+            ${isTeamMode() ? `<div class="kv-row"><span>الدفع:</span><strong>${payLbl}</strong></div>` : ""}
+            <div style="margin-top: 4px;">${linesHtml}</div>
+            ${inv.note ? `<div class="hint">ملاحظة: ${escapeHtml(inv.note)}</div>` : ""}
+          </div>
+          ${actions}
+        </div>
+      `;
+    }
+
+    function renderInvoicesTab(m) {
+      document.querySelectorAll("[data-inv-filter]").forEach((b) => {
+        b.classList.toggle("active", b.dataset.invFilter === state.invFilter);
+      });
+      const list = m.allInvoices.filter((i) => state.invFilter === "all" || i.status === state.invFilter);
+      document.getElementById("invoicesList").innerHTML = list.length
+        ? list.map(renderInvoiceCardHtml).join("")
+        : `<div class="empty-box">لا توجد فواتير ضمن هذا التصنيف.</div>`;
+    }
+
+    function renderStockTab(m) {
+      const entries = Object.entries(m.stockObj)
+        .map(([id, item]) => ({ id, ...item }))
+        .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "ar"));
+
+      const lowW = Number(state.config.lowStockWeightLimit != null ? state.config.lowStockWeightLimit : 1000);
+      const lowU = Number(state.config.lowStockUnitLimit != null ? state.config.lowStockUnitLimit : 10);
+
+      document.getElementById("stockList").innerHTML = entries.length
+        ? entries.map((it) => {
+            const limit = it.unit === "g" ? lowW : lowU;
+            const isLow = (Number(it.qty) || 0) <= limit;
+            return `
+              <div class="item-card ${isLow ? "low" : ""}">
+                <div class="item-top">
+                  <div>
+                    <strong>${escapeHtml(it.name)}</strong>
+                    <div class="hint">القياس: ${it.unit === "g" ? "بالغرام" : "بالوحدة"}</div>
+                  </div>
+                  <span class="pill ${isLow ? "pill-err" : "pill-ok"}">${formatQty(it.qty, it.unit)}</span>
+                </div>
+                <div class="item-actions">
+                  <button class="btn-info btn-sm" data-stock-action="audit" data-id="${escapeHtml(it.id)}">🔍 جرد فعلي</button>
+                  <button class="btn-danger btn-sm" data-stock-action="delete" data-id="${escapeHtml(it.id)}">حذف</button>
+                </div>
+              </div>
+            `;
+          }).join("")
+        : `<div class="empty-box">المخزون فارغ حالياً. أضف أصناف المقهى (القهوة، الماء، المشروبات...) لربطها بالفواتير واليوميات.</div>`;
+
+      // سجل الجرد
+      const audits = Object.entries(state.admin.stock_audits || {})
+        .map(([id, a]) => ({ id, ...a }))
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      document.getElementById("auditsList").innerHTML = audits.length
+        ? audits.map((a) => `
+            <div class="item-card">
+              <div class="item-top">
+                <strong>${escapeHtml(a.itemName)}</strong>
+                <span class="pill ${a.diff === 0 ? "pill-ok" : (a.diff < 0 ? "pill-err" : "pill-info")}">
+                  الفارق: ${a.diff > 0 ? "+" : ""}${formatQty(a.diff, a.unit)}
+                </span>
+              </div>
+              <div class="item-sub">
+                <div>النظري: <strong>${formatQty(a.theoreticalQty, a.unit)}</strong> ← الفعلي: <strong>${formatQty(a.actualQty, a.unit)}</strong></div>
+                <div class="hint">${escapeHtml(a.date || "")} ${a.note ? `— ${escapeHtml(a.note)}` : ""}</div>
+              </div>
+            </div>
+          `).join("")
+        : `<div class="empty-box">لا توجد عمليات جرد مسجّلة في هذا الشهر.</div>`;
+    }
+
+    function renderSettingsTab(m) {
+      document.getElementById("fixedMonthLbl").textContent = state.selectedMonth;
+      document.getElementById("fixedTotalLbl").textContent = formatDT(m.fixedTotal);
+
+      const presets = Array.isArray(state.config.fixedExpensePresets) ? state.config.fixedExpensePresets : [];
+      document.getElementById("fixedPresetsWrap").innerHTML = presets.map((p, idx) =>
+        `<button type="button" class="tag-btn" data-preset-idx="${idx}">+ ${escapeHtml(p.name)} (${formatDT(p.amount)})</button>`
+      ).join("");
+
+      document.getElementById("fixedExpList").innerHTML = m.fixedList.length
+        ? m.fixedList.map((fx) => `
+            <div class="item-card">
+              <div class="item-top" style="margin-bottom: 0; align-items: center;">
+                <div>
+                  <strong>${escapeHtml(fx.name)}</strong>
+                  <div class="hint" dir="ltr" style="text-align: right;">${escapeHtml(fx.date || "")}</div>
+                </div>
+                <div class="row-flex">
+                  <strong style="color: var(--warning); direction: ltr;">${formatDT(fx.amount)}</strong>
+                  <button class="btn-danger btn-sm" data-del-fixed="${escapeHtml(fx.id)}">حذف</button>
+                </div>
+              </div>
+            </div>
+          `).join("")
+        : `<div class="empty-box">لم تُسجّل مصاريف ثابتة لهذا الشهر بعد.</div>`;
+
+      document.getElementById("activeMonthHint").textContent =
+        `الشهر النشط حالياً في المنظومة: ${state.live.active_month || "غير محدد"}`;
+
+      // تعبئة نموذج الإعدادات (فقط إذا لم يكن المستخدم يكتب فيه حالياً)
+      if (!document.getElementById("configForm").contains(document.activeElement)) {
+        document.getElementById("cfgCafeName").value = state.config.cafeName || "";
+        document.getElementById("cfgOwnerName").value = state.config.ownerName || "الإدارة";
+        document.getElementById("cfgTeamFields").classList.toggle("hidden", !isTeamMode());
+        document.getElementById("cfgWorkerName").value = state.config.workerName || "العامل";
+        document.getElementById("cfgDailyWage").value = ((Number(state.config.defaultDailyWage) || 0) / 1000).toFixed(3);
+        document.getElementById("cfgLowWeight").value = state.config.lowStockWeightLimit != null ? state.config.lowStockWeightLimit : 1000;
+        document.getElementById("cfgLowUnit").value = state.config.lowStockUnitLimit != null ? state.config.lowStockUnitLimit : 10;
+        document.getElementById("cfgQuickTags").value = (state.config.consumableQuickTags || []).join("، ");
+      }
+    }
+
+    // ============ تسجيل يومية جديدة ============
+    function addDayExpRow(label = "", amountStr = "") {
+      const container = document.getElementById("dayExpRows");
+      const div = document.createElement("div");
+      div.className = "dyn-row";
+      div.innerHTML = `
+        <div class="dyn-row-top">
+          <input type="text" class="exp-label" placeholder="البيان (سكر، حليب...)" value="${escapeHtml(label)}" />
+          <input type="text" inputmode="decimal" dir="ltr" class="exp-amt" placeholder="المبلغ (د)" style="max-width: 110px;" value="${escapeHtml(amountStr)}" />
+          <button type="button" class="btn-danger btn-sm rm-row">&times;</button>
+        </div>
+      `;
+      div.querySelector(".rm-row").addEventListener("click", () => div.remove());
+      container.appendChild(div);
+    }
+
+    function addDayStockRow() {
+      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
+      const items = Object.entries(stockObj);
+      if (!items.length) {
+        showToast("أضف أصنافاً في تبويب المخزون أولاً.", "err");
+        return;
+      }
+      const options = items.map(([id, it]) =>
+        `<option value="${escapeHtml(id)}">${escapeHtml(it.name)} (${it.unit === "g" ? "غ" : "وحدة"})</option>`
+      ).join("");
+      const container = document.getElementById("dayStockRows");
+      const div = document.createElement("div");
+      div.className = "dyn-row";
+      div.innerHTML = `
+        <div class="dyn-row-top">
+          <select class="st-item">${options}</select>
+          <input type="number" step="any" min="0" dir="ltr" class="st-qty" placeholder="الكمية" style="max-width: 100px;" />
+          <button type="button" class="btn-danger btn-sm rm-row">&times;</button>
+        </div>
+      `;
+      div.querySelector(".rm-row").addEventListener("click", () => div.remove());
+      container.appendChild(div);
+    }
+
+    function openAddDayModal() {
+      if (!assertWritable()) return;
+      document.getElementById("dayForm").reset();
+      const today = getTodayDateStr();
+      document.getElementById("dDate").value = today.startsWith(state.selectedMonth) ? today : `${state.selectedMonth}-01`;
+      document.getElementById("dayExpRows").innerHTML = "";
+      document.getElementById("dayStockRows").innerHTML = "";
+      document.getElementById("dOwnerShiftWrap").classList.toggle("hidden", !isTeamMode());
+      document.getElementById("dOwnerShift").checked = true;
+
+      const tags = state.config.consumableQuickTags || [];
+      document.getElementById("dayQuickTags").innerHTML = tags.map((t) =>
+        `<button type="button" class="tag-btn" data-add-tag="${escapeHtml(t)}">+ ${escapeHtml(t)}</button>`
+      ).join("");
+
+      openModal("dayModal");
+    }
+
+    document.getElementById("qaAddDayBtn").addEventListener("click", openAddDayModal);
+    document.getElementById("daysAddBtn").addEventListener("click", openAddDayModal);
+    document.getElementById("addDayExpRowBtn").addEventListener("click", () => addDayExpRow());
+    document.getElementById("addDayStockRowBtn").addEventListener("click", addDayStockRow);
+    document.getElementById("dayQuickTags").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-add-tag]");
+      if (btn) addDayExpRow(btn.dataset.addTag);
+    });
+
+    document.getElementById("dayForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!assertWritable()) return;
+
+      const date = document.getElementById("dDate").value;
+      const monthKey = date.slice(0, 7);
+      const sales = toMillimes(document.getElementById("dSales").value);
+      const note = document.getElementById("dNote").value.trim();
+      const ownerShift = !isTeamMode() || document.getElementById("dOwnerShift").checked;
+
+      const expenses = [];
+      let expensesTotal = 0;
+      document.querySelectorAll("#dayExpRows .dyn-row").forEach((row) => {
+        const label = row.querySelector(".exp-label").value.trim();
+        const amt = toMillimes(row.querySelector(".exp-amt").value);
+        if (label && amt > 0) {
+          expenses.push({ label, amount: amt });
+          expensesTotal += amt;
+        }
+      });
+
+      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
+      const stockUsage = [];
+      const deltas = {};
+      document.querySelectorAll("#dayStockRows .dyn-row").forEach((row) => {
+        const itemId = row.querySelector(".st-item").value;
+        const qty = parseFloat(row.querySelector(".st-qty").value) || 0;
+        if (itemId && qty > 0 && stockObj[itemId]) {
+          stockUsage.push({ itemId, name: stockObj[itemId].name, unit: stockObj[itemId].unit, qty });
+          deltas[itemId] = (deltas[itemId] || 0) + qty;
+        }
+      });
+
+      const btn = document.getElementById("daySubmitBtn");
+      btn.disabled = true;
+      try {
+        const nowMs = Date.now();
+        const entryId = db.ref().push().key;
+        const updates = {};
+
+        updates[`submissions/${monthKey}/days/${entryId}`] = {
+          date,
+          sales,
+          expenses,
+          expensesTotal,
+          stockUsage,
+          note,
+          ownerShift,
+          submittedBy: state.user.uid,
+          submittedByRole: "owner",
+          createdAt: nowMs
+        };
+
+        const autoSettle = !isTeamMode() || ownerShift;
+        const wage = autoSettle ? 0 : (Number(state.config.defaultDailyWage) || 0);
+
+        updates[`admin/${monthKey}/day_decisions/${entryId}`] = {
+          status: "approved",
+          settled: autoSettle,
+          settledAt: autoSettle ? nowMs : null,
+          dailyWage: wage,
+          approvedAt: nowMs,
+          stockApplied: true,
+          note: ""
+        };
+
+        Object.entries(deltas).forEach(([itemId, usedQty]) => {
+          const cur = Number(stockObj[itemId].qty) || 0;
+          updates[`live/stock_state/stock/${itemId}/qty`] = Number((cur - usedQty).toFixed(3));
+        });
+        if (Object.keys(deltas).length > 0) {
+          updates[`live/stock_state/updatedAt`] = nowMs;
+        }
+
+        await db.ref(`tenants/${state.cafeId}`).update(updates);
+        if (monthKey !== state.selectedMonth) {
+          state.selectedMonth = monthKey;
+          document.getElementById("monthPicker").value = monthKey;
+          attachMonthListeners();
+        }
+        closeModal("dayModal");
+        showToast("تم تسجيل اليومية بنجاح.");
+      } catch (err) {
+        showToast("فشل الحفظ: " + err.message, "err");
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // ============ إجراءات اليوميات (مراجعة / اعتماد / إلغاء) ============
+    document.getElementById("daysFilters").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-day-filter]");
+      if (!btn) return;
+      state.dayFilter = btn.dataset.dayFilter;
+      renderAll();
+    });
+
+    async function handleDayAction(action, entryId) {
+      if (!assertWritable()) return;
+      const entry = (state.submissions.days || {})[entryId];
+      const dec = (state.admin.day_decisions || {})[entryId];
+      if (!entry) return;
+
+      if (action === "review") {
+        state.reviewEntryId = entryId;
+        const defaultWage = Number(state.config.defaultDailyWage) || 0;
+        const expLines = (entry.expenses || []).map((x) => `${escapeHtml(x.label)}: ${formatDT(x.amount)}`).join(" | ") || "لا يوجد";
+        const stockLines = (entry.stockUsage || []).map((x) => `${escapeHtml(x.name)}: -${formatQty(x.qty, x.unit)}`).join(" | ") || "لا يوجد";
+        document.getElementById("reviewDaySummary").innerHTML = `
+          <div class="kv-row"><span>التاريخ:</span><strong dir="ltr">${escapeHtml(entry.date)}</strong></div>
+          <div class="kv-row"><span>المداخيل:</span><strong style="color: var(--success);">${formatDT(entry.sales)}</strong></div>
+          <div class="kv-row"><span>المصاريف اليومية:</span><strong>${formatDT(entry.expensesTotal)}</strong></div>
+          <div class="hint" style="margin-top: 6px;">تفصيل المصاريف: ${expLines}</div>
+          <div class="hint">استهلاك المخزون: ${stockLines}</div>
+          ${entry.note ? `<div class="hint">ملاحظة العامل: ${escapeHtml(entry.note)}</div>` : ""}
+        `;
+        document.getElementById("revWage").value = (defaultWage / 1000).toFixed(3);
+        document.getElementById("revNote").value = "";
+        openModal("reviewDayModal");
+      } else if (action === "quick-reject") {
+        const reason = prompt("سبب رفض اليومية (اختياري):") || "";
+        if (reason === null) return;
+        await decideWorkerDay(entryId, "rejected", 0, false, reason);
+      } else if (action === "settle-one") {
+        openSettleModal([entryId], []);
+      } else if (action === "void") {
+        if (!confirm("إلغاء هذه اليومية وعكس خصم المخزون (إن وجد)؟")) return;
+        try {
+          const nowMs = Date.now();
+          const updates = {};
+          updates[`admin/${state.selectedMonth}/day_decisions/${entryId}/status`] = "rejected";
+          updates[`admin/${state.selectedMonth}/day_decisions/${entryId}/settled`] = false;
+          updates[`admin/${state.selectedMonth}/day_decisions/${entryId}/stockApplied`] = false;
+          updates[`admin/${state.selectedMonth}/day_decisions/${entryId}/voidedAt`] = nowMs;
+
+          if (dec && dec.stockApplied && Array.isArray(entry.stockUsage)) {
+            const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
+            const restore = {};
+            entry.stockUsage.forEach((u) => {
+              if (u.itemId && stockObj[u.itemId]) restore[u.itemId] = (restore[u.itemId] || 0) + (Number(u.qty) || 0);
+            });
+            Object.entries(restore).forEach(([itemId, q]) => {
+              const cur = Number(stockObj[itemId].qty) || 0;
+              updates[`live/stock_state/stock/${itemId}/qty`] = Number((cur + q).toFixed(3));
+            });
+            if (Object.keys(restore).length) updates[`live/stock_state/updatedAt`] = nowMs;
+          }
+          await db.ref(`tenants/${state.cafeId}`).update(updates);
+          showToast("تم إلغاء اليومية.");
+        } catch (err) {
+          showToast("فشل الإلغاء: " + err.message, "err");
+        }
+      }
+    }
+
+    async function decideWorkerDay(entryId, status, wageMillimes, settleNow, note) {
+      const entry = (state.submissions.days || {})[entryId];
+      if (!entry) return;
+      const existingDec = (state.admin.day_decisions || {})[entryId];
+      const nowMs = Date.now();
+      const updates = {};
+
+      updates[`admin/${state.selectedMonth}/day_decisions/${entryId}`] = {
+        status,
+        settled: status === "approved" && settleNow,
+        settledAt: status === "approved" && settleNow ? nowMs : null,
+        dailyWage: status === "approved" ? wageMillimes : 0,
+        approvedAt: nowMs,
+        stockApplied: status === "approved",
+        note: note || ""
+      };
+
+      if (status === "approved" && !(existingDec && existingDec.stockApplied) && Array.isArray(entry.stockUsage)) {
+        const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
+        const deltas = {};
+        entry.stockUsage.forEach((u) => {
+          if (u.itemId && stockObj[u.itemId]) deltas[u.itemId] = (deltas[u.itemId] || 0) + (Number(u.qty) || 0);
+        });
+        Object.entries(deltas).forEach(([itemId, q]) => {
+          const cur = Number(stockObj[itemId].qty) || 0;
+          updates[`live/stock_state/stock/${itemId}/qty`] = Number((cur - q).toFixed(3));
+        });
+        if (Object.keys(deltas).length) updates[`live/stock_state/updatedAt`] = nowMs;
+      }
+
+      if (status === "approved" && settleNow) {
+        const setId = db.ref().push().key;
+        const netDue = (Number(entry.sales) || 0) - (Number(entry.expensesTotal) || 0) - wageMillimes;
+        updates[`admin/${state.selectedMonth}/settlements/${setId}`] = {
+          date: getTodayDateStr(),
+          entryIds: [entryId],
+          invoiceIds: [],
+          netDue,
+          cashReceived: netDue,
+          diff: 0,
+          note: note || "تسوية فورية عند الاعتماد",
+          createdAt: nowMs
+        };
+      }
+
+      try {
+        await db.ref(`tenants/${state.cafeId}`).update(updates);
+        closeModal("reviewDayModal");
+        showToast(status === "approved" ? (settleNow ? "تم الاعتماد والتسوية الفورية." : "تم اعتماد اليومية.") : "تم رفض اليومية.");
+      } catch (err) {
+        showToast("فشل العملية: " + err.message, "err");
+      }
+    }
+
+    document.getElementById("reviewDayForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!assertWritable() || !state.reviewEntryId) return;
+      const wage = toMillimes(document.getElementById("revWage").value);
+      const note = document.getElementById("revNote").value.trim();
+      await decideWorkerDay(state.reviewEntryId, "approved", wage, false, note);
+    });
+    document.getElementById("revApproveSettleBtn").addEventListener("click", async () => {
+      if (!assertWritable() || !state.reviewEntryId) return;
+      const wage = toMillimes(document.getElementById("revWage").value);
+      const note = document.getElementById("revNote").value.trim();
+      await decideWorkerDay(state.reviewEntryId, "approved", wage, true, note);
+    });
+    document.getElementById("revRejectBtn").addEventListener("click", async () => {
+      if (!assertWritable() || !state.reviewEntryId) return;
+      const note = document.getElementById("revNote").value.trim();
+      await decideWorkerDay(state.reviewEntryId, "rejected", 0, false, note);
+    });
+
+    // ============ التسوية المالية مع العامل ============
+    function openSettleModal(specificDayIds = null, specificInvIds = null) {
+      if (!assertWritable()) return;
+      const m = computeMonthMetrics();
+      const targetDays = specificDayIds
+        ? m.unsettledApprovedDays.filter((d) => specificDayIds.includes(d.id))
+        : m.unsettledApprovedDays;
+      const targetInvs = specificInvIds
+        ? m.unsettledWorkerInvoices.filter((i) => specificInvIds.includes(i.id))
+        : m.unsettledWorkerInvoices;
+
+      if (!targetDays.length && !targetInvs.length) {
+        showToast("لا توجد يوميات معتمدة غير مسوّاة حالياً (اعتمد اليوميات المعلّقة أولاً).", "err");
+        return;
+      }
+
+      let salesSum = 0, expSum = 0, wageSum = 0, invSum = 0;
+      targetDays.forEach((d) => {
+        salesSum += d.sales;
+        expSum += d.expTotal;
+        wageSum += d.wage;
+      });
+      targetInvs.forEach((i) => { invSum += i.total; });
+      const netDue = salesSum - expSum - wageSum - invSum;
+
+      state.pendingSettleData = {
+        entryIds: targetDays.map((d) => d.id),
+        invoiceIds: targetInvs.map((i) => i.id),
+        netDue
+      };
+
+      document.getElementById("settleBreakdown").innerHTML = `
+        <div class="kv-row"><span>عدد اليوميات المعتمدة:</span><strong>${targetDays.length} يوم</strong></div>
+        <div class="kv-row"><span>إجمالي المداخيل:</span><strong style="color: var(--success);">${formatDT(salesSum)}</strong></div>
+        <div class="kv-row"><span>المصاريف اليومية:</span><strong>- ${formatDT(expSum)}</strong></div>
+        <div class="kv-row"><span>مجموع أجور العامل:</span><strong>- ${formatDT(wageSum)}</strong></div>
+        ${invSum > 0 ? `<div class="kv-row"><span>فواتير دفعها العامل (${targetInvs.length}):</span><strong>- ${formatDT(invSum)}</strong></div>` : ""}
+        <div class="kv-row" style="margin-top: 8px; border-top: 1px solid var(--border); padding-top: 8px;">
+          <span>الصافي المطلوب تسليمه للإدارة:</span>
+          <strong style="color: var(--info); font-size: 1.1rem;">${formatDT(netDue)}</strong>
+        </div>
+      `;
+
+      document.getElementById("settleReceived").value = (netDue / 1000).toFixed(3);
+      document.getElementById("settleNote").value = "";
+      updateSettleDiffHint();
+      openModal("settleModal");
+    }
+
+    function updateSettleDiffHint() {
+      if (!state.pendingSettleData) return;
+      const rec = toMillimes(document.getElementById("settleReceived").value);
+      const diff = rec - state.pendingSettleData.netDue;
+      const el = document.getElementById("settleDiffHint");
+      if (diff === 0) {
+        el.textContent = "✅ مطابقة تامة للمبلغ المطلوب.";
+        el.style.color = "var(--success)";
+      } else if (diff < 0) {
+        el.textContent = `⚠️ يوجد عجز قدره ${formatDT(Math.abs(diff))}`;
+        el.style.color = "var(--danger)";
+      } else {
+        el.textContent = `ℹ️ يوجد فائض قدره ${formatDT(diff)}`;
+        el.style.color = "var(--info)";
+      }
+    }
+
+    document.getElementById("settleReceived").addEventListener("input", updateSettleDiffHint);
+    document.getElementById("qaSettleBtn").addEventListener("click", () => openSettleModal());
+    document.getElementById("dashOpenSettleBtn").addEventListener("click", () => openSettleModal());
+    document.getElementById("daysSettleBtn").addEventListener("click", () => openSettleModal());
+
+    document.getElementById("settleForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!assertWritable() || !state.pendingSettleData) return;
+      const rec = toMillimes(document.getElementById("settleReceived").value);
+      const note = document.getElementById("settleNote").value.trim();
+      const { entryIds, invoiceIds, netDue } = state.pendingSettleData;
+      const nowMs = Date.now();
+      const setId = db.ref().push().key;
+
+      const updates = {};
+      updates[`admin/${state.selectedMonth}/settlements/${setId}`] = {
+        date: getTodayDateStr(),
+        entryIds,
+        invoiceIds,
+        netDue,
+        cashReceived: rec,
+        diff: rec - netDue,
+        note,
+        createdAt: nowMs
+      };
+      entryIds.forEach((id) => {
+        updates[`admin/${state.selectedMonth}/day_decisions/${id}/settled`] = true;
+        updates[`admin/${state.selectedMonth}/day_decisions/${id}/settledAt`] = nowMs;
+        updates[`admin/${state.selectedMonth}/day_decisions/${id}/settlementId`] = setId;
+      });
+      invoiceIds.forEach((id) => {
+        updates[`admin/${state.selectedMonth}/invoice_decisions/${id}/settled`] = true;
+        updates[`admin/${state.selectedMonth}/invoice_decisions/${id}/settledAt`] = nowMs;
+        updates[`admin/${state.selectedMonth}/invoice_decisions/${id}/settlementId`] = setId;
+      });
+
+      try {
+        await db.ref(`tenants/${state.cafeId}`).update(updates);
+        closeModal("settleModal");
+        showToast("تم تسجيل التسوية بنجاح.");
+      } catch (err) {
+        showToast("فشل التسوية: " + err.message, "err");
+      }
+    });
+
+    // ============ الفواتير المكتوبة ============
+    function addInvLineRow() {
+      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
+      const opts = `<option value="">— صنف عام (لا يُضاف للمخزون) —</option>` +
+        Object.entries(stockObj).map(([id, it]) =>
+          `<option value="${escapeHtml(id)}">📦 ${escapeHtml(it.name)} (${it.unit === "g" ? "غ" : "وحدة"})</option>`
+        ).join("");
+
+      const container = document.getElementById("invLineRows");
+      const div = document.createElement("div");
+      div.className = "dyn-row";
+      div.innerHTML = `
+        <div class="dyn-row-top">
+          <select class="il-stock">${opts}</select>
+          <button type="button" class="btn-danger btn-sm rm-row">&times;</button>
+        </div>
+        <input type="text" class="il-custom-name" placeholder="اسم البند (عند اختيار صنف عام)" />
+        <div class="grid-2">
+          <input type="number" step="any" min="0" dir="ltr" class="il-qty" placeholder="الكمية (غ أو وحدة)" value="1" />
+          <input type="text" inputmode="decimal" dir="ltr" class="il-total" placeholder="السعر الإجمالي (د)" />
+        </div>
+      `;
+      const stockSel = div.querySelector(".il-stock");
+      const customName = div.querySelector(".il-custom-name");
+      const syncCustom = () => customName.classList.toggle("hidden", stockSel.value !== "");
+      stockSel.addEventListener("change", syncCustom);
+      syncCustom();
+
+      div.querySelector(".il-total").addEventListener("input", recalcInvoiceTotal);
+      div.querySelector(".rm-row").addEventListener("click", () => {
+        div.remove();
+        recalcInvoiceTotal();
+      });
+      container.appendChild(div);
+    }
+
+    function recalcInvoiceTotal() {
+      let sum = 0;
+      document.querySelectorAll("#invLineRows .il-total").forEach((inp) => {
+        sum += toMillimes(inp.value);
+      });
+      document.getElementById("invCalcTotal").textContent = formatDT(sum);
+    }
+
+    function openAddInvoiceModal() {
+      if (!assertWritable()) return;
+      document.getElementById("invoiceForm").reset();
+      const today = getTodayDateStr();
+      document.getElementById("iDate").value = today.startsWith(state.selectedMonth) ? today : `${state.selectedMonth}-01`;
+      document.getElementById("iPaySourceWrap").classList.toggle("hidden", !isTeamMode());
+      document.getElementById("invLineRows").innerHTML = "";
+      addInvLineRow();
+      recalcInvoiceTotal();
+      openModal("invoiceModal");
+    }
+
+    document.getElementById("qaAddInvBtn").addEventListener("click", openAddInvoiceModal);
+    document.getElementById("invAddBtn").addEventListener("click", openAddInvoiceModal);
+    document.getElementById("addInvLineBtn").addEventListener("click", addInvLineRow);
+
+    document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!assertWritable()) return;
+
+      const date = document.getElementById("iDate").value;
+      const monthKey = date.slice(0, 7);
+      const supplier = document.getElementById("iSupplier").value.trim();
+      const paymentSource = isTeamMode() ? document.getElementById("iPaySource").value : "owner";
+      const note = document.getElementById("iNote").value.trim();
+      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
+
+      const items = [];
+      let totalAmount = 0;
+      const deltas = {};
+
+      document.querySelectorAll("#invLineRows .dyn-row").forEach((row) => {
+        const itemId = row.querySelector(".il-stock").value;
+        const customName = row.querySelector(".il-custom-name").value.trim();
+        const qty = parseFloat(row.querySelector(".il-qty").value) || 0;
+        const lineTotal = toMillimes(row.querySelector(".il-total").value);
+        if (lineTotal <= 0 && qty <= 0) return;
+
+        if (itemId && stockObj[itemId]) {
+          items.push({
+            itemId,
+            name: stockObj[itemId].name,
+            unit: stockObj[itemId].unit,
+            qty,
+            lineTotal
+          });
+          deltas[itemId] = (deltas[itemId] || 0) + qty;
+          totalAmount += lineTotal;
+        } else if (customName) {
+          items.push({
+            itemId: null,
+            name: customName,
+            unit: "unit",
+            qty: qty || 1,
+            lineTotal
+          });
+          totalAmount += lineTotal;
+        }
+      });
+
+      if (!items.length) {
+        showToast("أضف بنداً واحداً على الأقل للفاتورة.", "err");
+        return;
+      }
+
+      const btn = document.getElementById("invSubmitBtn");
+      btn.disabled = true;
+      try {
+        const nowMs = Date.now();
+        const invId = db.ref().push().key;
+        const nextNum = (Number(state.live.last_invoice_number) || 0) + 1;
+        const updates = {};
+
+        updates[`submissions/${monthKey}/invoices/${invId}`] = {
+          invoiceNumber: nextNum,
+          date,
+          supplier,
+          paymentSource,
+          items,
+          totalAmount,
+          note,
+          submittedBy: state.user.uid,
+          submittedByRole: "owner",
+          createdAt: nowMs
+        };
+
+        updates[`admin/${monthKey}/invoice_decisions/${invId}`] = {
+          status: "approved",
+          decidedAt: nowMs,
+          appliedToStock: true,
+          settled: paymentSource !== "worker_cash",
+          note: ""
+        };
+
+        updates[`live/last_invoice_number`] = nextNum;
+        Object.entries(deltas).forEach(([itemId, addQty]) => {
+          const cur = Number(stockObj[itemId].qty) || 0;
+          updates[`live/stock_state/stock/${itemId}/qty`] = Number((cur + addQty).toFixed(3));
+        });
+        if (Object.keys(deltas).length) updates[`live/stock_state/updatedAt`] = nowMs;
+
+        await db.ref(`tenants/${state.cafeId}`).update(updates);
+        if (monthKey !== state.selectedMonth) {
+          state.selectedMonth = monthKey;
+          document.getElementById("monthPicker").value = monthKey;
+          attachMonthListeners();
+        }
+        closeModal("invoiceModal");
+        showToast(`تم حفظ واعتماد الفاتورة #${nextNum}.`);
+      } catch (err) {
+        showToast("فشل حفظ الفاتورة: " + err.message, "err");
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById("invFilters").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-inv-filter]");
+      if (!btn) return;
+      state.invFilter = btn.dataset.invFilter;
+      renderAll();
+    });
+
+    async function handleInvoiceAction(action, invId) {
+      if (!assertWritable()) return;
+      const inv = (state.submissions.invoices || {})[invId];
+      const dec = (state.admin.invoice_decisions || {})[invId];
+      if (!inv) return;
+
+      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
+      const nowMs = Date.now();
+      const updates = {};
+
+      if (action === "approve") {
+        if (!confirm(`اعتماد الفاتورة #${inv.invoiceNumber || ""} بقيمة ${formatDT(inv.totalAmount)} وإضافة أصنافها إلى المخزون؟`)) return;
+        updates[`admin/${state.selectedMonth}/invoice_decisions/${invId}`] = {
+          status: "approved",
+          decidedAt: nowMs,
+          appliedToStock: true,
+          settled: inv.paymentSource !== "worker_cash",
+          note: ""
+        };
+        if (!(dec && dec.appliedToStock) && Array.isArray(inv.items)) {
+          const deltas = {};
+          inv.items.forEach((it) => {
+            if (it.itemId && stockObj[it.itemId]) deltas[it.itemId] = (deltas[it.itemId] || 0) + (Number(it.qty) || 0);
+          });
+          Object.entries(deltas).forEach(([itemId, q]) => {
+            const cur = Number(stockObj[itemId].qty) || 0;
+            updates[`live/stock_state/stock/${itemId}/qty`] = Number((cur + q).toFixed(3));
+          });
+          if (Object.keys(deltas).length) updates[`live/stock_state/updatedAt`] = nowMs;
+        }
+      } else if (action === "reject") {
+        const reason = prompt("سبب رفض الفاتورة (اختياري):");
+        if (reason === null) return;
+        updates[`admin/${state.selectedMonth}/invoice_decisions/${invId}`] = {
+          status: "rejected",
+          decidedAt: nowMs,
+          appliedToStock: false,
+          settled: true,
+          note: reason.trim()
+        };
+      } else if (action === "void") {
+        if (!confirm("إلغاء الفاتورة وطرح كمياتها من المخزون؟")) return;
+        updates[`admin/${state.selectedMonth}/invoice_decisions/${invId}/status`] = "rejected";
+        updates[`admin/${state.selectedMonth}/invoice_decisions/${invId}/appliedToStock`] = false;
+        updates[`admin/${state.selectedMonth}/invoice_decisions/${invId}/voidedAt`] = nowMs;
+
+        if (dec && dec.appliedToStock && Array.isArray(inv.items)) {
+          const deltas = {};
+          inv.items.forEach((it) => {
+            if (it.itemId && stockObj[it.itemId]) deltas[it.itemId] = (deltas[it.itemId] || 0) + (Number(it.qty) || 0);
+          });
+          Object.entries(deltas).forEach(([itemId, q]) => {
+            const cur = Number(stockObj[itemId].qty) || 0;
+            updates[`live/stock_state/stock/${itemId}/qty`] = Number((cur - q).toFixed(3));
+          });
+          if (Object.keys(deltas).length) updates[`live/stock_state/updatedAt`] = nowMs;
+        }
+      }
+
+      try {
+        await db.ref(`tenants/${state.cafeId}`).update(updates);
+        showToast(action === "approve" ? "تم اعتماد الفاتورة وتحديث المخزون." : "تم تحديث حالة الفاتورة.");
+      } catch (err) {
+        showToast("فشل العملية: " + err.message, "err");
+      }
+    }
+
+    // تفويض نقرات البطاقات في الرئيسية واليوميات والفواتير
+    document.querySelector("main").addEventListener("click", (e) => {
+      const dayBtn = e.target.closest("[data-day-action]");
+      if (dayBtn) {
+        handleDayAction(dayBtn.dataset.dayAction, dayBtn.dataset.id);
+        return;
+      }
+      const invBtn = e.target.closest("[data-inv-action]");
+      if (invBtn) {
+        handleInvoiceAction(invBtn.dataset.invAction, invBtn.dataset.id);
+        return;
+      }
+      const stBtn = e.target.closest("[data-stock-action]");
+      if (stBtn) {
+        handleStockAction(stBtn.dataset.stockAction, stBtn.dataset.id);
+        return;
+      }
+      const presetBtn = e.target.closest("[data-preset-idx]");
+      if (presetBtn) {
+        const p = (state.config.fixedExpensePresets || [])[Number(presetBtn.dataset.presetIdx)];
+        if (p) {
+          document.getElementById("fExpName").value = p.name;
+          document.getElementById("fExpAmount").value = (Number(p.amount) / 1000).toFixed(3);
+          document.getElementById("fExpAmount").focus();
+        }
+        return;
+      }
+      const delFixedBtn = e.target.closest("[data-del-fixed]");
+      if (delFixedBtn) {
+        deleteFixedExpense(delFixedBtn.dataset.delFixed);
+      }
+    });
+
+    // ============ المخزون والجرد الفعلي ============
+    document.getElementById("stockAddBtn").addEventListener("click", () => {
+      if (!assertWritable()) return;
+      document.getElementById("stockItemForm").reset();
+      openModal("stockItemModal");
+    });
+
+    document.getElementById("stockItemForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!assertWritable()) return;
+      const name = document.getElementById("stName").value.trim();
+      const unit = document.getElementById("stUnit").value;
+      const qty = parseFloat(document.getElementById("stQty").value) || 0;
+      if (!name) return;
+
+      try {
+        const itemId = db.ref().push().key;
+        const nowMs = Date.now();
+        const updates = {};
+        updates[`live/stock_state/stock/${itemId}`] = { name, unit, qty, createdAt: nowMs };
+        updates[`live/stock_state/updatedAt`] = nowMs;
+        await db.ref(`tenants/${state.cafeId}`).update(updates);
+        closeModal("stockItemModal");
+        showToast("تمت إضافة الصنف إلى المخزون.");
+      } catch (err) {
+        showToast("فشل الحفظ: " + err.message, "err");
+      }
+    });
+
+    async function handleStockAction(action, itemId) {
+      if (!assertWritable()) return;
+      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
+      const item = stockObj[itemId];
+      if (!item) return;
+
+      if (action === "delete") {
+        if (!confirm(`حذف صنف «${item.name}» من قائمة المخزون؟`)) return;
+        try {
+          await db.ref(`tenants/${state.cafeId}/live/stock_state/stock/${itemId}`).remove();
+          showToast("تم حذف الصنف.");
+        } catch (err) {
+          showToast("فشل الحذف: " + err.message, "err");
+        }
+      } else if (action === "audit") {
+        state.auditItemId = itemId;
+        document.getElementById("auditItemInfo").innerHTML = `
+          <div class="kv-row"><span>الصنف:</span><strong>${escapeHtml(item.name)}</strong></div>
+          <div class="kv-row"><span>الرصيد النظري المسجّل:</span><strong style="color: var(--primary);">${formatQty(item.qty, item.unit)}</strong></div>
+        `;
+        document.getElementById("auditActualQty").value = Number(item.qty) || 0;
+        document.getElementById("auditNote").value = "";
+        updateAuditDiffHint();
+        openModal("auditModal");
+      }
+    }
+
+    function updateAuditDiffHint() {
+      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
+      const item = stockObj[state.auditItemId];
+      if (!item) return;
+      const actual = parseFloat(document.getElementById("auditActualQty").value);
+      const theo = Number(item.qty) || 0;
+      const el = document.getElementById("auditDiffHint");
+      if (isNaN(actual)) { el.textContent = ""; return; }
+      const diff = Number((actual - theo).toFixed(3));
+      if (diff === 0) {
+        el.textContent = "✅ الرصيد الفعلي مطابق تماماً للنظري.";
+        el.style.color = "var(--success)";
+      } else if (diff < 0) {
+        el.textContent = `⚠️ عجز في المخزون قدره ${formatQty(Math.abs(diff), item.unit)}`;
+        el.style.color = "var(--danger)";
+      } else {
+        el.textContent = `ℹ️ فائض في المخزون قدره +${formatQty(diff, item.unit)}`;
+        el.style.color = "var(--info)";
+      }
+    }
+
+    document.getElementById("auditActualQty").addEventListener("input", updateAuditDiffHint);
+
+    document.getElementById("auditForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!assertWritable() || !state.auditItemId) return;
+      const stockObj = (state.live.stock_state && state.live.stock_state.stock) || {};
+      const item = stockObj[state.auditItemId];
+      if (!item) return;
+
+      const actualQty = parseFloat(document.getElementById("auditActualQty").value) || 0;
+      const theoQty = Number(item.qty) || 0;
+      const diff = Number((actualQty - theoQty).toFixed(3));
+      const note = document.getElementById("auditNote").value.trim();
+      const nowMs = Date.now();
+      const auditId = db.ref().push().key;
+
+      const updates = {};
+      updates[`live/stock_state/stock/${state.auditItemId}/qty`] = actualQty;
+      updates[`live/stock_state/updatedAt`] = nowMs;
+      updates[`admin/${state.selectedMonth}/stock_audits/${auditId}`] = {
+        itemId: state.auditItemId,
+        itemName: item.name,
+        unit: item.unit,
+        theoreticalQty: theoQty,
+        actualQty,
+        diff,
+        date: getTodayDateStr(),
+        note,
+        createdAt: nowMs
+      };
+
+      try {
+        await db.ref(`tenants/${state.cafeId}`).update(updates);
+        closeModal("auditModal");
+        showToast("تم اعتماد الجرد وتحديث رصيد المخزون.");
+      } catch (err) {
+        showToast("فشل الحفظ: " + err.message, "err");
+      }
+    });
+
+    // ============ المصاريف الثابتة والإعدادات والتقرير ============
+    document.getElementById("fixedExpForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!assertWritable()) return;
+      const name = document.getElementById("fExpName").value.trim();
+      const amount = toMillimes(document.getElementById("fExpAmount").value);
+      if (!name || amount <= 0) {
+        showToast("أدخل بيان المصروف ومبلغاً صحيحاً.", "err");
+        return;
+      }
+      try {
+        const expId = db.ref().push().key;
+        await db.ref(`tenants/${state.cafeId}/admin/${state.selectedMonth}/fixed_expenses/${expId}`).set({
+          name,
+          amount,
+          date: getTodayDateStr(),
+          createdAt: Date.now()
+        });
+        document.getElementById("fixedExpForm").reset();
+        showToast("تمت إضافة المصروف الثابت.");
+      } catch (err) {
+        showToast("فشل الحفظ: " + err.message, "err");
+      }
+    });
+
+    async function deleteFixedExpense(expId) {
+      if (!assertWritable()) return;
+      if (!confirm("حذف هذا المصروف الثابت؟")) return;
+      try {
+        await db.ref(`tenants/${state.cafeId}/admin/${state.selectedMonth}/fixed_expenses/${expId}`).remove();
+        showToast("تم حذف المصروف.");
+      } catch (err) {
+        showToast("فشل الحذف: " + err.message, "err");
+      }
+    }
+
+    document.getElementById("setActiveMonthBtn").addEventListener("click", async () => {
+      if (!assertWritable()) return;
+      try {
+        await db.ref(`tenants/${state.cafeId}/live/active_month`).set(state.selectedMonth);
+        showToast(`تم اعتماد ${state.selectedMonth} كشهر نشط.`);
+      } catch (err) {
+        showToast("فشل التحديث: " + err.message, "err");
+      }
+    });
+
+    document.getElementById("copyReportBtn").addEventListener("click", async () => {
+      const m = computeMonthMetrics();
+      let txt = `☕ التقرير المالي — ${state.config.cafeName || "CassaCafe"}\n`;
+      txt += `الشهر: ${state.selectedMonth} (${m.approvedDaysCount} يوم معتمد)\n`;
+      txt += `——————————————\n`;
+      txt += `إجمالي المداخيل: ${formatDT(m.approvedSales)}\n`;
+      txt += `المصاريف اليومية: ${formatDT(m.approvedDailyExp)}\n`;
+      txt += `فواتير المشتريات: ${formatDT(m.approvedInvoicesTotal)}\n`;
+      txt += `المصاريف الثابتة: ${formatDT(m.fixedTotal)}\n`;
+      if (isTeamMode()) {
+        txt += `أجور العامل: ${formatDT(m.approvedWages)}\n`;
+      }
+      txt += `——————————————\n`;
+      txt += `✅ صافي الربح: ${formatDT(m.netProfit)}\n`;
+      if (isTeamMode() && m.workerNetDue !== 0) {
+        txt += `💰 مستحقات غير مسوّاة عند العامل: ${formatDT(m.workerNetDue)}\n`;
+      }
+      try {
+        await navigator.clipboard.writeText(txt);
+        showToast("تم نسخ التقرير الشهري.");
+      } catch (_) {
+        alert(txt);
+      }
+    });
+
+    document.getElementById("configForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!assertWritable()) return;
+
+      const tagsRaw = document.getElementById("cfgQuickTags").value;
+      const tags = tagsRaw.split(/[،,]/).map((s) => s.trim()).filter(Boolean);
+
+      const patch = {
+        cafeName: document.getElementById("cfgCafeName").value.trim(),
+        ownerName: document.getElementById("cfgOwnerName").value.trim() || "الإدارة",
+        lowStockWeightLimit: Math.max(0, parseInt(document.getElementById("cfgLowWeight").value, 10) || 0),
+        lowStockUnitLimit: Math.max(0, parseInt(document.getElementById("cfgLowUnit").value, 10) || 0),
+        consumableQuickTags: tags
+      };
+      if (isTeamMode()) {
+        patch.workerName = document.getElementById("cfgWorkerName").value.trim() || "العامل";
+        patch.defaultDailyWage = Math.max(0, toMillimes(document.getElementById("cfgDailyWage").value));
+      }
+
+      try {
+        await db.ref(`tenants/${state.cafeId}/config`).update(patch);
+        showToast("تم حفظ إعدادات المقهى.");
+      } catch (err) {
+        showToast("فشل الحفظ: " + err.message, "err");
+      }
+    });
+  </script>
+</body>
+</html>
