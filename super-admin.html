@@ -13,7 +13,6 @@
       --text: #f8fafc;
       --muted: #94a3b8;
       --primary: #f59e0b;
-      --primary-hover: #d97706;
       --success: #10b981;
       --danger: #ef4444;
       --warning: #f97316;
@@ -31,7 +30,6 @@
     }
     .hidden { display: none !important; }
 
-    /* Auth */
     .center-wrap {
       min-height: 100vh;
       display: flex;
@@ -52,7 +50,6 @@
     .brand h1 { font-size: 1.6rem; color: var(--primary); }
     .brand p { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
 
-    /* Header */
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
@@ -70,11 +67,7 @@
       gap: 10px;
       flex-wrap: wrap;
     }
-    .title-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .title-wrap { display: flex; align-items: center; gap: 8px; }
     .title-wrap h1 { font-size: 1.25rem; color: var(--primary); }
 
     main {
@@ -83,7 +76,6 @@
       padding: 16px 14px 36px;
     }
 
-    /* Stats */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -100,16 +92,10 @@
       padding: 14px;
     }
     .stat-label { font-size: 0.82rem; color: var(--muted); }
-    .stat-val { font-size: 1.8rem; font-weight: 800; margin-top: 4px; direction: ltr; text-align: right; }
+    .stat-val { font-size: 1.8rem; font-weight: 800; margin-top: 4px; }
 
-    /* Search & Filters */
     .search-box { margin-bottom: 10px; }
-    .filters {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
+    .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
     .filter-pill {
       background: var(--surface);
       color: var(--muted);
@@ -125,12 +111,7 @@
       font-weight: 700;
     }
 
-    /* Cafes List */
-    .cafes-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
+    .cafes-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     @media (min-width: 760px) {
       .cafes-grid { grid-template-columns: repeat(2, 1fr); }
     }
@@ -145,30 +126,12 @@
     }
     .cafe-card.suspended { border-color: rgba(239, 68, 68, 0.55); opacity: 0.85; }
     .cafe-card.expired { border-color: rgba(249, 115, 22, 0.6); }
-    .cafe-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 8px;
-    }
+    .cafe-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
     .cafe-name { font-size: 1.05rem; font-weight: 800; color: var(--text); }
-    .cafe-meta {
-      font-size: 0.83rem;
-      color: var(--muted);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+    .cafe-meta { font-size: 0.83rem; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
     .cafe-meta strong { color: var(--text); }
-    .cafe-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      padding-top: 8px;
-      border-top: 1px solid var(--border);
-    }
+    .cafe-actions { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 8px; border-top: 1px solid var(--border); }
 
-    /* Pills */
     .pill {
       font-size: 0.72rem;
       font-weight: 700;
@@ -188,7 +151,6 @@
     .pill-food { background: rgba(5, 150, 105, 0.22); color: #6ee7b7; }
     .pill-fun { background: rgba(124, 58, 237, 0.24); color: #c4b5fd; }
 
-    /* Buttons */
     button {
       font-family: inherit;
       cursor: pointer;
@@ -211,7 +173,6 @@
     .btn-sm { padding: 6px 10px; font-size: 0.8rem; }
     .btn-full { width: 100%; }
 
-    /* Forms */
     .form-group { margin-bottom: 12px; }
     label { display: block; font-size: 0.83rem; color: var(--muted); margin-bottom: 4px; }
     input, select, textarea {
@@ -228,6 +189,7 @@
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .row-flex { display: flex; gap: 8px; align-items: center; }
     .hint { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }
+    .money { direction: rtl; font-weight: 700; white-space: nowrap; }
     .error-msg {
       color: #fca5a5;
       background: rgba(239, 68, 68, 0.14);
@@ -239,15 +201,15 @@
     }
     .empty-box {
       text-align: center;
-      padding: 26px 14px;
+      padding: 24px 14px;
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       border: 1px dashed var(--border);
       border-radius: var(--radius);
       grid-column: 1 / -1;
     }
 
-    /* Segmented Tabs inside Setup Modal */
+    /* التبويبات الثلاثة داخل نافذة التجهيز */
     .seg-bar {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -263,7 +225,7 @@
       color: var(--muted);
       padding: 8px 4px;
       border-radius: 7px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 700;
     }
     .seg-btn.active { background: var(--primary); color: #0f172a; }
@@ -276,21 +238,8 @@
       padding: 11px;
     }
     .item-card.inactive { opacity: 0.6; border-style: dashed; }
-    .item-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-    .item-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid var(--border);
-    }
+    .item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+    .item-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
     .section-box {
       background: rgba(15, 23, 42, 0.55);
       border: 1px solid var(--border);
@@ -300,7 +249,26 @@
     }
     .section-box h3 { font-size: 0.88rem; color: var(--primary); margin-bottom: 8px; }
 
-    /* Modals */
+    /* شارات السلع الاستهلاكية */
+    .chips-wrap { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.84rem;
+    }
+    .chip-del {
+      background: transparent;
+      color: #fca5a5;
+      padding: 0 3px;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -332,14 +300,8 @@
       border-bottom: 1px solid var(--border);
     }
     .modal-header h2 { font-size: 1.05rem; color: var(--primary); }
-    .close-btn {
-      background: transparent;
-      color: var(--muted);
-      font-size: 1.45rem;
-      padding: 0 6px;
-    }
+    .close-btn { background: transparent; color: var(--muted); font-size: 1.45rem; padding: 0 6px; }
 
-    /* Toast */
     .toast {
       position: fixed;
       bottom: 18px;
@@ -451,7 +413,7 @@
           </div>
           <div class="form-group">
             <label for="acCode">رمز المقهى (إنجليزي/أرقام) *</label>
-            <input id="acCode" type="text" required dir="ltr" placeholder="مثال: 101 أو yasmine" />
+            <input id="acCode" type="text" required dir="ltr" placeholder="مثال: 101" />
           </div>
         </div>
 
@@ -595,7 +557,7 @@
     </div>
   </div>
 
-  <!-- نافذة تجهيز المقهى: السلع والأسعار + مواد المخزون + إعدادات التشغيل -->
+  <!-- نافذة تجهيز المقهى: 3 أقسام مفصولة بوضوح -->
   <div id="setupModal" class="modal-backdrop hidden">
     <div class="modal modal-lg">
       <div class="modal-header">
@@ -604,66 +566,75 @@
       </div>
 
       <div class="seg-bar">
-        <button type="button" id="setupSubProds" class="seg-btn active" data-setup-tab="prods">☕ السلع والأسعار</button>
-        <button type="button" id="setupSubStock" class="seg-btn" data-setup-tab="stock">📦 مواد المخزون</button>
-        <button type="button" id="setupSubOpts" class="seg-btn" data-setup-tab="opts">⚙️ المصاريف والعتبات</button>
+        <button type="button" id="setupSubProds" class="seg-btn active" data-setup-tab="prods">☕ السلع المباعة</button>
+        <button type="button" id="setupSubStock" class="seg-btn" data-setup-tab="stock">📦 سلع المخزن</button>
+        <button type="button" id="setupSubCons" class="seg-btn" data-setup-tab="cons">🛒 السلع الاستهلاكية</button>
       </div>
 
-      <!-- القسم 1: قائمة البيع والأسعار -->
+      <!-- القسم 1: السلع المباعة (أزرار الكاسة) -->
       <div id="sp-prods">
         <div class="row-flex" style="justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap;">
-          <span class="hint" style="margin: 0;">أضف السلع التي يبيعها هذا المقهى وحدّد أسعارها وربطها بالمخزون.</span>
+          <span class="hint" style="margin: 0;">أزرار البيع التي يراها العامل بالأسعار (مرتبطة بالمخزن أو تحضير مباشر).</span>
           <div class="row-flex">
             <button type="button" id="spSeedBtn" class="btn-secondary btn-sm">⚡ قائمة مبدئية</button>
-            <button type="button" id="spAddProdBtn" class="btn-primary btn-sm">+ إضافة سلعة</button>
+            <button type="button" id="spAddProdBtn" class="btn-primary btn-sm">+ سلعة مباعة</button>
           </div>
         </div>
         <div id="spProdList" class="list-stack"></div>
       </div>
 
-      <!-- القسم 2: مواد المخزون -->
+      <!-- القسم 2: سلع المخزن (لها جرد وفواتير مخزن) -->
       <div id="sp-stock" class="hidden">
         <div class="row-flex" style="justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap;">
-          <span class="hint" style="margin: 0;">جهّز مواد المخزن (بن، مياه، قازوز...) ووحدة الشراء لكل مادة.</span>
-          <button type="button" id="spAddStockBtn" class="btn-primary btn-sm">+ إضافة مادة مخزن</button>
+          <span class="hint" style="margin: 0;">المواد التي لها رصيد وجرد وفواتير (البن بالكيلو، الماء بالستيكة، القازوز...).</span>
+          <button type="button" id="spAddStockBtn" class="btn-primary btn-sm">+ مادة مخزن</button>
         </div>
         <div id="spStockList" class="list-stack"></div>
       </div>
 
-      <!-- القسم 3: قائمة المصاريف اليومية وعتبات التنبيه -->
-      <div id="sp-opts" class="hidden">
-        <form id="spOptsForm">
+      <!-- القسم 3: السلع الاستهلاكية اليومية (مصاريف الكاسة فقط) -->
+      <div id="sp-cons" class="hidden">
+        <div class="section-box">
+          <h3>🛒 قائمة السلع الاستهلاكية اليومية (لا تدخل المخزون)</h3>
+          <div class="hint" style="margin-bottom: 10px;">
+            مواد تُشترى يومياً من الكاسة ولا تُباع وحدها ولا تُجرد (مثل: سكر، حليب، نعناع، شكولين، كؤوس، مواد تنظيف).
+          </div>
+          <div class="row-flex">
+            <input id="spConsInput" type="text" placeholder="أضف مادة استهلاكية (مثال: نعناع، حليب...)" />
+            <button type="button" id="spAddConsBtn" class="btn-primary btn-sm">+ إضافة</button>
+          </div>
+          <div id="spConsList" class="chips-wrap"></div>
+        </div>
+
+        <form id="spLimitsForm" class="section-box">
+          <h3>عتبات تنبيه نقص المخزون</h3>
           <div class="grid-2">
             <div class="form-group">
-              <label for="spLowWeight">عتبة تنبيه نقص الوزن (غرام)</label>
+              <label for="spLowWeight">عتبة نقص الوزن (غرام)</label>
               <input id="spLowWeight" type="number" min="0" dir="ltr" />
             </div>
             <div class="form-group">
-              <label for="spLowUnit">عتبة تنبيه نقص الوحدات (قطعة)</label>
+              <label for="spLowUnit">عتبة نقص الوحدات (قطعة)</label>
               <input id="spLowUnit" type="number" min="0" dir="ltr" />
             </div>
           </div>
-          <div class="form-group">
-            <label for="spQuickTags">قائمة المصاريف اليومية (تظهر للعامل في القائمة المنسدلة — افصل بفاصلة)</label>
-            <textarea id="spQuickTags" rows="3"></textarea>
-          </div>
-          <button type="submit" class="btn-primary btn-full">حفظ إعدادات التشغيل</button>
+          <button type="submit" class="btn-secondary btn-sm btn-full">حفظ العتبات</button>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- نافذة فرعية: إضافة / تعديل سلعة بيع -->
+  <!-- نافذة فرعية: إضافة / تعديل سلعة مباعة (السعر بالمليم + معاينة فورية) -->
   <div id="saProdModal" class="modal-backdrop sub-modal hidden">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="saProdTitle">☕ إضافة سلعة للبيع</h2>
+        <h2 id="saProdTitle">☕ إضافة سلعة مباعة</h2>
         <button class="close-btn" data-close="saProdModal">&times;</button>
       </div>
       <form id="saProdForm">
         <div class="form-group">
           <label for="saPName">اسم السلعة / المشروب *</label>
-          <input id="saPName" type="text" required placeholder="مثال: إكسبراس، تاي بالبندق، ماء 0.5ل..." />
+          <input id="saPName" type="text" required placeholder="مثال: إكسبراس، كابوسان، تاي، ماء 0.5ل..." />
         </div>
         <div class="grid-2">
           <div class="form-group">
@@ -676,23 +647,24 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="saPPrice">سعر البيع (بالدينار) *</label>
-            <input id="saPPrice" type="text" inputmode="decimal" required dir="ltr" placeholder="1.200" />
+            <label for="saPPrice">سعر البيع (بالمليم) *</label>
+            <input id="saPPrice" type="number" min="50" step="50" required dir="ltr" placeholder="مثال: 1500" />
+            <div id="saPPricePreview" class="hint" style="color: var(--primary); font-weight: 700;">سيظهر للعامل: 0.000 د</div>
           </div>
         </div>
         <div class="section-box">
-          <h3>الربط بالمخزون وحجب الكونتور</h3>
+          <h3>نوع السلعة والربط بالمخزن</h3>
           <div class="form-group">
-            <label for="saPStockItem">مادة المخزون المرتبطة</label>
+            <label for="saPStockItem">الربط بمادة مخزن</label>
             <select id="saPStockItem"></select>
             <div class="hint">
-              • <strong>تحضير مباشر:</strong> عدّاد هذه السلعة محجوب عن العامل.<br/>
+              • <strong>تحضير مباشر:</strong> يظهر للعامل «تحضير مباشر» والكونتور محجوب عنه.<br/>
               • <strong>مرتبط بمادة مخزن:</strong> يُخصم آلياً وتظهر كبسولة الرصيد المتبقي للعامل.
             </div>
           </div>
           <div id="saPDeductWrap" class="form-group hidden">
             <label id="saPDeductLbl" for="saPDeduct">الكمية المخصومة لكل بيعة *</label>
-            <input id="saPDeduct" type="number" step="any" min="0" dir="ltr" placeholder="مثال: 7 للقهوة أو 1 للقارورة" />
+            <input id="saPDeduct" type="number" step="any" min="0" dir="ltr" placeholder="مثال: 7 للبن أو 1 للقارورة" />
           </div>
         </div>
         <div class="form-group">
@@ -709,17 +681,17 @@
     </div>
   </div>
 
-  <!-- نافذة فرعية: إضافة / تعديل مادة مخزون -->
+  <!-- نافذة فرعية: إضافة / تعديل مادة مخزن -->
   <div id="saStockModal" class="modal-backdrop sub-modal hidden">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="saStockTitle">📦 إضافة مادة مخزون</h2>
+        <h2 id="saStockTitle">📦 إضافة مادة مخزن</h2>
         <button class="close-btn" data-close="saStockModal">&times;</button>
       </div>
       <form id="saStockForm">
         <div class="form-group">
-          <label for="saStName">اسم المادة *</label>
-          <input id="saStName" type="text" required placeholder="مثال: البن (قهوة)، ماء 0.5ل..." />
+          <label for="saStName">اسم مادة المخزن *</label>
+          <input id="saStName" type="text" required placeholder="مثال: البن (قهوة)، ماء 0.5ل، قازوز..." />
         </div>
         <div class="grid-2">
           <div class="form-group">
@@ -832,7 +804,8 @@
     }
     function formatDT(millimes) {
       const n = Number(millimes) || 0;
-      return `${(n / 1000).toFixed(3)} د`;
+      const val = (Math.abs(n) / 1000).toFixed(3);
+      return n < 0 ? `\u200E-${val} د` : `${val} د`;
     }
     function formatQty(qty, unit) {
       const n = Number(qty) || 0;
@@ -884,7 +857,6 @@
       return (err && map[err.code]) || (err && err.message) || "حدث خطأ غير متوقع.";
     }
 
-    // المصادقة
     auth.onAuthStateChanged(async (user) => {
       if (tenantsRef) {
         tenantsRef.off();
@@ -955,7 +927,6 @@
       });
     }
 
-    // العرض والإحصائيات
     function renderDashboard() {
       const now = Date.now();
       const entries = Object.entries(state.tenants).map(([id, data]) => {
@@ -967,7 +938,8 @@
         const mode = config.operationMode || "solo";
         const prodCount = config.products ? Object.keys(config.products).length : 0;
         const stockCount = (live.stock_state && live.stock_state.stock) ? Object.keys(live.stock_state.stock).length : 0;
-        return { id, meta, config, live, subUntil, daysLeft, mode, prodCount, stockCount };
+        const consCount = Array.isArray(config.consumableQuickTags) ? config.consumableQuickTags.length : 0;
+        return { id, meta, config, live, subUntil, daysLeft, mode, prodCount, stockCount, consCount };
       }).sort((a, b) => (b.meta.createdAt || 0) - (a.meta.createdAt || 0));
 
       let activeCnt = 0, expCnt = 0, suspCnt = 0;
@@ -1039,7 +1011,7 @@
               <div>المالك: <strong>${escapeHtml(c.config.ownerName || c.meta.ownerName || "—")}</strong> (<span dir="ltr">${escapeHtml(c.meta.ownerEmail || "—")}</span>)</div>
               ${c.meta.phone ? `<div>الهاتف: <strong dir="ltr">${escapeHtml(c.meta.phone)}</strong></div>` : ""}
               <div>ينتهي الاشتراك في: <strong dir="ltr">${formatDate(c.subUntil)}</strong></div>
-              <div>التجهيز: <strong>${c.prodCount}</strong> سلعة بيع • <strong>${c.stockCount}</strong> مادة مخزون</div>
+              <div>التجهيز: <strong>${c.prodCount}</strong> مباعة • <strong>${c.stockCount}</strong> مخزن • <strong>${c.consCount}</strong> استهلاكية</div>
             </div>
             <div class="cafe-actions">
               <button class="btn-primary btn-sm" data-action="setup" data-id="${escapeHtml(c.id)}">⚙️ السلع والمخزون</button>
@@ -1149,36 +1121,17 @@
         const updates = {};
 
         updates[`users/${ownerUid}`] = {
-          role: "owner",
-          cafeId,
-          active: true,
-          email: ownerEmail,
-          name: ownerName,
-          createdAt: nowMs
+          role: "owner", cafeId, active: true, email: ownerEmail, name: ownerName, createdAt: nowMs
         };
         if (workerUid) {
           updates[`users/${workerUid}`] = {
-            role: "worker",
-            cafeId,
-            active: true,
-            email: workerEmail,
-            name: workerName,
-            createdAt: nowMs
+            role: "worker", cafeId, active: true, email: workerEmail, name: workerName, createdAt: nowMs
           };
         }
 
         updates[`tenants/${cafeId}/meta`] = {
-          name,
-          code,
-          phone,
-          ownerUid,
-          ownerEmail,
-          ownerName,
-          workerUid,
-          workerEmail,
-          active: true,
-          subscriptionUntil: subUntil,
-          createdAt: nowMs
+          name, code, phone, ownerUid, ownerEmail, ownerName, workerUid, workerEmail,
+          active: true, subscriptionUntil: subUntil, createdAt: nowMs
         };
 
         updates[`tenants/${cafeId}/config`] = {
@@ -1189,7 +1142,7 @@
           defaultDailyWage: dailyWage,
           lowStockWeightLimit: 1000,
           lowStockUnitLimit: 10,
-          consumableQuickTags: ["حليب", "سكر", "ماء", "كؤوس", "مناديل", "مواد تنظيف"],
+          consumableQuickTags: ["سكر", "حليب", "نعناع", "شكولين", "كؤوس", "مناديل", "مواد تنظيف"],
           fixedExpensePresets: [
             { name: "كراء المحل", amount: 0 },
             { name: "فاتورة كهرباء", amount: 0 },
@@ -1238,13 +1191,10 @@
       const tenant = state.tenants[cafeId];
       if (!tenant) return;
 
-      if (action === "setup") {
-        openSetupModal(cafeId);
-      } else if (action === "mode") {
-        openModeModal(cafeId);
-      } else if (action === "renew") {
-        openRenewModal(cafeId);
-      } else if (action === "toggle") {
+      if (action === "setup") openSetupModal(cafeId);
+      else if (action === "mode") openModeModal(cafeId);
+      else if (action === "renew") openRenewModal(cafeId);
+      else if (action === "toggle") {
         const next = !(tenant.meta && tenant.meta.active === true);
         if (!confirm(next ? "إعادة تفعيل هذا المقهى؟" : "إيقاف حساب هذا المقهى مؤقتاً؟")) return;
         try {
@@ -1355,12 +1305,7 @@
           await secAuth.signOut();
 
           updates[`users/${wUid}`] = {
-            role: "worker",
-            cafeId,
-            active: true,
-            email: workerEmail,
-            name: workerName,
-            createdAt: Date.now()
+            role: "worker", cafeId, active: true, email: workerEmail, name: workerName, createdAt: Date.now()
           };
           updates[`tenants/${cafeId}/meta/workerUid`] = wUid;
           updates[`tenants/${cafeId}/meta/workerEmail`] = workerEmail;
@@ -1419,7 +1364,7 @@
       }
     });
 
-    // ============ 5. استوديو تجهيز المقهى (السلع والأسعار + المخزون + المصاريف) ============
+    // ============ 5. تجهيز المقهى (3 أقسام: مباعة / مخزن / استهلاكية) ============
     function getTenantStock(cafeId) {
       const t = state.tenants[cafeId];
       return (t && t.live && t.live.stock_state && t.live.stock_state.stock) || {};
@@ -1437,12 +1382,17 @@
       const order = { hot: 1, cold: 2, food: 3, fun: 4 };
       return arr.sort((a, b) => (order[a.category] || 9) - (order[b.category] || 9) || (a.createdAt || 0) - (b.createdAt || 0));
     }
+    function getTenantConsumables(cafeId) {
+      const t = state.tenants[cafeId];
+      const list = t && t.config && t.config.consumableQuickTags;
+      return Array.isArray(list) ? list : [];
+    }
 
     function switchSetupTab(tab) {
       state.setupTab = tab;
       document.getElementById("sp-prods").classList.toggle("hidden", tab !== "prods");
       document.getElementById("sp-stock").classList.toggle("hidden", tab !== "stock");
-      document.getElementById("sp-opts").classList.toggle("hidden", tab !== "opts");
+      document.getElementById("sp-cons").classList.toggle("hidden", tab !== "cons");
       document.querySelectorAll("[data-setup-tab]").forEach((b) => {
         b.classList.toggle("active", b.dataset.setupTab === tab);
       });
@@ -1459,7 +1409,6 @@
 
       document.getElementById("spLowWeight").value = cfg.lowStockWeightLimit != null ? cfg.lowStockWeightLimit : 1000;
       document.getElementById("spLowUnit").value = cfg.lowStockUnitLimit != null ? cfg.lowStockUnitLimit : 10;
-      document.getElementById("spQuickTags").value = (cfg.consumableQuickTags || []).join("، ");
 
       switchSetupTab("prods");
       renderSetupLists();
@@ -1471,11 +1420,12 @@
       if (!cafeId || !state.tenants[cafeId]) return;
       const stockObj = getTenantStock(cafeId);
       const prods = getTenantProducts(cafeId);
+      const cons = getTenantConsumables(cafeId);
 
-      // قائمة السلع والأسعار
+      // 1. السلع المباعة
       const prodEl = document.getElementById("spProdList");
       if (!prods.length) {
-        prodEl.innerHTML = `<div class="empty-box">لا توجد سلع بيع بعد لهذا المقهى.<br/>اضغط <strong>«+ إضافة سلعة»</strong> أو <strong>«⚡ قائمة مبدئية»</strong> لتجهيز التطبيق فوراً.</div>`;
+        prodEl.innerHTML = `<div class="empty-box">لا توجد سلع مباعة بعد.<br/>اضغط <strong>«+ سلعة مباعة»</strong> أو <strong>«⚡ قائمة مبدئية»</strong> لتجهيز أزرار البيع.</div>`;
       } else {
         prodEl.innerHTML = prods.map((p) => {
           const cat = CATEGORY_INFO[p.category] || CATEGORY_INFO.hot;
@@ -1497,7 +1447,7 @@
                     ${isActive ? "" : `<span class="pill pill-muted">مخفية</span>`}
                   </div>
                 </div>
-                <strong style="color: var(--primary); direction: ltr;">${formatDT(p.price)}</strong>
+                <strong class="money" style="color: var(--primary);">${formatDT(p.price)}</strong>
               </div>
               <div class="hint" style="color: #cbd5e1;">${linkTxt}</div>
               <div class="item-actions">
@@ -1510,13 +1460,13 @@
         }).join("");
       }
 
-      // قائمة مواد المخزون
+      // 2. سلع المخزن
       const stockArr = Object.entries(stockObj)
         .map(([id, it]) => ({ id, ...it }))
         .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "ar"));
       const stockEl = document.getElementById("spStockList");
       if (!stockArr.length) {
-        stockEl.innerHTML = `<div class="empty-box">لا توجد مواد مخزون بعد لهذا المقهى. أضف البن والمياه والمشروبات لربطها بالسلع والفواتير.</div>`;
+        stockEl.innerHTML = `<div class="empty-box">لا توجد سلع مخزن بعد. أضف البن والمياه والقازوز لربطها بأزرار البيع وفواتير المخزن.</div>`;
       } else {
         stockEl.innerHTML = stockArr.map((it) => {
           const packLbl = it.packLabel || (it.unit === "g" ? "كيلوغرام" : (it.packSize === 12 ? "ستيكة 12" : (it.packSize === 6 ? "ستيكة 6" : "قطعة")));
@@ -1537,13 +1487,44 @@
           `;
         }).join("");
       }
+
+      // 3. السلع الاستهلاكية اليومية
+      const consEl = document.getElementById("spConsList");
+      consEl.innerHTML = cons.length
+        ? cons.map((name, idx) => `
+            <span class="chip">
+              <span>${escapeHtml(name)}</span>
+              <button type="button" class="chip-del" data-sa-del-cons="${idx}" title="حذف">&times;</button>
+            </span>
+          `).join("")
+        : `<div class="hint">لا توجد سلع استهلاكية مضافة حالياً.</div>`;
     }
 
-    // توليد قائمة مبدئية لمقهى معيّن
+    // إضافة سلعة استهلاكية
+    document.getElementById("spAddConsBtn").addEventListener("click", async () => {
+      const cafeId = state.setupCafeId;
+      const inp = document.getElementById("spConsInput");
+      const val = inp.value.trim();
+      if (!cafeId || !val) return;
+      const cur = getTenantConsumables(cafeId);
+      if (cur.includes(val)) {
+        showToast("هذه المادة الاستهلاكية موجودة بالفعل.", "err");
+        return;
+      }
+      try {
+        await db.ref(`tenants/${cafeId}/config/consumableQuickTags`).set([...cur, val]);
+        inp.value = "";
+        showToast(`تمت إضافة «${val}» إلى السلع الاستهلاكية.`);
+      } catch (err) {
+        showToast("فشل الحفظ: " + err.message, "err");
+      }
+    });
+
+    // توليد قائمة مبدئية
     document.getElementById("spSeedBtn").addEventListener("click", async () => {
       const cafeId = state.setupCafeId;
       if (!cafeId) return;
-      if (!confirm("توليد قائمة مبدئية جاهزة (مواد مخزون أساسية + مشروبات بأسعار ابتدائية) لهذا المقهى؟ يمكنك تعديلها أو حذف أي صنف بعدها.")) return;
+      if (!confirm("توليد قائمة مبدئية (سلع مخزن + سلع مباعة بأسعار ابتدائية + سلع استهلاكية) لهذا المقهى؟")) return;
 
       const nowMs = Date.now();
       const stCoffee = db.ref().push().key;
@@ -1555,7 +1536,7 @@
       updates[`live/stock_state/stock/${stCoffee}`] = { name: "البن (قهوة)", unit: "g", packSize: 1000, packLabel: "كيلوغرام", qty: 0, createdAt: nowMs };
       updates[`live/stock_state/stock/${stW05}`] = { name: "ماء 0.5ل", unit: "unit", packSize: 12, packLabel: "ستيكة 12", qty: 0, createdAt: nowMs + 1 };
       updates[`live/stock_state/stock/${stW15}`] = { name: "ماء 1.5ل", unit: "unit", packSize: 6, packLabel: "ستيكة 6", qty: 0, createdAt: nowMs + 2 };
-      updates[`live/stock_state/stock/${stSoda}`] = { name: "قازوز / مشروبات غازية", unit: "unit", packSize: 12, packLabel: "ستيكة 12", qty: 0, createdAt: nowMs + 3 };
+      updates[`live/stock_state/stock/${stSoda}`] = { name: "قازوز", unit: "unit", packSize: 12, packLabel: "ستيكة 12", qty: 0, createdAt: nowMs + 3 };
       updates[`live/stock_state/updatedAt`] = nowMs;
 
       const starterProds = [
@@ -1575,15 +1556,25 @@
         updates[`config/products/${pid}`] = { id: pid, ...p, active: true, createdAt: nowMs + idx };
       });
 
+      if (!getTenantConsumables(cafeId).length) {
+        updates[`config/consumableQuickTags`] = ["سكر", "حليب", "نعناع", "شكولين", "كؤوس", "مناديل", "مواد تنظيف"];
+      }
+
       try {
         await db.ref(`tenants/${cafeId}`).update(updates);
-        showToast("تم تجهيز القائمة المبدئية ومواد المخزون بنجاح.");
+        showToast("تم تجهيز القائمة المبدئية بنجاح.");
       } catch (err) {
         showToast("فشل العملية: " + err.message, "err");
       }
     });
 
-    // إضافة / تعديل سلعة بيع
+    // معاينة سعر البيع بالمليم لحظياً
+    function updateSaPricePreview() {
+      const m = Math.max(0, parseInt(document.getElementById("saPPrice").value, 10) || 0);
+      document.getElementById("saPPricePreview").textContent = `سيظهر للعامل: ${formatDT(m)}`;
+    }
+    document.getElementById("saPPrice").addEventListener("input", updateSaPricePreview);
+
     function syncSaProdDeduct() {
       const stockObj = getTenantStock(state.setupCafeId);
       const sid = document.getElementById("saPStockItem").value;
@@ -1619,17 +1610,18 @@
       if (prodId) {
         const prod = getTenantProducts(state.setupCafeId).find((p) => p.id === prodId);
         if (!prod) return;
-        document.getElementById("saProdTitle").textContent = "✏️ تعديل سلعة بيع";
+        document.getElementById("saProdTitle").textContent = "✏️ تعديل سلعة مباعة";
         document.getElementById("saPName").value = prod.name || "";
         document.getElementById("saPCategory").value = prod.category || "hot";
-        document.getElementById("saPPrice").value = ((Number(prod.price) || 0) / 1000).toFixed(3);
+        document.getElementById("saPPrice").value = Math.round(Number(prod.price) || 0);
         sel.value = prod.stockItemId && stockObj[prod.stockItemId] ? prod.stockItemId : "";
         document.getElementById("saPDeduct").value = prod.stockDeduct || "";
         document.getElementById("saPActive").checked = prod.active !== false;
       } else {
-        document.getElementById("saProdTitle").textContent = "☕ إضافة سلعة للبيع";
+        document.getElementById("saProdTitle").textContent = "☕ إضافة سلعة مباعة";
         document.getElementById("saPActive").checked = true;
       }
+      updateSaPricePreview();
       syncSaProdDeduct();
       openModal("saProdModal");
     }
@@ -1643,13 +1635,13 @@
 
       const name = document.getElementById("saPName").value.trim();
       const category = document.getElementById("saPCategory").value;
-      const price = toMillimes(document.getElementById("saPPrice").value);
+      const price = Math.max(0, parseInt(document.getElementById("saPPrice").value, 10) || 0);
       const stockItemId = document.getElementById("saPStockItem").value;
       const stockDeduct = stockItemId ? (parseFloat(document.getElementById("saPDeduct").value) || 0) : 0;
       const active = document.getElementById("saPActive").checked;
 
       if (!name || price <= 0) {
-        showToast("أدخل اسم السلعة وسعر بيع صحيحاً.", "err");
+        showToast("أدخل اسم السلعة وثمنها بالمليم (مثال: 1500).", "err");
         return;
       }
       if (stockItemId && stockDeduct <= 0) {
@@ -1662,10 +1654,7 @@
 
       try {
         await db.ref(`tenants/${cafeId}/config/products/${id}`).set({
-          id,
-          name,
-          category,
-          price,
+          id, name, category, price,
           stockItemId: stockItemId || "",
           stockDeduct: stockItemId ? stockDeduct : 0,
           active,
@@ -1678,7 +1667,7 @@
       }
     });
 
-    // إضافة / تعديل مادة مخزون
+    // إضافة / تعديل مادة مخزن
     function syncSaStockPack(selectedSize = null) {
       const unit = document.getElementById("saStUnit").value;
       const opts = PACK_OPTIONS[unit] || PACK_OPTIONS.unit;
@@ -1698,13 +1687,13 @@
 
       if (itemId && stockObj[itemId]) {
         const it = stockObj[itemId];
-        document.getElementById("saStockTitle").textContent = "✏️ تعديل مادة مخزون";
+        document.getElementById("saStockTitle").textContent = "✏️ تعديل مادة مخزن";
         document.getElementById("saStName").value = it.name || "";
         document.getElementById("saStUnit").value = it.unit || "unit";
         syncSaStockPack(it.packSize);
         document.getElementById("saStQty").value = Number(it.qty) || 0;
       } else {
-        document.getElementById("saStockTitle").textContent = "📦 إضافة مادة مخزون";
+        document.getElementById("saStockTitle").textContent = "📦 إضافة مادة مخزن";
         document.getElementById("saStUnit").value = "unit";
         syncSaStockPack();
         document.getElementById("saStQty").value = "0";
@@ -1734,23 +1723,19 @@
       try {
         const updates = {};
         updates[`live/stock_state/stock/${itemId}`] = {
-          name,
-          unit,
-          packSize,
-          packLabel,
-          qty,
+          name, unit, packSize, packLabel, qty,
           createdAt: (existing && existing.createdAt) || nowMs
         };
         updates[`live/stock_state/updatedAt`] = nowMs;
         await db.ref(`tenants/${cafeId}`).update(updates);
         closeModal("saStockModal");
-        showToast(state.editingStockId ? "تم تحديث مادة المخزون." : "تمت إضافة المادة للمخزون.");
+        showToast(state.editingStockId ? "تم تحديث مادة المخزن." : "تمت إضافة المادة للمخزن.");
       } catch (err) {
         showToast("فشل الحفظ: " + err.message, "err");
       }
     });
 
-    // تفويض نقرات قوائم التجهيز (سلع + مخزون)
+    // تفويض نقرات قوائم التجهيز الثلاث
     document.getElementById("setupModal").addEventListener("click", async (e) => {
       const cafeId = state.setupCafeId;
       if (!cafeId) return;
@@ -1784,27 +1769,36 @@
 
         if (act === "edit") openSaStockModal(sid);
         else if (act === "delete") {
-          if (!confirm(`حذف مادة «${st.name}» من المخزون؟`)) return;
+          if (!confirm(`حذف مادة «${st.name}» من المخزن؟`)) return;
           await db.ref(`tenants/${cafeId}/live/stock_state/stock/${sid}`).remove();
           showToast("تم حذف المادة.");
+        }
+        return;
+      }
+
+      const cBtn = e.target.closest("[data-sa-del-cons]");
+      if (cBtn) {
+        const idx = parseInt(cBtn.dataset.saDelCons, 10);
+        const cur = getTenantConsumables(cafeId).slice();
+        if (!isNaN(idx) && idx >= 0 && idx < cur.length) {
+          cur.splice(idx, 1);
+          await db.ref(`tenants/${cafeId}/config/consumableQuickTags`).set(cur);
+          showToast("تم حذف المادة الاستهلاكية.");
         }
       }
     });
 
-    // حفظ إعدادات المصاريف اليومية والعتبات
-    document.getElementById("spOptsForm").addEventListener("submit", async (e) => {
+    // حفظ عتبات التنبيه
+    document.getElementById("spLimitsForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const cafeId = state.setupCafeId;
       if (!cafeId) return;
-      const tags = document.getElementById("spQuickTags").value.split(/[،,]/).map((s) => s.trim()).filter(Boolean);
-      const patch = {
-        lowStockWeightLimit: Math.max(0, parseInt(document.getElementById("spLowWeight").value, 10) || 0),
-        lowStockUnitLimit: Math.max(0, parseInt(document.getElementById("spLowUnit").value, 10) || 0),
-        consumableQuickTags: tags
-      };
       try {
-        await db.ref(`tenants/${cafeId}/config`).update(patch);
-        showToast("تم حفظ إعدادات التشغيل للمقهى.");
+        await db.ref(`tenants/${cafeId}/config`).update({
+          lowStockWeightLimit: Math.max(0, parseInt(document.getElementById("spLowWeight").value, 10) || 0),
+          lowStockUnitLimit: Math.max(0, parseInt(document.getElementById("spLowUnit").value, 10) || 0)
+        });
+        showToast("تم حفظ عتبات التنبيه.");
       } catch (err) {
         showToast("فشل الحفظ: " + err.message, "err");
       }
