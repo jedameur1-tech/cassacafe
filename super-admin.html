@@ -32,6 +32,7 @@
       overflow-x: hidden;
     }
     .hidden { display: none !important; }
+    .flex-1 { flex: 1 1 0%; }
 
     .num-ltr {
       direction: ltr !important;
@@ -473,7 +474,7 @@
           </div>
           <div class="form-group">
             <label for="acCode">رمز المقهى (إنجليزي/أرقام) *</label>
-            <input id="acCode" type="text" required dir="ltr" placeholder="مثال: 101" />
+            <input id="acCode" type="text" required dir="ltr" class="num-input-ltr" placeholder="مثال: 101" />
           </div>
         </div>
 
@@ -484,7 +485,7 @@
           </div>
           <div class="form-group">
             <label for="acPhone">رقم الهاتف (واتساب)</label>
-            <input id="acPhone" type="tel" dir="ltr" placeholder="20123456" />
+            <input id="acPhone" type="tel" dir="ltr" class="num-input-ltr" placeholder="20123456" />
           </div>
         </div>
 
@@ -498,7 +499,7 @@
             <div class="form-group">
               <label for="acOwnerPass">كلمة السر *</label>
               <div class="row-flex">
-                <input id="acOwnerPass" type="text" required minlength="6" dir="ltr" />
+                <input id="acOwnerPass" type="text" required minlength="6" dir="ltr" class="num-input-ltr" />
                 <button type="button" id="acGenPassBtn" class="btn-secondary btn-sm">🎲</button>
               </div>
             </div>
@@ -546,7 +547,7 @@
             <div id="acW1PinWrap" class="form-group hidden" style="margin-bottom: 0;">
               <label for="acW1Pin">الرمز السري PIN للعامل 1 (6 أرقام فأكثر) *</label>
               <div class="row-flex">
-                <input id="acW1Pin" type="text" dir="ltr" />
+                <input id="acW1Pin" type="text" dir="ltr" class="num-input-ltr" />
                 <button type="button" id="acGenPin1Btn" class="btn-secondary btn-sm">🎲 توليد</button>
               </div>
             </div>
@@ -567,7 +568,7 @@
             <div id="acW2PinWrap" class="form-group hidden" style="margin-bottom: 0;">
               <label for="acW2Pin">الرمز السري PIN للعامل 2 (6 أرقام فأكثر) *</label>
               <div class="row-flex">
-                <input id="acW2Pin" type="text" dir="ltr" />
+                <input id="acW2Pin" type="text" dir="ltr" class="num-input-ltr" />
                 <button type="button" id="acGenPin2Btn" class="btn-secondary btn-sm">🎲 توليد</button>
               </div>
             </div>
@@ -625,7 +626,7 @@
             <div id="mmW1PinWrap" class="form-group hidden" style="margin-bottom: 0;">
               <label for="mmW1Pin">الرمز السري PIN للعامل 1 *</label>
               <div class="row-flex">
-                <input id="mmW1Pin" type="text" dir="ltr" />
+                <input id="mmW1Pin" type="text" dir="ltr" class="num-input-ltr" />
                 <button type="button" id="mmGenPin1Btn" class="btn-secondary btn-sm">🎲 توليد</button>
               </div>
             </div>
@@ -647,7 +648,7 @@
             <div id="mmW2PinWrap" class="form-group hidden" style="margin-bottom: 0;">
               <label for="mmW2Pin">الرمز السري PIN للعامل 2 *</label>
               <div class="row-flex">
-                <input id="mmW2Pin" type="text" dir="ltr" />
+                <input id="mmW2Pin" type="text" dir="ltr" class="num-input-ltr" />
                 <button type="button" id="mmGenPin2Btn" class="btn-secondary btn-sm">🎲 توليد</button>
               </div>
             </div>
@@ -1046,6 +1047,19 @@
       window.open(url, "_blank");
     }
 
+    function getCafeCode(cafeId, tenant) {
+      const meta = (tenant && tenant.meta) || {};
+      if (meta.code) return String(meta.code).trim().toLowerCase();
+      const w1Email = (meta.workers && meta.workers.w1 && meta.workers.w1.email) || meta.workerEmail || "";
+      const m1 = String(w1Email).match(/^w2?_([^@]+)@/i);
+      if (m1) return m1[1].toLowerCase();
+      const w2Email = (meta.workers && meta.workers.w2 && meta.workers.w2.email) || "";
+      const m2 = String(w2Email).match(/^w2?_([^@]+)@/i);
+      if (m2) return m2[1].toLowerCase();
+      const m3 = String(cafeId || "").match(/^cafe_([a-z0-9]+)_/i);
+      return m3 ? m3[1].toLowerCase() : "";
+    }
+
     function resolveWorkPattern(tenant) {
       const cfg = (tenant && tenant.config) || {};
       if (cfg.workPattern && PATTERN_META[cfg.workPattern]) return cfg.workPattern;
@@ -1092,7 +1106,7 @@
       const t = state.tenants[cafeId];
       if (!t) return "";
       const name = (t.config && t.config.cafeName) || (t.meta && t.meta.name) || "";
-      const code = (t.meta && t.meta.code) || "";
+      const code = getCafeCode(cafeId, t);
       const pat = resolveWorkPattern(t);
       const pm = PATTERN_META[pat];
       const wi = getWorkersInfo(t);
@@ -1245,6 +1259,7 @@
         const meta = data.meta || {};
         const config = data.config || {};
         const live = data.live || {};
+        const code = getCafeCode(id, data);
         const subUntil = Number(meta.subscriptionUntil) || 0;
         const daysLeft = Math.ceil((subUntil - now) / 86400000);
         const pattern = resolveWorkPattern(data);
@@ -1252,7 +1267,7 @@
         const prodCount = config.products ? Object.keys(config.products).length : 0;
         const stockCount = (live.stock_state && live.stock_state.stock) ? Object.keys(live.stock_state.stock).length : 0;
         const consCount = Array.isArray(config.consumableQuickTags) ? config.consumableQuickTags.length : 0;
-        return { id, meta, config, live, subUntil, daysLeft, pattern, workers, prodCount, stockCount, consCount };
+        return { id, code, meta, config, live, subUntil, daysLeft, pattern, workers, prodCount, stockCount, consCount };
       }).sort((a, b) => (b.meta.createdAt || 0) - (a.meta.createdAt || 0));
 
       let activeCnt = 0, expCnt = 0, suspCnt = 0;
@@ -1274,7 +1289,7 @@
         if (state.filter === "suspended" && c.meta.active === true) return false;
         if (PATTERN_META[state.filter] && c.pattern !== state.filter) return false;
         if (q) {
-          const hay = [c.meta.name, c.config.cafeName, c.meta.code, c.meta.ownerEmail, c.meta.phone, c.meta.ownerName]
+          const hay = [c.meta.name, c.config.cafeName, c.code, c.meta.ownerEmail, c.meta.phone, c.meta.ownerName]
             .join(" ").toLowerCase();
           if (!hay.includes(q)) return false;
         }
@@ -1314,7 +1329,7 @@
               <div style="margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap;">
                 ${statusBadge}
                 ${patBadge}
-                <span class="pill pill-muted" dir="ltr">#${escapeHtml(c.meta.code || "—")}</span>
+                <span class="pill pill-muted" dir="ltr">#${escapeHtml(c.code || "—")}</span>
               </div>
             </div>
             <div class="cafe-meta">
@@ -1436,7 +1451,7 @@
         showToast("رمز المقهى يجب أن يكون من 3 إلى 12 حرفاً/رقماً إنجليزياً بدون مسافات.", "err");
         return;
       }
-      const codeExists = Object.values(state.tenants).some((t) => t.meta && String(t.meta.code || "").toLowerCase() === code);
+      const codeExists = Object.entries(state.tenants).some(([id, t]) => getCafeCode(id, t) === code);
       if (codeExists) {
         showToast("رمز المقهى هذا مستخدم بالفعل لمقهى آخر.", "err");
         return;
@@ -1578,6 +1593,7 @@
       if (!t) return;
       const wi = getWorkersInfo(t);
       const meta = t.meta || {};
+      const code = getCafeCode(cafeId, t);
       const ownerSecret = (state.adminSecrets[cafeId] && state.adminSecrets[cafeId].owner) || {};
       const savedOwnerPass = ownerSecret.pass || "";
 
@@ -1595,13 +1611,13 @@
             ${!savedVal ? `
               <div class="form-group" style="margin-bottom:8px;">
                 <label for="${oldId}">${label} الحالية (مطلوبة مرة واحدة للحسابات القديمة):</label>
-                <input id="${oldId}" type="text" dir="ltr" placeholder="اكتب ${label} الحالية..." />
+                <input id="${oldId}" type="text" dir="ltr" class="num-input-ltr" placeholder="اكتب ${label} الحالية..." />
               </div>
             ` : ""}
             <div class="form-group" style="margin-bottom:8px;">
               <label for="${newId}">${label} الجديدة (6 أحرف/أرقام فأكثر):</label>
               <div class="row-flex">
-                <input id="${newId}" type="text" dir="ltr" placeholder="${isPin ? "مثال: 482910" : "كلمة سر جديدة..."}" />
+                <input id="${newId}" type="text" dir="ltr" class="num-input-ltr" placeholder="${isPin ? "مثال: 482910" : "كلمة سر جديدة..."}" />
                 <button type="button" class="btn-secondary btn-sm" data-gen-secret="${type}">🎲</button>
               </div>
             </div>
@@ -1614,11 +1630,18 @@
       }
 
       let html = `
-        <div class="item-card" style="font-size:0.82rem;">
+        <div class="item-card list-stack" style="font-size:0.82rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span>رمز المقهى (للعامل):</span>
+            <div class="row-flex">
+              <input id="cmCodeInput" type="text" dir="ltr" class="num-input-ltr" value="${escapeHtml(code)}" placeholder="مثال: 101" style="width:120px;padding:6px 8px;" />
+              <button type="button" class="btn-secondary btn-sm" data-save-code="1">حفظ</button>
+            </div>
+          </div>
           <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
             <span>رقم هاتف المالك (واتساب):</span>
             <div class="row-flex">
-              <input id="cmPhoneInput" type="tel" dir="ltr" value="${escapeHtml(meta.phone || "")}" placeholder="20123456" style="width:140px;padding:6px 8px;" />
+              <input id="cmPhoneInput" type="tel" dir="ltr" class="num-input-ltr" value="${escapeHtml(meta.phone || "")}" placeholder="20123456" style="width:140px;padding:6px 8px;" />
               <button type="button" class="btn-secondary btn-sm" data-save-phone="1">حفظ</button>
             </div>
           </div>
@@ -1628,10 +1651,10 @@
       html += buildAccountBox("owner", "👑 حساب صاحب المقهى (index.html)", meta.ownerEmail, savedOwnerPass, false);
 
       if (wi.w1.uid) {
-        html += buildAccountBox("w1", `☀️ ${escapeHtml(wi.w1.name)} — صباح / 1 (رمز المقهى: ${escapeHtml(meta.code || "")})`, wi.w1.email || `w_${meta.code}@cassacafe.app`, wi.w1.pin, true);
+        html += buildAccountBox("w1", `☀️ ${escapeHtml(wi.w1.name)} — صباح / 1 (رمز المقهى: ${escapeHtml(code || "—")})`, wi.w1.email || `w_${code}@cassacafe.app`, wi.w1.pin, true);
       }
       if (wi.w2.uid) {
-        html += buildAccountBox("w2", `🌙 ${escapeHtml(wi.w2.name)} — عشية / 2 (رمز المقهى: ${escapeHtml(meta.code || "")})`, wi.w2.email || `w2_${meta.code}@cassacafe.app`, wi.w2.pin, true);
+        html += buildAccountBox("w2", `🌙 ${escapeHtml(wi.w2.name)} — عشية / 2 (رمز المقهى: ${escapeHtml(code || "—")})`, wi.w2.email || `w2_${code}@cassacafe.app`, wi.w2.pin, true);
       }
 
       html += `
@@ -1654,6 +1677,24 @@
         const type = genBtn.dataset.genSecret;
         const inp = document.getElementById(`cmNew_${type}`);
         if (inp) inp.value = (type === "owner") ? randomPass(8) : randomPin(6);
+        return;
+      }
+
+      if (e.target.closest("[data-save-code]")) {
+        const newCode = (document.getElementById("cmCodeInput").value || "").trim().toLowerCase();
+        if (!/^[a-z0-9]{3,12}$/.test(newCode)) {
+          showToast("رمز المقهى يجب أن يكون من 3 إلى 12 حرفاً/رقماً إنجليزياً.", "err");
+          return;
+        }
+        const dup = Object.entries(state.tenants).some(([id, ten]) => id !== cafeId && getCafeCode(id, ten) === newCode);
+        if (dup) {
+          showToast("رمز المقهى هذا مستخدم لمقهى آخر.", "err");
+          return;
+        }
+        try {
+          await db.ref(`tenants/${cafeId}/meta/code`).set(newCode);
+          showToast("تم حفظ رمز المقهى بنجاح.");
+        } catch (err) { showToast("فشل الحفظ: " + err.message, "err"); }
         return;
       }
 
@@ -1694,6 +1735,7 @@
         const type = chBtn.dataset.changeSecret;
         const wi = getWorkersInfo(t);
         const meta = t.meta || {};
+        const code = getCafeCode(cafeId, t);
         const newVal = (document.getElementById(`cmNew_${type}`).value || "").trim();
         if (newVal.length < 6) {
           showToast("يجب أن تكون القيمة الجديدة 6 أحرف/أرقام على الأقل.", "err");
@@ -1705,10 +1747,10 @@
           email = meta.ownerEmail || "";
           oldVal = ((state.adminSecrets[cafeId] && state.adminSecrets[cafeId].owner && state.adminSecrets[cafeId].owner.pass) || "").trim();
         } else if (type === "w1") {
-          email = wi.w1.email || `w_${meta.code}@cassacafe.app`;
+          email = wi.w1.email || `w_${code}@cassacafe.app`;
           oldVal = (wi.w1.pin || "").trim();
         } else {
-          email = wi.w2.email || `w2_${meta.code}@cassacafe.app`;
+          email = wi.w2.email || `w2_${code}@cassacafe.app`;
           oldVal = (wi.w2.pin || "").trim();
         }
 
@@ -1849,7 +1891,7 @@
       const pat = state.mmPattern;
       const pm = PATTERN_META[pat];
       const wCount = getEffectiveWorkerCount(pat, state.mmWCount);
-      const code = String((tenant.meta && tenant.meta.code) || "").toLowerCase();
+      const code = getCafeCode(cafeId, tenant);
 
       const w1Name = document.getElementById("mmW1Name").value.trim() || (pat === "worker_only" ? "العامل" : "عامل الصباح");
       const w1Wage = parseNum(document.getElementById("mmW1Wage").value);
@@ -1859,6 +1901,10 @@
       const w2Wage = parseNum(document.getElementById("mmW2Wage").value);
       const w2Pin = document.getElementById("mmW2Pin").value.trim();
 
+      if (pm.needsAuth >= 1 && !code) {
+        showToast("رمز المقهى فارغ! افتح «🔑 الحسابات والـ PIN» واحفظ رمز المقهى أولاً.", "err");
+        return;
+      }
       if (pm.needsAuth >= 1 && !wi.w1.uid && w1Pin.length < 6) {
         showToast("الرمز السري للعامل 1 يجب أن يكون 6 أرقام/أحرف على الأقل.", "err");
         return;
@@ -1876,6 +1922,9 @@
         const createdLines = [];
         const nowMs = Date.now();
 
+        if (code && !(tenant.meta && tenant.meta.code)) {
+          updates[`tenants/${cafeId}/meta/code`] = code;
+        }
         updates[`tenants/${cafeId}/config/operationMode`] = pm.opMode;
         updates[`tenants/${cafeId}/config/workPattern`] = pat;
         updates[`tenants/${cafeId}/config/workerName`] = w1Name;
