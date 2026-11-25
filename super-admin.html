@@ -33,7 +33,6 @@
     }
     .hidden { display: none !important; }
 
-    /* قفل اتجاه الأرقام من اليسار لليمين مع ظهور مي بعد الرقم */
     .num-ltr {
       direction: ltr !important;
       unicode-bidi: isolate !important;
@@ -48,7 +47,6 @@
     }
     input.num-input-ltr::placeholder { direction: rtl; unicode-bidi: plaintext; }
 
-    /* Auth */
     .center-wrap {
       min-height: 100vh;
       display: flex;
@@ -68,7 +66,6 @@
     .brand h1 { font-size: 1.55rem; color: var(--primary); }
     .brand p { color: var(--muted); font-size: 0.88rem; margin-top: 4px; }
 
-    /* Header */
     header {
       background: var(--surface);
       border-bottom: 2px solid var(--border);
@@ -89,22 +86,15 @@
     .title-wrap { display: flex; align-items: center; gap: 8px; }
     .title-wrap h1 { font-size: 1.2rem; color: var(--primary); }
 
-    main {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 14px 12px 40px;
-    }
+    main { max-width: 1080px; margin: 0 auto; padding: 14px 12px 40px; }
 
-    /* Stats */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 8px;
       margin-bottom: 12px;
     }
-    @media (min-width: 700px) {
-      .stats-grid { grid-template-columns: repeat(4, 1fr); }
-    }
+    @media (min-width: 700px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
     .stat-card {
       background: var(--surface);
       border: 1.5px solid var(--border);
@@ -122,7 +112,7 @@
       border: 1.5px solid var(--border);
       padding: 6px 11px;
       border-radius: 999px;
-      font-size: 0.8rem;
+      font-size: 0.79rem;
       font-weight: 700;
     }
     .filter-pill.active {
@@ -131,11 +121,8 @@
       border-color: var(--primary);
     }
 
-    /* Cafes Grid */
     .cafes-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    @media (min-width: 760px) {
-      .cafes-grid { grid-template-columns: repeat(2, 1fr); }
-    }
+    @media (min-width: 760px) { .cafes-grid { grid-template-columns: repeat(2, 1fr); } }
     .cafe-card {
       background: var(--surface);
       border: 1.5px solid var(--border);
@@ -152,7 +139,6 @@
     .cafe-meta strong { color: var(--text); }
     .cafe-actions { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 8px; border-top: 1px solid var(--border); }
 
-    /* Pills */
     .pill {
       font-size: 0.72rem;
       font-weight: 800;
@@ -172,7 +158,6 @@
     .pill-food { background: #3d1d05; color: #ffd6a5; border: 1px solid #fb8500; }
     .pill-fun { background: #2e0d42; color: #e0aaff; border: 1px solid #c77dff; }
 
-    /* Buttons */
     button {
       font-family: Tahoma, Arial, sans-serif;
       cursor: pointer;
@@ -191,12 +176,12 @@
     .btn-primary { background: var(--primary); color: var(--primary-text); }
     .btn-secondary { background: var(--surface-2); color: var(--text); border: 1.5px solid #52437a; }
     .btn-success { background: #063b27; color: #9ef8d8; border: 1.5px solid #06d6a0; }
+    .btn-wa { background: #15803d; color: #ffffff; border: 1.5px solid #22c55e; }
     .btn-danger { background: #470d1b; color: #ffc2cd; border: 1.5px solid #ef233c; }
     .btn-info { background: #092c47; color: #90e0ef; border: 1.5px solid #00b4d8; }
     .btn-sm { padding: 6px 10px; font-size: 0.78rem; }
     .btn-full { width: 100%; }
 
-    /* أزرار الاختيار الداكنة (بديل select لمنع النوافذ البيضاء) */
     .opt-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
     .opt-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
     .opt-btn {
@@ -204,19 +189,18 @@
       color: #ffea9f;
       border: 1.5px solid var(--border);
       border-radius: 10px;
-      padding: 9px 6px;
+      padding: 9px 7px;
       font-size: 0.8rem;
       font-weight: 800;
       text-align: center;
       width: 100%;
+      flex-direction: column;
+      line-height: 1.3;
     }
-    .opt-btn.active {
-      background: var(--primary);
-      color: var(--primary-text);
-      border-color: #ffe169;
-    }
+    .opt-btn small { font-size: 0.7rem; font-weight: 700; opacity: 0.85; }
+    .opt-btn.col-span-2 { grid-column: span 2; }
+    .opt-btn.active { background: var(--primary); color: var(--primary-text); border-color: #ffe169; }
 
-    /* Forms */
     .form-group { margin-bottom: 12px; }
     label { display: block; font-size: 0.82rem; color: #ffea9f; font-weight: 800; margin-bottom: 5px; }
     input, textarea {
@@ -254,7 +238,6 @@
       grid-column: 1 / -1;
     }
 
-    /* Segmented Tabs */
     .seg-bar {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -308,7 +291,33 @@
     }
     .chip-del { background: transparent; color: #ff8fa3; padding: 0 3px; font-size: 1rem; line-height: 1; }
 
-    /* Modals */
+    .creds-pre {
+      background: var(--input-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 0.86rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #ffea9f;
+      margin-bottom: 12px;
+      user-select: text;
+    }
+    .secret-val {
+      display: inline-block;
+      background: #2b2342;
+      border: 1px solid #ffb703;
+      color: #ffd166;
+      padding: 2px 9px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-weight: 800;
+      font-size: 0.95rem;
+      direction: ltr;
+      user-select: text;
+    }
+
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -351,7 +360,6 @@
       padding: 0;
     }
 
-    /* Toast */
     .toast {
       position: fixed;
       bottom: 18px;
@@ -378,7 +386,7 @@
     <div class="auth-card">
       <div class="brand">
         <h1>☕ CassaCafe</h1>
-        <p>لوحة المشرف العام (تجهيز وإدارة الحرفاء)</p>
+        <p>لوحة المشرف العام (إدارة وتجهيز الحرفاء)</p>
       </div>
       <div id="loginError" class="error-msg hidden"></div>
       <form id="loginForm">
@@ -439,9 +447,11 @@
         <button class="filter-pill" data-filter="active">نشط</button>
         <button class="filter-pill" data-filter="expiring">قريب / منتهٍ</button>
         <button class="filter-pill" data-filter="suspended">موقوف</button>
-        <button class="filter-pill" data-filter="solo">فردي</button>
-        <button class="filter-pill" data-filter="assisted">مالك + عمال</button>
-        <button class="filter-pill" data-filter="team">فريق (تطبيق عامل)</button>
+        <button class="filter-pill" data-filter="owner_only">مالك وحده</button>
+        <button class="filter-pill" data-filter="owner_with_worker">مالك + عامل</button>
+        <button class="filter-pill" data-filter="worker_only">عامل وحده</button>
+        <button class="filter-pill" data-filter="worker_owner">عامل صباح + مالك مساء</button>
+        <button class="filter-pill" data-filter="two_workers">عاملان</button>
       </div>
 
       <div id="cafesGrid" class="cafes-grid"></div>
@@ -473,7 +483,7 @@
             <input id="acOwnerName" type="text" required placeholder="مثال: أحمد" />
           </div>
           <div class="form-group">
-            <label for="acPhone">رقم الهاتف</label>
+            <label for="acPhone">رقم الهاتف (واتساب)</label>
             <input id="acPhone" type="tel" dir="ltr" placeholder="20123456" />
           </div>
         </div>
@@ -501,30 +511,32 @@
 
         <div class="form-group">
           <label>نمط تشغيل المقهى *</label>
-          <div id="acModeBtns" class="opt-grid-3">
-            <button type="button" class="opt-btn active" data-ac-mode="solo">👤 فردي<br/><small>المالك فقط</small></button>
-            <button type="button" class="opt-btn" data-ac-mode="assisted">🤝 مالك+عمال<br/><small>الكاسة عند المالك</small></button>
-            <button type="button" class="opt-btn" data-ac-mode="team">👥 فريق<br/><small>تطبيق عامل مستقل</small></button>
+          <div id="acPatternBtns" class="opt-grid-2">
+            <button type="button" class="opt-btn active" data-ac-pat="owner_only">👤 مالك وحده<small>تطبيق المالك فقط — بدون عمال</small></button>
+            <button type="button" class="opt-btn" data-ac-pat="owner_with_worker">🤝 مالك + عامل معاً<small>الكاسة عند المالك + متابعة الأجر</small></button>
+            <button type="button" class="opt-btn" data-ac-pat="worker_only">👷 عامل وحده<small>نموذج الكروان — يوم كامل للعامل</small></button>
+            <button type="button" class="opt-btn" data-ac-pat="worker_owner">☀️🌙 عامل صباحاً + مالك مساءً<small>تناوب: العامل الصباح والمالك العشية</small></button>
+            <button type="button" class="opt-btn col-span-2" data-ac-pat="two_workers">👷👷 عامل صباحاً + عامل مساءً<small>حسابان مستقلان (صباح 1 + عشية 2) بتسوية منفصلة</small></button>
           </div>
         </div>
 
         <div id="acWorkersSection" class="section-box hidden">
-          <h3>إعداد العمال (صباح / عشية)</h3>
-          <div class="form-group">
-            <label>عدد العمال في المقهى</label>
+          <h3>بيانات العمال والأجور (بالمليم مي)</h3>
+
+          <div id="acWCountWrap" class="form-group hidden">
+            <label>عدد العمال المساعدين</label>
             <div id="acWorkerCountBtns" class="opt-grid-2">
               <button type="button" class="opt-btn active" data-ac-wcount="1">👷 عامل واحد</button>
-              <button type="button" class="opt-btn" data-ac-wcount="2">👷👷 عاملان (صباح + عشية)</button>
+              <button type="button" class="opt-btn" data-ac-wcount="2">👷👷 عاملان</button>
             </div>
           </div>
 
-          <!-- العامل 1 -->
           <div id="acW1Box" class="item-card" style="margin-bottom: 8px;">
-            <div style="font-size: 0.82rem; font-weight: 800; color: var(--info); margin-bottom: 6px;">☀️ العامل 1 (صباح / رئيسي)</div>
+            <div id="acW1Title" style="font-size: 0.82rem; font-weight: 800; color: var(--info); margin-bottom: 6px;">☀️ العامل 1</div>
             <div class="grid-2">
               <div class="form-group" style="margin-bottom: 8px;">
                 <label for="acW1Name">الاسم</label>
-                <input id="acW1Name" type="text" value="عامل الصباح" />
+                <input id="acW1Name" type="text" value="العامل" />
               </div>
               <div class="form-group" style="margin-bottom: 8px;">
                 <label for="acW1Wage">الأجر اليومي (مي)</label>
@@ -540,9 +552,8 @@
             </div>
           </div>
 
-          <!-- العامل 2 -->
           <div id="acW2Box" class="item-card hidden">
-            <div style="font-size: 0.82rem; font-weight: 800; color: #e0aaff; margin-bottom: 6px;">🌙 العامل 2 (عشية)</div>
+            <div id="acW2Title" style="font-size: 0.82rem; font-weight: 800; color: #e0aaff; margin-bottom: 6px;">🌙 العامل 2 (عشية)</div>
             <div class="grid-2">
               <div class="form-group" style="margin-bottom: 8px;">
                 <label for="acW2Name">الاسم</label>
@@ -580,25 +591,27 @@
       </div>
       <form id="modeForm">
         <div class="form-group">
-          <label>نمط التشغيل</label>
-          <div id="mmModeBtns" class="opt-grid-3">
-            <button type="button" class="opt-btn" data-mm-mode="solo">👤 فردي</button>
-            <button type="button" class="opt-btn" data-mm-mode="assisted">🤝 مالك+عمال</button>
-            <button type="button" class="opt-btn" data-mm-mode="team">👥 فريق</button>
+          <label>نمط تشغيل المقهى</label>
+          <div id="mmPatternBtns" class="opt-grid-2">
+            <button type="button" class="opt-btn" data-mm-pat="owner_only">👤 مالك وحده</button>
+            <button type="button" class="opt-btn" data-mm-pat="owner_with_worker">🤝 مالك + عامل معاً</button>
+            <button type="button" class="opt-btn" data-mm-pat="worker_only">👷 عامل وحده</button>
+            <button type="button" class="opt-btn" data-mm-pat="worker_owner">☀️🌙 عامل صباحاً + مالك مساءً</button>
+            <button type="button" class="opt-btn col-span-2" data-mm-pat="two_workers">👷👷 عامل صباحاً + عامل مساءً</button>
           </div>
         </div>
 
         <div id="mmWorkersSection" class="section-box hidden">
-          <div class="form-group">
-            <label>عدد العمال</label>
+          <div id="mmWCountWrap" class="form-group hidden">
+            <label>عدد العمال المساعدين</label>
             <div id="mmWorkerCountBtns" class="opt-grid-2">
               <button type="button" class="opt-btn" data-mm-wcount="1">👷 عامل واحد</button>
-              <button type="button" class="opt-btn" data-mm-wcount="2">👷👷 عاملان (صباح + عشية)</button>
+              <button type="button" class="opt-btn" data-mm-wcount="2">👷👷 عاملان</button>
             </div>
           </div>
 
           <div id="mmW1Box" class="item-card" style="margin-bottom: 8px;">
-            <div style="font-size: 0.82rem; font-weight: 800; color: var(--info); margin-bottom: 6px;">☀️ العامل 1 (صباح / رئيسي)</div>
+            <div id="mmW1Title" style="font-size: 0.82rem; font-weight: 800; color: var(--info); margin-bottom: 6px;">☀️ العامل 1</div>
             <div class="grid-2">
               <div class="form-group" style="margin-bottom: 8px;">
                 <label for="mmW1Name">الاسم</label>
@@ -620,7 +633,7 @@
           </div>
 
           <div id="mmW2Box" class="item-card hidden">
-            <div style="font-size: 0.82rem; font-weight: 800; color: #e0aaff; margin-bottom: 6px;">🌙 العامل 2 (عشية)</div>
+            <div id="mmW2Title" style="font-size: 0.82rem; font-weight: 800; color: #e0aaff; margin-bottom: 6px;">🌙 العامل 2 (عشية)</div>
             <div class="grid-2">
               <div class="form-group" style="margin-bottom: 8px;">
                 <label for="mmW2Name">الاسم</label>
@@ -647,6 +660,17 @@
           <button type="button" class="btn-secondary" data-close="modeModal">إلغاء</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- نافذة إدارة الحسابات وتغيير كلمة السر والـ PIN + الإرسال عبر واتساب -->
+  <div id="credsModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="cmCafeTitle">🔑 الحسابات والـ PIN</h2>
+        <button type="button" class="close-btn" data-close="credsModal">&times;</button>
+      </div>
+      <div id="cmBody" class="list-stack"></div>
     </div>
   </div>
 
@@ -741,7 +765,7 @@
     </div>
   </div>
 
-  <!-- نافذة فرعية: إضافة / تعديل سلعة مباعة (بدون select) -->
+  <!-- نافذة فرعية: إضافة / تعديل سلعة مباعة -->
   <div id="saProdModal" class="modal-backdrop sub-modal hidden">
     <div class="modal">
       <div class="modal-header">
@@ -788,7 +812,7 @@
           <div id="saPDeductWrap" class="form-group hidden" style="margin-bottom: 0;">
             <label id="saPDeductLbl" for="saPDeduct">الكمية المخصومة لكل وحدة مباعة *</label>
             <input id="saPDeduct" type="tel" inputmode="numeric" class="num-input-ltr" placeholder="1 أو 7" />
-            <div class="hint">إذا كان البيع بالغرام (مثل البن = 150 مي/غرام) اكتب <strong>1</strong>. إذا كان بالكأس (مثل إكسبراس) اكتب <strong>7</strong>.</div>
+            <div class="hint">البيع بالغرام (مثل البن = 150 مي/غرام): اكتب <strong>1</strong>. بالكأس (إكسبراس): اكتب <strong>7</strong>.</div>
           </div>
         </div>
 
@@ -806,7 +830,7 @@
     </div>
   </div>
 
-  <!-- نافذة فرعية: إضافة / تعديل مادة مخزن (بدون select) -->
+  <!-- نافذة فرعية: إضافة / تعديل مادة مخزن -->
   <div id="saStockModal" class="modal-backdrop sub-modal hidden">
     <div class="modal">
       <div class="modal-header">
@@ -846,6 +870,22 @@
     </div>
   </div>
 
+  <!-- نافذة عرض ونسخ وإرسال البيانات عبر واتساب -->
+  <div id="infoModal" class="modal-backdrop sub-modal hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="infoModalTitle">بيانات الدخول</h2>
+        <button type="button" class="close-btn" data-close="infoModal">&times;</button>
+      </div>
+      <div id="infoModalBody" class="creds-pre"></div>
+      <div class="grid-2" style="margin-bottom: 8px;">
+        <button type="button" id="infoWaBtn" class="btn-wa btn-full">📲 إرسال عبر واتساب</button>
+        <button type="button" id="infoCopyBtn" class="btn-primary btn-full">📋 نسخ البيانات</button>
+      </div>
+      <button type="button" class="btn-secondary btn-full" data-close="infoModal">إغلاق</button>
+    </div>
+  </div>
+
   <div id="toast" class="toast hidden"></div>
 
   <!-- Firebase Compat SDK v10.12.2 -->
@@ -869,6 +909,14 @@
     const db = firebase.database();
 
     const APP_BASE_URL = "https://jedameur1-tech.github.io/cassacafe";
+
+    const PATTERN_META = {
+      owner_only:        { label: "👤 مالك وحده",                   pill: "pill-muted", opMode: "solo", needsAuth: 0, hasWorkers: false, fixedCount: 0, w1Shift: "morning" },
+      owner_with_worker: { label: "🤝 مالك + عامل معاً",            pill: "pill-warn",  opMode: "solo", needsAuth: 0, hasWorkers: true,  fixedCount: 0, w1Shift: "full" },
+      worker_only:       { label: "👷 عامل وحده",                   pill: "pill-info",  opMode: "team", needsAuth: 1, hasWorkers: true,  fixedCount: 1, w1Shift: "full" },
+      worker_owner:      { label: "☀️🌙 عامل صباحاً + مالك مساءً",  pill: "pill-info",  opMode: "team", needsAuth: 1, hasWorkers: true,  fixedCount: 1, w1Shift: "morning" },
+      two_workers:       { label: "👷👷 عامل صباحاً + عامل مساءً",  pill: "pill-fun",   opMode: "team", needsAuth: 2, hasWorkers: true,  fixedCount: 2, w1Shift: "morning" }
+    };
 
     const CATEGORY_INFO = {
       hot: { label: "☕ ساخن", pill: "pill-hot" },
@@ -894,26 +942,30 @@
     const state = {
       user: null,
       tenants: {},
+      adminSecrets: {},
       filter: "all",
       search: "",
       activeCafeId: null,
+      credsCafeId: null,
       setupCafeId: null,
       setupTab: "prods",
       editingProdId: null,
       editingStockId: null,
-      // حالات اختيارات الأزرار (بديل select)
-      acMode: "solo",
+      acPattern: "owner_only",
       acWCount: 1,
-      mmMode: "solo",
+      mmPattern: "owner_only",
       mmWCount: 1,
       saPCat: "hot",
       saPUnit: "كأس",
       saPStockId: "",
       saStUnit: "unit",
-      saStPackSize: 1
+      saStPackSize: 1,
+      lastInfoText: "",
+      lastInfoPhone: ""
     };
 
     let tenantsRef = null;
+    let secretsRef = null;
 
     function getSecondaryAuth() {
       const name = "secondary-creator-app";
@@ -928,11 +980,8 @@
     }
     function escapeHtml(str) {
       return String(str == null ? "" : str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
     }
     function parseNum(val) {
       if (typeof val === "number") return isFinite(val) && val > 0 ? Math.round(val) : 0;
@@ -945,9 +994,7 @@
       const n = Math.round(Number(v) || 0);
       return (n < 0 ? "-" : "") + Math.abs(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u00A0");
     }
-    function fmtMi(v) {
-      return `<span class="num-ltr" dir="ltr">${fmtPlain(v)}</span> مي`;
-    }
+    function fmtMi(v) { return `<span class="num-ltr" dir="ltr">${fmtPlain(v)}</span> مي`; }
     function fmtInputVal(v) {
       const n = parseNum(v);
       return n > 0 ? String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ") : "";
@@ -983,31 +1030,90 @@
       return out;
     }
 
-    // قراءة بيانات العمال مع التوافق الكامل مع المقاهي القديمة
+    function normalizeTunisiaPhone(rawPhone) {
+      let digits = String(rawPhone || "").replace(/[^\d]/g, "");
+      if (!digits) return "";
+      if (digits.startsWith("00")) digits = digits.slice(2);
+      if (digits.length === 8) digits = "216" + digits;
+      return digits;
+    }
+
+    function openWhatsAppMessage(phone, text) {
+      const clean = normalizeTunisiaPhone(phone);
+      const url = clean
+        ? `https://wa.me/${clean}?text=${encodeURIComponent(text)}`
+        : `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(url, "_blank");
+    }
+
+    function resolveWorkPattern(tenant) {
+      const cfg = (tenant && tenant.config) || {};
+      if (cfg.workPattern && PATTERN_META[cfg.workPattern]) return cfg.workPattern;
+      if (cfg.operationMode === "assisted") return "owner_with_worker";
+      if (cfg.operationMode === "team") {
+        if (cfg.workers && cfg.workers.w2 && cfg.workers.w2.active) return "two_workers";
+        return "worker_only";
+      }
+      return "owner_only";
+    }
+
     function getWorkersInfo(tenant) {
       const cfg = (tenant && tenant.config) || {};
       const meta = (tenant && tenant.meta) || {};
       const cw = cfg.workers || {};
       const mw = meta.workers || {};
+      const pat = resolveWorkPattern(tenant);
+      const pm = PATTERN_META[pat];
+      const os = (tenant && tenant.owner_secrets && tenant.owner_secrets.workers) || {};
 
       const w1 = {
-        name: (cw.w1 && cw.w1.name) || cfg.workerName || "عامل الصباح",
+        name: (cw.w1 && cw.w1.name) || cfg.workerName || (pat === "worker_only" ? "العامل" : "عامل الصباح"),
         defaultWage: parseNum((cw.w1 && cw.w1.defaultWage != null) ? cw.w1.defaultWage : cfg.defaultDailyWage),
-        shift: (cw.w1 && cw.w1.shift) || "morning",
-        active: cw.w1 ? cw.w1.active !== false : (cfg.operationMode === "team" || cfg.operationMode === "assisted"),
+        shift: (cw.w1 && cw.w1.shift) || pm.w1Shift,
+        active: pm.hasWorkers && (cw.w1 ? cw.w1.active !== false : true),
         uid: (mw.w1 && mw.w1.uid) || meta.workerUid || null,
-        email: (mw.w1 && mw.w1.email) || meta.workerEmail || null
+        email: (mw.w1 && mw.w1.email) || meta.workerEmail || null,
+        pin: (os.w1 && os.w1.pin) || ""
       };
       const w2 = {
         name: (cw.w2 && cw.w2.name) || "عامل العشية",
         defaultWage: parseNum(cw.w2 && cw.w2.defaultWage),
-        shift: (cw.w2 && cw.w2.shift) || "evening",
-        active: Boolean(cw.w2 && cw.w2.active),
+        shift: "evening",
+        active: pat === "two_workers" || (pat === "owner_with_worker" && Boolean(cw.w2 && cw.w2.active)),
         uid: (mw.w2 && mw.w2.uid) || null,
-        email: (mw.w2 && mw.w2.email) || null
+        email: (mw.w2 && mw.w2.email) || null,
+        pin: (os.w2 && os.w2.pin) || ""
       };
-      const count = w2.active ? 2 : 1;
-      return { w1, w2, count };
+      const count = !pm.hasWorkers ? 0 : (w2.active ? 2 : 1);
+      return { w1, w2, count, pattern: pat };
+    }
+
+    function buildCafeCredentialsText(cafeId, includeSecrets = true) {
+      const t = state.tenants[cafeId];
+      if (!t) return "";
+      const name = (t.config && t.config.cafeName) || (t.meta && t.meta.name) || "";
+      const code = (t.meta && t.meta.code) || "";
+      const pat = resolveWorkPattern(t);
+      const pm = PATTERN_META[pat];
+      const wi = getWorkersInfo(t);
+      const ownerSecret = (state.adminSecrets[cafeId] && state.adminSecrets[cafeId].owner) || {};
+
+      let txt = `☕ بيانات تطبيق مقهى ${name}\n`;
+      txt += `النمط: ${pm.label}\n`;
+      txt += `• تطبيق المالك: ${APP_BASE_URL}/\n`;
+      txt += `  البريد: ${(t.meta && t.meta.ownerEmail) || ""}\n`;
+      if (includeSecrets && ownerSecret.pass) {
+        txt += `  كلمة السر: ${ownerSecret.pass}\n`;
+      }
+      if (pm.needsAuth >= 1) {
+        txt += `——————————\n• تطبيق العامل: ${APP_BASE_URL}/worker.html\n`;
+        txt += `  رمز المقهى: ${code}\n`;
+        txt += `  - ${wi.w1.name} (صباح / 1)${includeSecrets && wi.w1.pin ? ` — PIN: ${wi.w1.pin}` : ""}\n`;
+        if (pm.needsAuth >= 2) {
+          txt += `  - ${wi.w2.name} (عشية / 2)${includeSecrets && wi.w2.pin ? ` — PIN: ${wi.w2.pin}` : ""}\n`;
+        }
+      }
+      return txt;
     }
 
     let toastTimer = null;
@@ -1016,8 +1122,27 @@
       el.textContent = msg;
       el.className = "toast " + (type === "err" ? "err" : "ok");
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.classList.add("hidden"), 3500);
+      toastTimer = setTimeout(() => el.classList.add("hidden"), 3800);
     }
+
+    function showInfoModal(title, text, phone = "") {
+      state.lastInfoText = text;
+      state.lastInfoPhone = phone || "";
+      document.getElementById("infoModalTitle").textContent = title;
+      document.getElementById("infoModalBody").textContent = text;
+      openModal("infoModal");
+    }
+    document.getElementById("infoCopyBtn").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(state.lastInfoText);
+        showToast("تم نسخ البيانات بنجاح.");
+      } catch (_) {
+        showToast("انسخ النص يدوياً من المربع.", "err");
+      }
+    });
+    document.getElementById("infoWaBtn").addEventListener("click", () => {
+      openWhatsAppMessage(state.lastInfoPhone, state.lastInfoText);
+    });
 
     function openModal(id) { document.getElementById(id).classList.remove("hidden"); }
     function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
@@ -1025,7 +1150,6 @@
       b.addEventListener("click", () => closeModal(b.dataset.close));
     });
 
-    // تفعيل الفواصل التلقائية على جميع حقول المليم والكميات
     ["acW1Wage", "acW2Wage", "mmW1Wage", "mmW2Wage", "saPPrice", "saPDeduct", "saStQty", "spLowWeight", "spLowUnit"].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.addEventListener("input", () => formatInputWithSpaces(el));
@@ -1034,8 +1158,8 @@
     function translateAuthError(err) {
       const map = {
         "auth/invalid-email": "البريد الإلكتروني غير صالح.",
-        "auth/wrong-password": "كلمة السر غير صحيحة.",
-        "auth/invalid-credential": "البريد الإلكتروني أو كلمة السر غير صحيحة.",
+        "auth/wrong-password": "كلمة السر أو الرمز السري غير صحيح.",
+        "auth/invalid-credential": "البيانات القديمة غير مطابقة للحساب.",
         "auth/email-already-in-use": "هذا البريد الإلكتروني مستخدم بالفعل لحساب آخر.",
         "auth/weak-password": "كلمة السر أو الرمز السري يجب أن يكون 6 أحرف/أرقام على الأقل.",
         "auth/too-many-requests": "محاولات كثيرة متتالية، انتظر قليلاً.",
@@ -1047,6 +1171,7 @@
     // المصادقة
     auth.onAuthStateChanged(async (user) => {
       if (tenantsRef) { tenantsRef.off(); tenantsRef = null; }
+      if (secretsRef) { secretsRef.off(); secretsRef = null; }
       state.user = user;
 
       const loginView = document.getElementById("loginView");
@@ -1069,7 +1194,7 @@
         }
         loginView.classList.add("hidden");
         appView.classList.remove("hidden");
-        startListeningTenants();
+        startListeningData();
       } catch (err) {
         errEl.textContent = "تعذّر التحقق من الصلاحية: " + translateAuthError(err);
         errEl.classList.remove("hidden");
@@ -1098,17 +1223,20 @@
 
     document.getElementById("logoutBtn").addEventListener("click", () => auth.signOut());
 
-    function startListeningTenants() {
+    function startListeningData() {
       tenantsRef = db.ref("tenants");
       tenantsRef.on("value", (snap) => {
         state.tenants = snap.val() || {};
         renderDashboard();
-        if (state.setupCafeId && !document.getElementById("setupModal").classList.contains("hidden")) {
-          renderSetupLists();
-        }
-      }, (err) => {
-        showToast("خطأ في قراءة المقاهي: " + err.message, "err");
-      });
+        if (state.setupCafeId && !document.getElementById("setupModal").classList.contains("hidden")) renderSetupLists();
+        if (state.credsCafeId && !document.getElementById("credsModal").classList.contains("hidden")) renderCredsModalBody();
+      }, (err) => showToast("خطأ في قراءة المقاهي: " + err.message, "err"));
+
+      secretsRef = db.ref("super_admin_secrets");
+      secretsRef.on("value", (snap) => {
+        state.adminSecrets = snap.val() || {};
+        if (state.credsCafeId && !document.getElementById("credsModal").classList.contains("hidden")) renderCredsModalBody();
+      }, () => {});
     }
 
     function renderDashboard() {
@@ -1119,12 +1247,12 @@
         const live = data.live || {};
         const subUntil = Number(meta.subscriptionUntil) || 0;
         const daysLeft = Math.ceil((subUntil - now) / 86400000);
-        const mode = config.operationMode || "solo";
+        const pattern = resolveWorkPattern(data);
         const workers = getWorkersInfo(data);
         const prodCount = config.products ? Object.keys(config.products).length : 0;
         const stockCount = (live.stock_state && live.stock_state.stock) ? Object.keys(live.stock_state.stock).length : 0;
         const consCount = Array.isArray(config.consumableQuickTags) ? config.consumableQuickTags.length : 0;
-        return { id, meta, config, live, subUntil, daysLeft, mode, workers, prodCount, stockCount, consCount };
+        return { id, meta, config, live, subUntil, daysLeft, pattern, workers, prodCount, stockCount, consCount };
       }).sort((a, b) => (b.meta.createdAt || 0) - (a.meta.createdAt || 0));
 
       let activeCnt = 0, expCnt = 0, suspCnt = 0;
@@ -1144,9 +1272,7 @@
         if (state.filter === "active" && !(c.meta.active === true && c.daysLeft > 0)) return false;
         if (state.filter === "expiring" && !(c.meta.active === true && c.daysLeft <= 7)) return false;
         if (state.filter === "suspended" && c.meta.active === true) return false;
-        if (state.filter === "solo" && c.mode !== "solo") return false;
-        if (state.filter === "assisted" && c.mode !== "assisted") return false;
-        if (state.filter === "team" && c.mode !== "team") return false;
+        if (PATTERN_META[state.filter] && c.pattern !== state.filter) return false;
         if (q) {
           const hay = [c.meta.name, c.config.cafeName, c.meta.code, c.meta.ownerEmail, c.meta.phone, c.meta.ownerName]
             .join(" ").toLowerCase();
@@ -1174,14 +1300,10 @@
           statusBadge = `<span class="pill pill-warn">ينتهي خلال ${c.daysLeft} يوم</span>`;
         }
 
-        let modeBadge = `<span class="pill pill-muted">👤 فردي</span>`;
-        if (c.mode === "assisted") {
-          modeBadge = `<span class="pill pill-warn">🤝 مالك + ${c.workers.count === 2 ? "عاملان" : "عامل"}</span>`;
-        } else if (c.mode === "team") {
-          modeBadge = `<span class="pill pill-info">👥 فريق (${c.workers.count === 2 ? "صباح + عشية" : "عامل واحد"})</span>`;
-        }
+        const pm = PATTERN_META[c.pattern] || PATTERN_META.owner_only;
+        const patBadge = `<span class="pill ${pm.pill}">${pm.label}</span>`;
 
-        const workersSummary = c.mode === "solo"
+        const workersSummary = c.workers.count === 0
           ? ""
           : `<div>العمال: <strong>${escapeHtml(c.workers.w1.name)}</strong> (${fmtMi(c.workers.w1.defaultWage)})${c.workers.count === 2 ? ` • <strong>${escapeHtml(c.workers.w2.name)}</strong> (${fmtMi(c.workers.w2.defaultWage)})` : ""}</div>`;
 
@@ -1191,7 +1313,7 @@
               <div class="cafe-name">${escapeHtml(c.config.cafeName || c.meta.name || "بدون اسم")}</div>
               <div style="margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap;">
                 ${statusBadge}
-                ${modeBadge}
+                ${patBadge}
                 <span class="pill pill-muted" dir="ltr">#${escapeHtml(c.meta.code || "—")}</span>
               </div>
             </div>
@@ -1204,10 +1326,10 @@
             </div>
             <div class="cafe-actions">
               <button class="btn-primary btn-sm" data-action="setup" data-id="${escapeHtml(c.id)}">⚙️ السلع والمخزون</button>
-              <button class="btn-info btn-sm" data-action="mode" data-id="${escapeHtml(c.id)}">👥 النمط والعمال</button>
+              <button class="btn-info btn-sm" data-action="creds" data-id="${escapeHtml(c.id)}">🔑 الحسابات والـ PIN</button>
+              <button class="btn-secondary btn-sm" data-action="mode" data-id="${escapeHtml(c.id)}">👥 النمط والعمال</button>
               <button class="btn-success btn-sm" data-action="renew" data-id="${escapeHtml(c.id)}">⏳ الاشتراك</button>
-              <button class="btn-secondary btn-sm" data-action="copy" data-id="${escapeHtml(c.id)}">📋 الروابط</button>
-              <button class="btn-secondary btn-sm" data-action="reset-pass" data-id="${escapeHtml(c.id)}">🔑 استعادة السر</button>
+              <button class="btn-wa btn-sm" data-action="wa" data-id="${escapeHtml(c.id)}">📲 واتساب</button>
               <button class="${c.meta.active === true ? "btn-danger" : "btn-success"} btn-sm" data-action="toggle" data-id="${escapeHtml(c.id)}">
                 ${c.meta.active === true ? "⛔ إيقاف" : "✅ تفعيل"}
               </button>
@@ -1227,27 +1349,41 @@
     });
 
     // ============ 1. إضافة مقهى جديد ============
-    function syncAddCafeUI() {
-      document.querySelectorAll("[data-ac-mode]").forEach((b) => b.classList.toggle("active", b.dataset.acMode === state.acMode));
-      document.querySelectorAll("[data-ac-wcount]").forEach((b) => b.classList.toggle("active", Number(b.dataset.acWcount) === state.acWCount));
-
-      const showWorkers = state.acMode !== "solo";
-      const isTeam = state.acMode === "team";
-      const hasTwo = showWorkers && state.acWCount === 2;
-
-      document.getElementById("acWorkersSection").classList.toggle("hidden", !showWorkers);
-      document.getElementById("acW1PinWrap").classList.toggle("hidden", !isTeam);
-      document.getElementById("acW1Pin").required = isTeam;
-
-      document.getElementById("acW2Box").classList.toggle("hidden", !hasTwo);
-      document.getElementById("acW2PinWrap").classList.toggle("hidden", !(isTeam && hasTwo));
-      document.getElementById("acW2Pin").required = isTeam && hasTwo;
+    function getEffectiveWorkerCount(pat, chosenCount) {
+      const pm = PATTERN_META[pat] || PATTERN_META.owner_only;
+      if (!pm.hasWorkers) return 0;
+      if (pm.fixedCount > 0) return pm.fixedCount;
+      return chosenCount === 2 ? 2 : 1;
     }
 
-    document.getElementById("acModeBtns").addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-ac-mode]");
+    function syncAddCafeUI() {
+      const pat = state.acPattern;
+      const pm = PATTERN_META[pat];
+      const effCount = getEffectiveWorkerCount(pat, state.acWCount);
+
+      document.querySelectorAll("[data-ac-pat]").forEach((b) => b.classList.toggle("active", b.dataset.acPat === pat));
+      document.querySelectorAll("[data-ac-wcount]").forEach((b) => b.classList.toggle("active", Number(b.dataset.acWcount) === state.acWCount));
+
+      document.getElementById("acWorkersSection").classList.toggle("hidden", !pm.hasWorkers);
+      document.getElementById("acWCountWrap").classList.toggle("hidden", pat !== "owner_with_worker");
+
+      document.getElementById("acW1Title").textContent = pat === "worker_only"
+        ? "👷 العامل (يوم كامل — حساب تطبيق العامل)"
+        : (pat === "worker_owner" || pat === "two_workers" ? "☀️ العامل 1 (وردية الصباح)" : "👷 العامل 1");
+      document.getElementById("acW2Title").textContent = pat === "two_workers" ? "🌙 العامل 2 (وردية العشية)" : "👷 العامل 2";
+
+      document.getElementById("acW1PinWrap").classList.toggle("hidden", pm.needsAuth < 1);
+      document.getElementById("acW1Pin").required = pm.needsAuth >= 1;
+
+      document.getElementById("acW2Box").classList.toggle("hidden", effCount < 2);
+      document.getElementById("acW2PinWrap").classList.toggle("hidden", pm.needsAuth < 2);
+      document.getElementById("acW2Pin").required = pm.needsAuth >= 2;
+    }
+
+    document.getElementById("acPatternBtns").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-ac-pat]");
       if (!btn) return;
-      state.acMode = btn.dataset.acMode;
+      state.acPattern = btn.dataset.acPat;
       syncAddCafeUI();
     });
     document.getElementById("acWorkerCountBtns").addEventListener("click", (e) => {
@@ -1262,7 +1398,7 @@
 
     document.getElementById("addCafeBtn").addEventListener("click", () => {
       document.getElementById("addCafeForm").reset();
-      state.acMode = "solo";
+      state.acPattern = "owner_only";
       state.acWCount = 1;
       document.getElementById("acOwnerPass").value = randomPass(8);
       document.getElementById("acDays").value = "30";
@@ -1286,9 +1422,10 @@
       const ownerPass = document.getElementById("acOwnerPass").value.trim();
       const days = Math.max(1, parseNum(document.getElementById("acDays").value) || 30);
 
-      const mode = state.acMode;
-      const wCount = mode === "solo" ? 0 : state.acWCount;
-      const w1Name = document.getElementById("acW1Name").value.trim() || "عامل الصباح";
+      const pat = state.acPattern;
+      const pm = PATTERN_META[pat];
+      const wCount = getEffectiveWorkerCount(pat, state.acWCount);
+      const w1Name = document.getElementById("acW1Name").value.trim() || (pat === "worker_only" ? "العامل" : "عامل الصباح");
       const w1Wage = parseNum(document.getElementById("acW1Wage").value);
       const w1Pin = document.getElementById("acW1Pin").value.trim();
       const w2Name = document.getElementById("acW2Name").value.trim() || "عامل العشية";
@@ -1304,18 +1441,9 @@
         showToast("رمز المقهى هذا مستخدم بالفعل لمقهى آخر.", "err");
         return;
       }
-      if (ownerPass.length < 6) {
-        showToast("كلمة سر المالك يجب أن تكون 6 أحرف على الأقل.", "err");
-        return;
-      }
-      if (mode === "team" && w1Pin.length < 6) {
-        showToast("الرمز السري للعامل 1 يجب أن يكون 6 أرقام/أحرف على الأقل.", "err");
-        return;
-      }
-      if (mode === "team" && wCount === 2 && w2Pin.length < 6) {
-        showToast("الرمز السري للعامل 2 يجب أن يكون 6 أرقام/أحرف على الأقل.", "err");
-        return;
-      }
+      if (ownerPass.length < 6) { showToast("كلمة سر المالك يجب أن تكون 6 أحرف على الأقل.", "err"); return; }
+      if (pm.needsAuth >= 1 && w1Pin.length < 6) { showToast("الرمز السري للعامل 1 يجب أن يكون 6 أرقام/أحرف على الأقل.", "err"); return; }
+      if (pm.needsAuth >= 2 && w2Pin.length < 6) { showToast("الرمز السري للعامل 2 يجب أن يكون 6 أرقام/أحرف على الأقل.", "err"); return; }
 
       const btn = document.getElementById("acSubmitBtn");
       btn.disabled = true;
@@ -1328,18 +1456,17 @@
 
         let w1Uid = null, w1Email = null;
         let w2Uid = null, w2Email = null;
-        if (mode === "team") {
+        if (pm.needsAuth >= 1) {
           w1Email = `w_${code}@cassacafe.app`;
           const c1 = await secAuth.createUserWithEmailAndPassword(w1Email, w1Pin);
           w1Uid = c1.user.uid;
           await secAuth.signOut();
-
-          if (wCount === 2) {
-            w2Email = `w2_${code}@cassacafe.app`;
-            const c2 = await secAuth.createUserWithEmailAndPassword(w2Email, w2Pin);
-            w2Uid = c2.user.uid;
-            await secAuth.signOut();
-          }
+        }
+        if (pm.needsAuth >= 2) {
+          w2Email = `w2_${code}@cassacafe.app`;
+          const c2 = await secAuth.createUserWithEmailAndPassword(w2Email, w2Pin);
+          w2Uid = c2.user.uid;
+          await secAuth.signOut();
         }
 
         const nowMs = Date.now();
@@ -1347,56 +1474,43 @@
         const cafeId = `cafe_${code}_${nowMs.toString(36)}`;
         const updates = {};
 
-        updates[`users/${ownerUid}`] = {
-          role: "owner", cafeId, active: true, email: ownerEmail, name: ownerName, createdAt: nowMs
-        };
+        updates[`users/${ownerUid}`] = { role: "owner", cafeId, active: true, email: ownerEmail, name: ownerName, createdAt: nowMs };
+        updates[`super_admin_secrets/${cafeId}/owner`] = { email: ownerEmail, pass: ownerPass, updatedAt: nowMs };
+
         if (w1Uid) {
-          updates[`users/${w1Uid}`] = {
-            role: "worker", cafeId, active: true, email: w1Email, name: w1Name, slot: "w1", shift: "morning", createdAt: nowMs
-          };
+          updates[`users/${w1Uid}`] = { role: "worker", cafeId, active: true, email: w1Email, name: w1Name, slot: "w1", shift: pm.w1Shift, createdAt: nowMs };
+          updates[`tenants/${cafeId}/owner_secrets/workers/w1`] = { email: w1Email, pin: w1Pin, updatedAt: nowMs };
         }
         if (w2Uid) {
-          updates[`users/${w2Uid}`] = {
-            role: "worker", cafeId, active: true, email: w2Email, name: w2Name, slot: "w2", shift: "evening", createdAt: nowMs
-          };
+          updates[`users/${w2Uid}`] = { role: "worker", cafeId, active: true, email: w2Email, name: w2Name, slot: "w2", shift: "evening", createdAt: nowMs };
+          updates[`tenants/${cafeId}/owner_secrets/workers/w2`] = { email: w2Email, pin: w2Pin, updatedAt: nowMs };
         }
 
         updates[`tenants/${cafeId}/meta`] = {
-          name, code, phone,
-          ownerUid, ownerEmail, ownerName,
+          name, code, phone, ownerUid, ownerEmail, ownerName,
           workerUid: w1Uid, workerEmail: w1Email,
-          workers: {
-            w1: { uid: w1Uid, email: w1Email },
-            w2: { uid: w2Uid, email: w2Email }
-          },
+          workers: { w1: { uid: w1Uid, email: w1Email }, w2: { uid: w2Uid, email: w2Email } },
           active: true, subscriptionUntil: subUntil, createdAt: nowMs
         };
 
         updates[`tenants/${cafeId}/config`] = {
-          cafeName: name,
-          ownerName,
-          operationMode: mode,
-          workerName: w1Name,
-          defaultDailyWage: w1Wage,
+          cafeName: name, ownerName, operationMode: pm.opMode, workPattern: pat,
+          workerName: w1Name, defaultDailyWage: w1Wage,
           workers: {
-            w1: { name: w1Name, defaultWage: w1Wage, shift: "morning", active: mode !== "solo" },
-            w2: { name: w2Name, defaultWage: w2Wage, shift: "evening", active: mode !== "solo" && wCount === 2 }
+            w1: { name: w1Name, defaultWage: w1Wage, shift: pm.w1Shift, active: wCount >= 1 },
+            w2: { name: w2Name, defaultWage: w2Wage, shift: "evening", active: wCount === 2 }
           },
-          lowStockWeightLimit: 1000,
-          lowStockUnitLimit: 10,
+          lowStockWeightLimit: 1000, lowStockUnitLimit: 10,
           consumableQuickTags: ["ماء إمصفي", "مواد تنظيف", "سكر", "حليب", "شكولين", "زهر", "كؤوس بلورية"],
           fixedExpensePresets: [
-            { name: "كراء المحل", amount: 0 },
-            { name: "فاتورة كهرباء", amount: 0 },
-            { name: "فاتورة ماء", amount: 0 },
-            { name: "أنترنت", amount: 0 }
+            { name: "كراء المحل", amount: 0 }, { name: "فاتورة كهرباء", amount: 0 },
+            { name: "فاتورة ماء", amount: 0 }, { name: "أنترنت", amount: 0 }
           ],
           products: {}
         };
 
         updates[`tenants/${cafeId}/live`] = {
-          active_month: getCurrentMonthKey(),
-          last_invoice_number: 0,
+          active_month: getCurrentMonthKey(), last_invoice_number: 0,
           stock_state: { stock: {}, updatedAt: nowMs }
         };
 
@@ -1404,18 +1518,12 @@
         closeModal("addCafeModal");
         showToast(`تم إنشاء «${name}». جهّز سلعه ومخزونه الآن.`);
 
-        let summary = `☕ بيانات دخول مقهى ${name}\n`;
-        summary += `رابط المالك: ${APP_BASE_URL}/\n`;
-        summary += `البريد: ${ownerEmail}\n`;
-        summary += `كلمة السر: ${ownerPass}\n`;
-        if (mode === "team") {
-          summary += `——————\nرابط العامل: ${APP_BASE_URL}/worker.html\n`;
-          summary += `رمز المقهى: ${code}\n`;
-          summary += `• ${w1Name} (صباح 1) — PIN: ${w1Pin}\n`;
-          if (wCount === 2) summary += `• ${w2Name} (عشية 2) — PIN: ${w2Pin}\n`;
+        let summary = `☕ بيانات دخول مقهى ${name}\nالنمط: ${pm.label}\n• تطبيق المالك: ${APP_BASE_URL}/\n  البريد: ${ownerEmail}\n  كلمة السر: ${ownerPass}\n`;
+        if (pm.needsAuth >= 1) {
+          summary += `——————————\n• تطبيق العامل: ${APP_BASE_URL}/worker.html\n  رمز المقهى: ${code}\n  - ${w1Name} (صباح / 1) — PIN: ${w1Pin}\n`;
+          if (pm.needsAuth >= 2) summary += `  - ${w2Name} (عشية / 2) — PIN: ${w2Pin}\n`;
         }
-        try { await navigator.clipboard.writeText(summary); } catch (_) {}
-        alert(summary);
+        showInfoModal("✅ تم إنشاء المقهى بنجاح", summary, phone);
       } catch (err) {
         showToast("فشل الإنشاء: " + translateAuthError(err), "err");
       } finally {
@@ -1435,9 +1543,13 @@
       if (!tenant) return;
 
       if (action === "setup") openSetupModal(cafeId);
+      else if (action === "creds") openCredsModal(cafeId);
       else if (action === "mode") openModeModal(cafeId);
       else if (action === "renew") openRenewModal(cafeId);
-      else if (action === "toggle") {
+      else if (action === "wa") {
+        const txt = buildCafeCredentialsText(cafeId, true);
+        showInfoModal("📲 إرسال بيانات المقهى", txt, (tenant.meta && tenant.meta.phone) || "");
+      } else if (action === "toggle") {
         const next = !(tenant.meta && tenant.meta.active === true);
         if (!confirm(next ? "إعادة تفعيل هذا المقهى؟" : "إيقاف حساب هذا المقهى مؤقتاً؟")) return;
         try {
@@ -1446,83 +1558,254 @@
         } catch (err) {
           showToast("فشل التحديث: " + err.message, "err");
         }
-      } else if (action === "reset-pass") {
-        const email = tenant.meta && tenant.meta.ownerEmail;
+      }
+    });
+
+    // ============ 3. نافذة إدارة الحسابات وتغيير كلمة السر والـ PIN ============
+    function openCredsModal(cafeId) {
+      state.credsCafeId = cafeId;
+      const t = state.tenants[cafeId];
+      if (!t) return;
+      const name = (t.config && t.config.cafeName) || (t.meta && t.meta.name) || "";
+      document.getElementById("cmCafeTitle").textContent = `🔑 الحسابات والـ PIN — ${name}`;
+      renderCredsModalBody();
+      openModal("credsModal");
+    }
+
+    function renderCredsModalBody() {
+      const cafeId = state.credsCafeId;
+      const t = state.tenants[cafeId];
+      if (!t) return;
+      const wi = getWorkersInfo(t);
+      const meta = t.meta || {};
+      const ownerSecret = (state.adminSecrets[cafeId] && state.adminSecrets[cafeId].owner) || {};
+      const savedOwnerPass = ownerSecret.pass || "";
+
+      function buildAccountBox(type, title, email, savedVal, isPin) {
+        const label = isPin ? "PIN" : "كلمة السر";
+        const newId = `cmNew_${type}`;
+        const oldId = `cmOld_${type}`;
+        return `
+          <div class="section-box" style="margin-bottom:0;">
+            <h3>${title}</h3>
+            <div style="font-size:0.82rem;color:var(--muted);margin-bottom:8px;">
+              الحساب: <strong dir="ltr" style="color:#fff;">${escapeHtml(email || "—")}</strong><br/>
+              ${label} المحفوظة: ${savedVal ? `<span class="secret-val">${escapeHtml(savedVal)}</span>` : `<span class="pill pill-warn">غير محفوظة (حساب قديم)</span>`}
+            </div>
+            ${!savedVal ? `
+              <div class="form-group" style="margin-bottom:8px;">
+                <label for="${oldId}">${label} الحالية (مطلوبة مرة واحدة للحسابات القديمة):</label>
+                <input id="${oldId}" type="text" dir="ltr" placeholder="اكتب ${label} الحالية..." />
+              </div>
+            ` : ""}
+            <div class="form-group" style="margin-bottom:8px;">
+              <label for="${newId}">${label} الجديدة (6 أحرف/أرقام فأكثر):</label>
+              <div class="row-flex">
+                <input id="${newId}" type="text" dir="ltr" placeholder="${isPin ? "مثال: 482910" : "كلمة سر جديدة..."}" />
+                <button type="button" class="btn-secondary btn-sm" data-gen-secret="${type}">🎲</button>
+              </div>
+            </div>
+            <div class="row-flex" style="flex-wrap:wrap;">
+              <button type="button" class="btn-primary btn-sm flex-1" data-change-secret="${type}">🔄 تغيير ${label} الآن</button>
+              ${type === "owner" ? `<button type="button" class="btn-info btn-sm" data-reset-owner-email="1">📧 رابط استعادة بالبريد</button>` : ""}
+            </div>
+          </div>
+        `;
+      }
+
+      let html = `
+        <div class="item-card" style="font-size:0.82rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span>رقم هاتف المالك (واتساب):</span>
+            <div class="row-flex">
+              <input id="cmPhoneInput" type="tel" dir="ltr" value="${escapeHtml(meta.phone || "")}" placeholder="20123456" style="width:140px;padding:6px 8px;" />
+              <button type="button" class="btn-secondary btn-sm" data-save-phone="1">حفظ</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      html += buildAccountBox("owner", "👑 حساب صاحب المقهى (index.html)", meta.ownerEmail, savedOwnerPass, false);
+
+      if (wi.w1.uid) {
+        html += buildAccountBox("w1", `☀️ ${escapeHtml(wi.w1.name)} — صباح / 1 (رمز المقهى: ${escapeHtml(meta.code || "")})`, wi.w1.email || `w_${meta.code}@cassacafe.app`, wi.w1.pin, true);
+      }
+      if (wi.w2.uid) {
+        html += buildAccountBox("w2", `🌙 ${escapeHtml(wi.w2.name)} — عشية / 2 (رمز المقهى: ${escapeHtml(meta.code || "")})`, wi.w2.email || `w2_${meta.code}@cassacafe.app`, wi.w2.pin, true);
+      }
+
+      html += `
+        <div class="grid-2" style="margin-top:4px;">
+          <button type="button" class="btn-wa btn-full" data-send-creds-wa="1">📲 إرسال الكل عبر واتساب</button>
+          <button type="button" class="btn-secondary btn-full" data-copy-creds="1">📋 نسخ كل البيانات</button>
+        </div>
+      `;
+
+      document.getElementById("cmBody").innerHTML = html;
+    }
+
+    document.getElementById("cmBody").addEventListener("click", async (e) => {
+      const cafeId = state.credsCafeId;
+      const t = state.tenants[cafeId];
+      if (!cafeId || !t) return;
+
+      const genBtn = e.target.closest("[data-gen-secret]");
+      if (genBtn) {
+        const type = genBtn.dataset.genSecret;
+        const inp = document.getElementById(`cmNew_${type}`);
+        if (inp) inp.value = (type === "owner") ? randomPass(8) : randomPin(6);
+        return;
+      }
+
+      if (e.target.closest("[data-save-phone]")) {
+        const phone = (document.getElementById("cmPhoneInput").value || "").trim();
+        try {
+          await db.ref(`tenants/${cafeId}/meta/phone`).set(phone);
+          showToast("تم حفظ رقم الهاتف.");
+        } catch (err) { showToast("فشل الحفظ: " + err.message, "err"); }
+        return;
+      }
+
+      if (e.target.closest("[data-reset-owner-email]")) {
+        const email = t.meta && t.meta.ownerEmail;
         if (!email) return;
-        if (!confirm(`إرسال رابط إعادة تعيين كلمة السر إلى ${email}؟`)) return;
+        if (!confirm(`إرسال رابط تغيير كلمة السر إلى بريد المالك (${email})؟`)) return;
         try {
           await auth.sendPasswordResetEmail(email);
-          showToast("تم إرسال رابط استعادة كلمة السر للمالك.");
-        } catch (err) {
-          showToast(translateAuthError(err), "err");
+          showToast("تم إرسال رابط استعادة كلمة السر إلى بريد المالك.");
+        } catch (err) { showToast(translateAuthError(err), "err"); }
+        return;
+      }
+
+      if (e.target.closest("[data-send-creds-wa]")) {
+        openWhatsAppMessage((t.meta && t.meta.phone) || "", buildCafeCredentialsText(cafeId, true));
+        return;
+      }
+
+      if (e.target.closest("[data-copy-creds]")) {
+        const txt = buildCafeCredentialsText(cafeId, true);
+        try { await navigator.clipboard.writeText(txt); showToast("تم نسخ كل بيانات الدخول."); }
+        catch (_) { showInfoModal("📋 بيانات الدخول", txt, (t.meta && t.meta.phone) || ""); }
+        return;
+      }
+
+      const chBtn = e.target.closest("[data-change-secret]");
+      if (chBtn) {
+        const type = chBtn.dataset.changeSecret;
+        const wi = getWorkersInfo(t);
+        const meta = t.meta || {};
+        const newVal = (document.getElementById(`cmNew_${type}`).value || "").trim();
+        if (newVal.length < 6) {
+          showToast("يجب أن تكون القيمة الجديدة 6 أحرف/أرقام على الأقل.", "err");
+          return;
         }
-      } else if (action === "copy") {
-        const name = (tenant.config && tenant.config.cafeName) || (tenant.meta && tenant.meta.name) || "";
-        const code = (tenant.meta && tenant.meta.code) || "";
-        const mode = (tenant.config && tenant.config.operationMode) || "solo";
-        const wi = getWorkersInfo(tenant);
-        let txt = `☕ روابط تطبيق ${name}\n`;
-        txt += `• تطبيق المالك: ${APP_BASE_URL}/\n`;
-        txt += `  البريد: ${(tenant.meta && tenant.meta.ownerEmail) || ""}\n`;
-        if (mode === "team") {
-          txt += `• تطبيق العامل: ${APP_BASE_URL}/worker.html\n`;
-          txt += `  رمز المقهى: ${code}\n`;
-          txt += `  العامل 1 (صباح): ${wi.w1.name}\n`;
-          if (wi.count === 2) txt += `  العامل 2 (عشية): ${wi.w2.name}\n`;
+
+        let email = "", oldVal = "";
+        if (type === "owner") {
+          email = meta.ownerEmail || "";
+          oldVal = ((state.adminSecrets[cafeId] && state.adminSecrets[cafeId].owner && state.adminSecrets[cafeId].owner.pass) || "").trim();
+        } else if (type === "w1") {
+          email = wi.w1.email || `w_${meta.code}@cassacafe.app`;
+          oldVal = (wi.w1.pin || "").trim();
+        } else {
+          email = wi.w2.email || `w2_${meta.code}@cassacafe.app`;
+          oldVal = (wi.w2.pin || "").trim();
         }
+
+        if (!oldVal) {
+          const oldInp = document.getElementById(`cmOld_${type}`);
+          oldVal = oldInp ? oldInp.value.trim() : "";
+        }
+        if (!oldVal) {
+          showToast(type === "owner"
+            ? "أدخل كلمة السر الحالية أو استخدم زر «📧 رابط استعادة بالبريد»."
+            : "أدخل الـ PIN الحالي أولاً لتحديثه وحفظه.", "err");
+          return;
+        }
+
+        chBtn.disabled = true;
+        const origTxt = chBtn.textContent;
+        chBtn.textContent = "جارٍ التغيير...";
+        const secAuth = getSecondaryAuth();
         try {
-          await navigator.clipboard.writeText(txt);
-          showToast("تم نسخ الروابط وبيانات الدخول.");
-        } catch (_) {
-          alert(txt);
+          const cred = await secAuth.signInWithEmailAndPassword(email, oldVal);
+          if (newVal !== oldVal) {
+            await cred.user.updatePassword(newVal);
+          }
+          await secAuth.signOut();
+
+          const nowMs = Date.now();
+          if (type === "owner") {
+            await db.ref(`super_admin_secrets/${cafeId}/owner`).set({ email, pass: newVal, updatedAt: nowMs });
+          } else {
+            await db.ref(`tenants/${cafeId}/owner_secrets/workers/${type}`).set({ email, pin: newVal, updatedAt: nowMs });
+          }
+
+          showToast(type === "owner" ? "✅ تم تغيير كلمة سر المالك بنجاح." : "✅ تم تغيير الـ PIN بنجاح وحفظه.");
+          renderCredsModalBody();
+        } catch (err) {
+          if (type === "owner" && (err.code === "auth/wrong-password" || err.code === "auth/invalid-credential")) {
+            showToast("كلمة السر المحفوظة لم تعد مطابقة (ربما غيّرها المالك بنفسه). أرسل له «📧 رابط استعادة بالبريد».", "err");
+          } else {
+            showToast("تعذّر التغيير: " + translateAuthError(err), "err");
+          }
+        } finally {
+          secAuth.signOut().catch(() => {});
+          chBtn.disabled = false;
+          chBtn.textContent = origTxt;
         }
       }
     });
 
-    // ============ 3. نافذة تعديل النمط والعمال ============
+    // ============ 4. تعديل النمط والعمال ============
     function syncModeModalUI() {
       const tenant = state.tenants[state.activeCafeId];
       const wi = getWorkersInfo(tenant);
+      const pat = state.mmPattern;
+      const pm = PATTERN_META[pat];
+      const effCount = getEffectiveWorkerCount(pat, state.mmWCount);
 
-      document.querySelectorAll("[data-mm-mode]").forEach((b) => b.classList.toggle("active", b.dataset.mmMode === state.mmMode));
+      document.querySelectorAll("[data-mm-pat]").forEach((b) => b.classList.toggle("active", b.dataset.mmPat === pat));
       document.querySelectorAll("[data-mm-wcount]").forEach((b) => b.classList.toggle("active", Number(b.dataset.mmWcount) === state.mmWCount));
 
-      const showWorkers = state.mmMode !== "solo";
-      const isTeam = state.mmMode === "team";
-      const hasTwo = showWorkers && state.mmWCount === 2;
+      document.getElementById("mmWorkersSection").classList.toggle("hidden", !pm.hasWorkers);
+      document.getElementById("mmWCountWrap").classList.toggle("hidden", pat !== "owner_with_worker");
 
-      document.getElementById("mmWorkersSection").classList.toggle("hidden", !showWorkers);
+      document.getElementById("mmW1Title").textContent = pat === "worker_only"
+        ? "👷 العامل (يوم كامل)"
+        : (pat === "worker_owner" || pat === "two_workers" ? "☀️ العامل 1 (وردية الصباح)" : "👷 العامل 1");
+      document.getElementById("mmW2Title").textContent = pat === "two_workers" ? "🌙 العامل 2 (وردية العشية)" : "👷 العامل 2";
 
-      // العامل 1
       const hasW1Auth = Boolean(wi.w1.uid);
-      document.getElementById("mmW1PinWrap").classList.toggle("hidden", !(isTeam && !hasW1Auth));
-      document.getElementById("mmW1Pin").required = isTeam && !hasW1Auth;
+      const needNewAuth1 = pm.needsAuth >= 1 && !hasW1Auth;
+      document.getElementById("mmW1PinWrap").classList.toggle("hidden", !needNewAuth1);
+      document.getElementById("mmW1Pin").required = needNewAuth1;
       const w1Hint = document.getElementById("mmW1ExistingHint");
-      if (isTeam && hasW1Auth) {
-        w1Hint.textContent = `✓ حساب العامل 1 جاهز — رمز المقهى: ${(tenant.meta && tenant.meta.code) || ""}`;
+      if (pm.needsAuth >= 1 && hasW1Auth) {
+        w1Hint.textContent = `✓ حساب العامل 1 جاهز${wi.w1.pin ? ` — PIN: ${wi.w1.pin}` : ""} (لتغييره افتح «🔑 الحسابات والـ PIN»)`;
         w1Hint.classList.remove("hidden");
       } else {
         w1Hint.classList.add("hidden");
       }
 
-      // العامل 2
       const hasW2Auth = Boolean(wi.w2.uid);
-      document.getElementById("mmW2Box").classList.toggle("hidden", !hasTwo);
-      document.getElementById("mmW2PinWrap").classList.toggle("hidden", !(isTeam && hasTwo && !hasW2Auth));
-      document.getElementById("mmW2Pin").required = isTeam && hasTwo && !hasW2Auth;
+      const needNewAuth2 = pm.needsAuth >= 2 && !hasW2Auth;
+      document.getElementById("mmW2Box").classList.toggle("hidden", effCount < 2);
+      document.getElementById("mmW2PinWrap").classList.toggle("hidden", !needNewAuth2);
+      document.getElementById("mmW2Pin").required = needNewAuth2;
       const w2Hint = document.getElementById("mmW2ExistingHint");
-      if (isTeam && hasTwo && hasW2Auth) {
-        w2Hint.textContent = `✓ حساب العامل 2 جاهز — يدخل بزر «عشية 2» بنفس رمز المقهى`;
+      if (pm.needsAuth >= 2 && hasW2Auth) {
+        w2Hint.textContent = `✓ حساب العامل 2 جاهز${wi.w2.pin ? ` — PIN: ${wi.w2.pin}` : ""} (لتغييره افتح «🔑 الحسابات والـ PIN»)`;
         w2Hint.classList.remove("hidden");
       } else {
         w2Hint.classList.add("hidden");
       }
     }
 
-    document.getElementById("mmModeBtns").addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-mm-mode]");
+    document.getElementById("mmPatternBtns").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-mm-pat]");
       if (!btn) return;
-      state.mmMode = btn.dataset.mmMode;
+      state.mmPattern = btn.dataset.mmPat;
       syncModeModalUI();
     });
     document.getElementById("mmWorkerCountBtns").addEventListener("click", (e) => {
@@ -1540,8 +1823,8 @@
       const cfg = tenant.config || {};
       const wi = getWorkersInfo(tenant);
 
-      state.mmMode = cfg.operationMode || "solo";
-      state.mmWCount = wi.count;
+      state.mmPattern = wi.pattern;
+      state.mmWCount = wi.count === 2 ? 2 : 1;
 
       document.getElementById("mmCafeTitle").textContent = `النمط والعمال — ${cfg.cafeName || (tenant.meta && tenant.meta.name) || ""}`;
       document.getElementById("mmW1Name").value = wi.w1.name;
@@ -1563,11 +1846,12 @@
       if (!tenant) return;
 
       const wi = getWorkersInfo(tenant);
-      const mode = state.mmMode;
-      const wCount = mode === "solo" ? 0 : state.mmWCount;
+      const pat = state.mmPattern;
+      const pm = PATTERN_META[pat];
+      const wCount = getEffectiveWorkerCount(pat, state.mmWCount);
       const code = String((tenant.meta && tenant.meta.code) || "").toLowerCase();
 
-      const w1Name = document.getElementById("mmW1Name").value.trim() || "عامل الصباح";
+      const w1Name = document.getElementById("mmW1Name").value.trim() || (pat === "worker_only" ? "العامل" : "عامل الصباح");
       const w1Wage = parseNum(document.getElementById("mmW1Wage").value);
       const w1Pin = document.getElementById("mmW1Pin").value.trim();
 
@@ -1575,11 +1859,11 @@
       const w2Wage = parseNum(document.getElementById("mmW2Wage").value);
       const w2Pin = document.getElementById("mmW2Pin").value.trim();
 
-      if (mode === "team" && !wi.w1.uid && w1Pin.length < 6) {
+      if (pm.needsAuth >= 1 && !wi.w1.uid && w1Pin.length < 6) {
         showToast("الرمز السري للعامل 1 يجب أن يكون 6 أرقام/أحرف على الأقل.", "err");
         return;
       }
-      if (mode === "team" && wCount === 2 && !wi.w2.uid && w2Pin.length < 6) {
+      if (pm.needsAuth >= 2 && !wi.w2.uid && w2Pin.length < 6) {
         showToast("الرمز السري للعامل 2 يجب أن يكون 6 أرقام/أحرف على الأقل.", "err");
         return;
       }
@@ -1592,44 +1876,45 @@
         const createdLines = [];
         const nowMs = Date.now();
 
-        updates[`tenants/${cafeId}/config/operationMode`] = mode;
+        updates[`tenants/${cafeId}/config/operationMode`] = pm.opMode;
+        updates[`tenants/${cafeId}/config/workPattern`] = pat;
         updates[`tenants/${cafeId}/config/workerName`] = w1Name;
         updates[`tenants/${cafeId}/config/defaultDailyWage`] = w1Wage;
         updates[`tenants/${cafeId}/config/workers`] = {
-          w1: { name: w1Name, defaultWage: w1Wage, shift: "morning", active: mode !== "solo" },
-          w2: { name: w2Name, defaultWage: w2Wage, shift: "evening", active: mode !== "solo" && wCount === 2 }
+          w1: { name: w1Name, defaultWage: w1Wage, shift: pm.w1Shift, active: wCount >= 1 },
+          w2: { name: w2Name, defaultWage: w2Wage, shift: "evening", active: wCount === 2 }
         };
 
-        // معالجة حساب العامل 1
-        if (mode === "team" && !wi.w1.uid) {
+        if (pm.needsAuth >= 1 && !wi.w1.uid) {
           const email1 = `w_${code}@cassacafe.app`;
           const c1 = await secAuth.createUserWithEmailAndPassword(email1, w1Pin);
           const uid1 = c1.user.uid;
           await secAuth.signOut();
-          updates[`users/${uid1}`] = { role: "worker", cafeId, active: true, email: email1, name: w1Name, slot: "w1", shift: "morning", createdAt: nowMs };
+          updates[`users/${uid1}`] = { role: "worker", cafeId, active: true, email: email1, name: w1Name, slot: "w1", shift: pm.w1Shift, createdAt: nowMs };
           updates[`tenants/${cafeId}/meta/workerUid`] = uid1;
           updates[`tenants/${cafeId}/meta/workerEmail`] = email1;
           updates[`tenants/${cafeId}/meta/workers/w1`] = { uid: uid1, email: email1 };
-          createdLines.push(`• ${w1Name} (صباح 1) — PIN: ${w1Pin}`);
+          updates[`tenants/${cafeId}/owner_secrets/workers/w1`] = { email: email1, pin: w1Pin, updatedAt: nowMs };
+          createdLines.push(`• ${w1Name} (صباح / 1) — PIN: ${w1Pin}`);
         } else if (wi.w1.uid) {
-          updates[`users/${wi.w1.uid}/active`] = (mode === "team");
+          updates[`users/${wi.w1.uid}/active`] = (pm.needsAuth >= 1);
           updates[`users/${wi.w1.uid}/name`] = w1Name;
           updates[`users/${wi.w1.uid}/slot`] = "w1";
-          updates[`users/${wi.w1.uid}/shift`] = "morning";
+          updates[`users/${wi.w1.uid}/shift`] = pm.w1Shift;
           updates[`tenants/${cafeId}/meta/workers/w1`] = { uid: wi.w1.uid, email: wi.w1.email || `w_${code}@cassacafe.app` };
         }
 
-        // معالجة حساب العامل 2
-        if (mode === "team" && wCount === 2 && !wi.w2.uid) {
+        if (pm.needsAuth >= 2 && !wi.w2.uid) {
           const email2 = `w2_${code}@cassacafe.app`;
           const c2 = await secAuth.createUserWithEmailAndPassword(email2, w2Pin);
           const uid2 = c2.user.uid;
           await secAuth.signOut();
           updates[`users/${uid2}`] = { role: "worker", cafeId, active: true, email: email2, name: w2Name, slot: "w2", shift: "evening", createdAt: nowMs };
           updates[`tenants/${cafeId}/meta/workers/w2`] = { uid: uid2, email: email2 };
-          createdLines.push(`• ${w2Name} (عشية 2) — PIN: ${w2Pin}`);
+          updates[`tenants/${cafeId}/owner_secrets/workers/w2`] = { email: email2, pin: w2Pin, updatedAt: nowMs };
+          createdLines.push(`• ${w2Name} (عشية / 2) — PIN: ${w2Pin}`);
         } else if (wi.w2.uid) {
-          updates[`users/${wi.w2.uid}/active`] = (mode === "team" && wCount === 2);
+          updates[`users/${wi.w2.uid}/active`] = (pm.needsAuth >= 2);
           updates[`users/${wi.w2.uid}/name`] = w2Name;
           updates[`users/${wi.w2.uid}/slot`] = "w2";
           updates[`users/${wi.w2.uid}/shift`] = "evening";
@@ -1637,12 +1922,11 @@
 
         await db.ref().update(updates);
         closeModal("modeModal");
-        showToast("تم تحديث النمط وبيانات العمال بنجاح.");
+        showToast("تم تحديث نمط التشغيل والعمال بنجاح.");
 
         if (createdLines.length) {
           const msg = `تم إنشاء حسابات العمال الجديدة:\nالرابط: ${APP_BASE_URL}/worker.html\nرمز المقهى: ${code}\n` + createdLines.join("\n");
-          try { await navigator.clipboard.writeText(msg); } catch (_) {}
-          alert(msg);
+          showInfoModal("✅ حسابات العمال الجديدة", msg, (tenant.meta && tenant.meta.phone) || "");
         }
       } catch (err) {
         showToast("فشل التحديث: " + translateAuthError(err), "err");
@@ -1652,7 +1936,7 @@
       }
     });
 
-    // ============ 4. تجديد الاشتراك ============
+    // ============ 5. تجديد الاشتراك ============
     function openRenewModal(cafeId) {
       state.activeCafeId = cafeId;
       const tenant = state.tenants[cafeId];
@@ -1690,7 +1974,7 @@
       }
     });
 
-    // ============ 5. تجهيز المقهى (مباعة / مخزن / استهلاكية) ============
+    // ============ 6. تجهيز المقهى (مباعة / مخزن / استهلاكية) ============
     function getTenantStock(cafeId) {
       const t = state.tenants[cafeId];
       return (t && t.live && t.live.stock_state && t.live.stock_state.stock) || {};
@@ -1744,7 +2028,6 @@
       const prods = getTenantProducts(cafeId);
       const cons = getTenantConsumables(cafeId);
 
-      // 1. السلع المباعة
       const prodEl = document.getElementById("spProdList");
       if (!prods.length) {
         prodEl.innerHTML = `<div class="empty-box">لا توجد سلع مباعة بعد.<br/>اضغط <strong>«+ سلعة مباعة»</strong> أو <strong>«⚡ قائمة مبدئية»</strong> لتجهيز أزرار البيع.</div>`;
@@ -1754,11 +2037,8 @@
           const isActive = p.active !== false;
           const st = p.stockItemId ? stockObj[p.stockItemId] : null;
           let linkTxt = "🔒 تحضير مباشر";
-          if (st && Number(p.stockDeduct) > 0) {
-            linkTxt = `📦 يخصم <strong>${formatQty(p.stockDeduct, st.unit)}</strong> من <strong>${escapeHtml(st.name)}</strong>`;
-          } else if (p.stockItemId && !st) {
-            linkTxt = "⚠️ مرتبط بمادة مخزن محذوفة";
-          }
+          if (st && Number(p.stockDeduct) > 0) linkTxt = `📦 يخصم <strong>${formatQty(p.stockDeduct, st.unit)}</strong> من <strong>${escapeHtml(st.name)}</strong>`;
+          else if (p.stockItemId && !st) linkTxt = "⚠️ مرتبط بمادة مخزن محذوفة";
           const unitTxt = p.unit ? ` / ${escapeHtml(p.unit)}` : "";
           return `
             <div class="item-card ${isActive ? "" : "inactive"}">
@@ -1783,7 +2063,6 @@
         }).join("");
       }
 
-      // 2. سلع المخزن
       const stockArr = Object.entries(stockObj)
         .map(([id, it]) => ({ id, ...it }))
         .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "ar"));
@@ -1812,7 +2091,6 @@
         }).join("");
       }
 
-      // 3. السلع الاستهلاكية
       const consEl = document.getElementById("spConsList");
       consEl.innerHTML = cons.length
         ? cons.map((name, idx) => `
@@ -1835,16 +2113,13 @@
         await db.ref(`tenants/${cafeId}/config/consumableQuickTags`).set([...cur, val]);
         inp.value = "";
         showToast(`تمت إضافة «${val}».`);
-      } catch (err) {
-        showToast("فشل الحفظ: " + err.message, "err");
-      }
+      } catch (err) { showToast("فشل الحفظ: " + err.message, "err"); }
     });
 
-    // قائمة مبدئية كاملة على نمط مقهى الكروان
     document.getElementById("spSeedBtn").addEventListener("click", async () => {
       const cafeId = state.setupCafeId;
       if (!cafeId) return;
-      if (!confirm("توليد قائمة مبدئية (بن، شاي، مياه، قازوز، كايك، رامي + سلع مخزن واستهلاكية)؟ يمكنك تعديل أي سعر أو حذف أي صنف بعدها.")) return;
+      if (!confirm("توليد قائمة مبدئية (بن، شاي، مياه، قازوز، كايك، رامي + سلع مخزن واستهلاكية)؟")) return;
 
       const nowMs = Date.now();
       const stCoffee = db.ref().push().key;
@@ -1884,12 +2159,9 @@
       try {
         await db.ref(`tenants/${cafeId}`).update(updates);
         showToast("تم تجهيز القائمة المبدئية بنجاح.");
-      } catch (err) {
-        showToast("فشل العملية: " + err.message, "err");
-      }
+      } catch (err) { showToast("فشل العملية: " + err.message, "err"); }
     });
 
-    // ============ إضافة / تعديل سلعة مباعة (أزرار داكنة) ============
     function syncSaProdUI() {
       document.querySelectorAll("[data-pcat]").forEach((b) => b.classList.toggle("active", b.dataset.pcat === state.saPCat));
       document.querySelectorAll("[data-punit]").forEach((b) => b.classList.toggle("active", b.dataset.punit === state.saPUnit));
@@ -1932,12 +2204,10 @@
       document.getElementById("saProdForm").reset();
       const stockObj = getTenantStock(state.setupCafeId);
 
-      // بناء أزرار الربط بالمخزن
-      const stBtnsHtml = `<button type="button" class="opt-btn" data-pstock="">🔒 تحضير مباشر</button>` +
+      document.getElementById("saPStockBtns").innerHTML = `<button type="button" class="opt-btn" data-pstock="">🔒 تحضير مباشر</button>` +
         Object.entries(stockObj).map(([id, st]) =>
           `<button type="button" class="opt-btn" data-pstock="${escapeHtml(id)}">📦 ${escapeHtml(st.name)}</button>`
         ).join("");
-      document.getElementById("saPStockBtns").innerHTML = stBtnsHtml;
 
       if (prodId) {
         const prod = getTenantProducts(state.setupCafeId).find((p) => p.id === prodId);
@@ -1974,44 +2244,28 @@
       const stockDeduct = state.saPStockId ? parseNum(document.getElementById("saPDeduct").value) : 0;
       const active = document.getElementById("saPActive").checked;
 
-      if (!name || price <= 0) {
-        showToast("أدخل اسم السلعة وثمنها بالمليم (مثال: 1 500).", "err");
-        return;
-      }
-      if (state.saPStockId && stockDeduct <= 0) {
-        showToast("أدخل الكمية المخصومة لكل بيعة.", "err");
-        return;
-      }
+      if (!name || price <= 0) { showToast("أدخل اسم السلعة وثمنها بالمليم (مثال: 1 500).", "err"); return; }
+      if (state.saPStockId && stockDeduct <= 0) { showToast("أدخل الكمية المخصومة لكل بيعة.", "err"); return; }
 
       const id = state.editingProdId || db.ref().push().key;
       const existing = state.editingProdId ? getTenantProducts(cafeId).find((p) => p.id === id) : null;
 
       try {
         await db.ref(`tenants/${cafeId}/config/products/${id}`).set({
-          id,
-          name,
-          category: state.saPCat,
-          unit: state.saPUnit,
-          price,
+          id, name, category: state.saPCat, unit: state.saPUnit, price,
           stockItemId: state.saPStockId || "",
           stockDeduct: state.saPStockId ? stockDeduct : 0,
-          active,
-          createdAt: (existing && existing.createdAt) || Date.now()
+          active, createdAt: (existing && existing.createdAt) || Date.now()
         });
         closeModal("saProdModal");
         showToast(state.editingProdId ? "تم تعديل السلعة." : "تمت إضافة السلعة.");
-      } catch (err) {
-        showToast("فشل الحفظ: " + err.message, "err");
-      }
+      } catch (err) { showToast("فشل الحفظ: " + err.message, "err"); }
     });
 
-    // ============ إضافة / تعديل مادة مخزن (أزرار داكنة) ============
     function syncSaStockUI() {
       document.querySelectorAll("[data-stunit]").forEach((b) => b.classList.toggle("active", b.dataset.stunit === state.saStUnit));
       const opts = PACK_OPTIONS[state.saStUnit] || PACK_OPTIONS.unit;
-      if (!opts.some((o) => o.size === state.saStPackSize)) {
-        state.saStPackSize = opts[0].size;
-      }
+      if (!opts.some((o) => o.size === state.saStPackSize)) state.saStPackSize = opts[0].size;
       document.getElementById("saStPackBtns").innerHTML = opts.map((o) =>
         `<button type="button" class="opt-btn ${o.size === state.saStPackSize ? "active" : ""}" data-stpack="${o.size}">${escapeHtml(o.fullLabel)}</button>`
       ).join("");
@@ -2078,12 +2332,9 @@
         await db.ref(`tenants/${cafeId}`).update(updates);
         closeModal("saStockModal");
         showToast(state.editingStockId ? "تم تحديث مادة المخزن." : "تمت إضافة المادة للمخزن.");
-      } catch (err) {
-        showToast("فشل الحفظ: " + err.message, "err");
-      }
+      } catch (err) { showToast("فشل الحفظ: " + err.message, "err"); }
     });
 
-    // تفويض نقرات قوائم التجهيز
     document.getElementById("setupModal").addEventListener("click", async (e) => {
       const cafeId = state.setupCafeId;
       if (!cafeId) return;
@@ -2144,9 +2395,7 @@
           lowStockUnitLimit: parseNum(document.getElementById("spLowUnit").value)
         });
         showToast("تم حفظ عتبات التنبيه.");
-      } catch (err) {
-        showToast("فشل الحفظ: " + err.message, "err");
-      }
+      } catch (err) { showToast("فشل الحفظ: " + err.message, "err"); }
     });
   </script>
 </body>
