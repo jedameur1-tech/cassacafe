@@ -235,7 +235,7 @@
     .border-green-600 { border-color: #06d6a0; }
     .border-red-600 { border-color: #ef233c; }
 
-    /* شاشة تسجيل الدخول */
+    /* شاشة تسجيل الدخول وأزرار اختيار العامل والوردية */
     .auth-screen {
       min-height: 100vh;
       display: flex;
@@ -250,6 +250,22 @@
       border: 2px solid #ffb703;
       border-radius: 20px;
       padding: 22px 18px;
+    }
+    .slot-btn {
+      width: 100%;
+      padding: 10px 6px;
+      border-radius: 12px;
+      border: 1.5px solid #52437a;
+      background-color: #141022;
+      color: #ffea9f;
+      font-weight: 800;
+      font-size: 13px !important;
+      text-align: center;
+    }
+    .slot-btn-active {
+      border: 2px solid #ffe169;
+      background-color: #ffb703;
+      color: #0b0814;
     }
 
     /* أزرار التبويب العلوية */
@@ -359,7 +375,7 @@
 </head>
 <body class="min-h-screen">
 
-  <!-- 1. شاشة دخول العامل (بنفس ثيم الكروان) -->
+  <!-- 1. شاشة دخول العامل (دعم عامل 1 صباح وعامل 2 عشية بدون نوافذ بيضاء) -->
   <section id="login-view" class="auth-screen">
     <div class="auth-box text-right space-y-3">
       <div class="text-center space-y-1">
@@ -372,6 +388,13 @@
         <div>
           <label for="cafeCodeInput" class="text-[12px] text-amber-200 block mb-1 font-extrabold">رمز المقهى:</label>
           <input id="cafeCodeInput" type="text" dir="ltr" autocomplete="off" placeholder="مثال: 101" class="num-input-ltr bg-[#1f1610] border-2 border-stone-600 rounded-xl p-2.5 text-amber-200 font-mono font-extrabold outline-none" />
+        </div>
+        <div>
+          <label class="text-[12px] text-amber-200 block mb-1 font-extrabold">حساب العامل:</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button id="loginSlotW1" type="button" onclick="selectLoginSlot('w1')" class="slot-btn slot-btn-active">☀️ صباح (عامل 1)</button>
+            <button id="loginSlotW2" type="button" onclick="selectLoginSlot('w2')" class="slot-btn">🌙 عشية (عامل 2)</button>
+          </div>
         </div>
         <div>
           <label for="pinInput" class="text-[12px] text-amber-200 block mb-1 font-extrabold">الرمز السري (PIN):</label>
@@ -600,16 +623,19 @@
       var map = {
         "auth/invalid-email": "رمز المقهى غير صالح.",
         "auth/wrong-password": "الرمز السري (PIN) غير صحيح.",
-        "auth/invalid-credential": "رمز المقهى أو الرمز السري غير صحيح.",
-        "auth/user-not-found": "لم يتم العثور على حساب عامل بهذا الرمز.",
+        "auth/invalid-credential": "رمز المقهى أو حساب العامل أو الرمز السري غير صحيح.",
+        "auth/user-not-found": "لا يوجد حساب عامل بهذا الرمز في هذا الاختيار.",
         "auth/too-many-requests": "محاولات كثيرة متتالية، انتظر قليلاً.",
         "auth/network-request-failed": "تحقّق من الاتصال بالإنترنت."
       };
       return (err && map[err.code]) || (err && err.message) || "حدث خطأ غير متوقع.";
     }
 
-    // ===== التخزين المحلي المعزول لكل مقهى =====
-    function sKey(name) { return 'cc_w_' + (state.cafeId || 'none') + '_' + name; }
+    // ===== التخزين المحلي المعزول لكل مقهى ولكل عامل =====
+    function sKey(name) {
+      var uidPart = (state.user && state.user.uid) ? state.user.uid : state.workerSlot;
+      return 'cc_w_' + (state.cafeId || 'none') + '_' + uidPart + '_' + name;
+    }
     function safeGetStorage(key, fallback) {
       try {
         var v = localStorage.getItem(key);
@@ -632,7 +658,10 @@
     // ===== الحالة العامة =====
     var state = {
       user: null,
+      userProfile: null,
       cafeId: null,
+      loginSlot: safeGetStorage('cassacafe_worker_slot', 'w1') === 'w2' ? 'w2' : 'w1',
+      workerSlot: 'w1',
       meta: null,
       config: {},
       stockObj: {},
@@ -644,6 +673,7 @@
       isSyncingNow: false,
       activeMonthKey: getLocalTodayDateStr().slice(0, 7),
       date: getLocalTodayDateStr(),
+      selectedShift: 'morning',
       lastInvoiceNumber: 0,
 
       todaySales: [],
@@ -652,6 +682,7 @@
       showSettlementModal: false,
       settlementLoading: false,
       settlementNote: '',
+      settlementPendingDays: 0,
       ownerSettlementNet: 0,
 
       showDailyExpenseModal: false,
@@ -687,8 +718,44 @@
 
     function getCafeName() { return (state.config && state.config.cafeName) || (state.meta && state.meta.name) || 'CassaCafe'; }
     function getOwnerName() { return (state.config && state.config.ownerName) || 'الإدارة'; }
-    function getWorkerName() { return (state.config && state.config.workerName) || 'العامل'; }
-    function getDailyWage() { return parseNum(state.config && state.config.defaultDailyWage); }
+    function getWorkPattern() {
+      var cfg = state.config || {};
+      if (cfg.workPattern) return cfg.workPattern;
+      if (cfg.workers && cfg.workers.w2 && cfg.workers.w2.active) return 'two_workers';
+      return 'worker_only';
+    }
+    function getMyWorkerConfig() {
+      var cfg = state.config || {};
+      var slot = state.workerSlot === 'w2' ? 'w2' : 'w1';
+      var wObj = (cfg.workers && cfg.workers[slot]) ? cfg.workers[slot] : null;
+      if (slot === 'w2') {
+        return {
+          name: (wObj && wObj.name) || (state.userProfile && state.userProfile.name) || 'عامل العشية',
+          defaultWage: parseNum(wObj && wObj.defaultWage),
+          shift: (wObj && wObj.shift) || 'evening',
+          active: !!(wObj && wObj.active)
+        };
+      }
+      return {
+        name: (wObj && wObj.name) || cfg.workerName || (state.userProfile && state.userProfile.name) || 'العامل',
+        defaultWage: parseNum((wObj && wObj.defaultWage !== undefined && wObj.defaultWage !== null) ? wObj.defaultWage : cfg.defaultDailyWage),
+        shift: (wObj && wObj.shift) || (getWorkPattern() === 'worker_only' ? 'full' : 'morning'),
+        active: wObj ? (wObj.active !== false) : true
+      };
+    }
+    function getWorkerName() { return getMyWorkerConfig().name; }
+    function getDailyWage() { return getMyWorkerConfig().defaultWage; }
+    function getDefaultShiftForWorker() {
+      var pat = getWorkPattern();
+      if (pat === 'worker_only') return 'full';
+      if (state.workerSlot === 'w2') return 'evening';
+      return 'morning';
+    }
+    function getShiftLabel(shiftKey) {
+      if (shiftKey === 'morning') return '☀️ صباح';
+      if (shiftKey === 'evening') return '🌙 عشية';
+      return '📅 يوم كامل';
+    }
     function getLowWeightLimit() {
       return (state.config && state.config.lowStockWeightLimit !== undefined && state.config.lowStockWeightLimit !== null)
         ? parseNum(state.config.lowStockWeightLimit) : 1000;
@@ -777,12 +844,12 @@
       safeRemoveStorage(sKey('inv_draft'));
     }
 
-    // ===== قواعد تحويل سلع المخزن (كيلو / ستيكة / كاجو / قطعة) =====
+    // ===== قواعد تحويل سلع المخزن (كغ / ستيكة 6 / ستيكة 12 / كاجو 24 / قطعة) =====
     function getStockPurchaseRule(st) {
       if (!st) return { buyUnit: 'وحدة', buyUnitHtml: 'وحدة', factor: 1, isWeight: false };
       if (st.unit === 'g') {
         var pfW = parseNum(st.packSize) || 1000;
-        var lblW = st.packLabel || (pfW === 1000 ? 'كغ' : (pfW === 500 ? 'نصف كيلو' : 'غرام'));
+        var lblW = st.packLabel || (pfW === 1000 ? 'كغ' : (pfW === 500 ? 'نصف كغ' : 'غرام'));
         var htmlW = (pfW === 1000)
           ? 'كغ (أو بالغرام فوق <span class="num-ltr" dir="ltr">100</span>)'
           : (escapeHtmlLocal(lblW) + ' (<span class="num-ltr" dir="ltr">' + pfW + '</span> غ)');
@@ -790,7 +857,7 @@
       }
       var pf = parseNum(st.packSize) || 1;
       if (pf > 1) {
-        var pu = String(st.packLabel || 'ستيكة').replace(/\s*\(\d+\)\s*$/, '').trim() || 'ستيكة';
+        var pu = String(st.packLabel || (pf === 24 ? 'كاجو' : 'ستيكة')).replace(/\s*\(\d+\)\s*$/, '').trim() || 'ستيكة';
         return {
           buyUnit: pu + ' (' + pf + ')',
           buyUnitHtml: escapeHtmlLocal(pu) + ' (<span class="num-ltr" dir="ltr">' + pf + '</span>)',
@@ -809,7 +876,7 @@
       if (p.category === 'hot') return 'كأس';
       if (p.category === 'cold') return 'قارورة';
       if (p.category === 'food') return 'قطعة';
-      return 'حصة';
+      return 'طرح';
     }
     function isProductSoldByWeight(p) {
       var st = p.stockItemId ? state.stockObj[p.stockItemId] : null;
@@ -833,6 +900,15 @@
     }
 
     // ===== المصادقة وتسجيل الدخول =====
+    function selectLoginSlot(slot) {
+      state.loginSlot = (slot === 'w2') ? 'w2' : 'w1';
+      safeSetStorage('cassacafe_worker_slot', state.loginSlot);
+      var b1 = document.getElementById('loginSlotW1');
+      var b2 = document.getElementById('loginSlotW2');
+      if (b1) b1.className = 'slot-btn' + (state.loginSlot === 'w1' ? ' slot-btn-active' : '');
+      if (b2) b2.className = 'slot-btn' + (state.loginSlot === 'w2' ? ' slot-btn-active' : '');
+    }
+
     function showView(viewId) {
       document.getElementById('login-view').classList.toggle('hidden', viewId !== 'login');
       document.getElementById('blocked-view').classList.toggle('hidden', viewId !== 'blocked');
@@ -859,6 +935,7 @@
 
     var savedCafeCode = safeGetStorage('cassacafe_worker_code', '');
     if (savedCafeCode) document.getElementById('cafeCodeInput').value = savedCafeCode;
+    selectLoginSlot(state.loginSlot);
 
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -883,7 +960,8 @@
       btn.textContent = 'جارٍ التحقق...';
       safeSetStorage('cassacafe_worker_code', code);
 
-      auth.signInWithEmailAndPassword('w_' + code + '@cassacafe.app', pin).then(function() {
+      var prefix = (state.loginSlot === 'w2') ? 'w2_' : 'w_';
+      auth.signInWithEmailAndPassword(prefix + code + '@cassacafe.app', pin).then(function() {
         btn.disabled = false;
         btn.textContent = 'دخول';
       }).catch(function(err) {
@@ -898,6 +976,7 @@
       state.user = user;
       if (!user) {
         state.cafeId = null;
+        state.userProfile = null;
         showView('login');
         return;
       }
@@ -913,7 +992,9 @@
           return;
         }
 
+        state.userProfile = profile;
         state.cafeId = profile.cafeId;
+        state.workerSlot = (profile.slot === 'w2') ? 'w2' : 'w1';
         loadTenantLocalState();
         showView('main');
 
@@ -936,10 +1017,11 @@
     });
 
     function buildWelcomeAlertMsg(statusLine) {
+      var shiftBadge = getShiftLabel(getDefaultShiftForWorker());
       return '<span class="block bg-[#1f1610] border border-[#a87434] rounded-2xl p-3.5 text-[15px] text-amber-200 font-extrabold leading-relaxed">' +
         'مرحباً بك يا ' + escapeHtmlLocal(getWorkerName()) + ' في ' + escapeHtmlLocal(getCafeName()) + ' ☕🤝\n' +
         'ربي يعينك ويبارك في صحتك وفي رزقك، ويجعل يومك فاتحة خير وبركة وتوفيق.' +
-        '<span class="block text-[14px] text-amber-300 mt-2.5 pt-2 border-t border-stone-700">📅 يوم العمل المفتوح: ' + safeLtr(state.date) + '</span>' +
+        '<span class="block text-[13px] text-amber-300 mt-2.5 pt-2 border-t border-stone-700">📅 ' + safeLtr(state.date) + ' • ' + shiftBadge + '</span>' +
         (statusLine ? '<span class="block text-[12px] text-teal-200 mt-2 pt-2 border-t border-stone-700">' + statusLine + '</span>' : '') +
       '</span>';
     }
@@ -958,11 +1040,22 @@
 
     function pingWorkerStatus() {
       if (!state.cafeId || !state.user || isReadOnly()) return;
-      db.ref('tenants/' + state.cafeId + '/live/worker_status').set({
-        lastSeen: Date.now(),
+      var nowMs = Date.now();
+      var slot = state.workerSlot;
+      var patch = {
+        lastSeen: nowMs,
         openDate: state.date,
-        uid: state.user.uid
-      }).catch(function() {});
+        uid: state.user.uid,
+        slot: slot,
+        workerName: getWorkerName()
+      };
+      patch['slots/' + slot] = {
+        lastSeen: nowMs,
+        openDate: state.date,
+        uid: state.user.uid,
+        name: getWorkerName()
+      };
+      db.ref('tenants/' + state.cafeId + '/live/worker_status').update(patch).catch(function() {});
     }
 
     // ===== الجلب الخفيف عند الفتح أو الضغط على 🔄 فقط (بدون مستمعات دائمة) =====
@@ -1024,7 +1117,17 @@
         if (cfg.operationMode !== 'team') {
           startupPullInFlight = false;
           state.isSyncingNow = false;
-          showBlockedScreen('هذا المقهى يعمل حالياً بنمط «المالك الفردي» ولا يستخدم تطبيق العامل.');
+          showBlockedScreen('هذا المقهى يعمل حالياً بدون تطبيق عامل (الكاسة عند المالك).');
+          return;
+        }
+
+        state.meta = meta;
+        state.config = cfg;
+
+        if (!getMyWorkerConfig().active) {
+          startupPullInFlight = false;
+          state.isSyncingNow = false;
+          showBlockedScreen('تم تعطيل وردية هذا العامل في إعدادات المقهى.');
           return;
         }
 
@@ -1033,11 +1136,10 @@
           db.ref(base + '/live/worker_commands/last_cleared').set(Date.now()).catch(function() {});
         }
 
-        state.meta = meta;
-        state.config = cfg;
         state.stockObj = stock;
         if (activeMk && isValidMonthKeyLocal(activeMk)) state.activeMonthKey = String(activeMk).trim();
         if (lastInvNum !== null && lastInvNum !== undefined) state.lastInvoiceNumber = parseNum(lastInvNum);
+        state.selectedShift = getDefaultShiftForWorker();
 
         // تجهيز قائمة السلع المباعة
         var rawProds = cfg.products;
@@ -1094,7 +1196,7 @@
         } else {
           unlockWelcomeGate('✓ حسناً', '✓ تم جلب وتحديث البيانات من السحابة');
         }
-      }).catch(function(err) {
+      }).catch(function() {
         startupPullInFlight = false;
         state.isSyncingNow = false;
         if (startupHardTimerId) { clearTimeout(startupHardTimerId); startupHardTimerId = null; }
@@ -1316,7 +1418,7 @@
       return true;
     }
 
-    // ============ نافذة المبيعات (مثل مقهى الكروان) ============
+    // ============ نافذة المبيعات ============
     function openSaleModal(id) {
       blurActiveInput();
       state.activeProduct = state.products.find(function(x) { return x.id === id; }) || null;
@@ -1862,6 +1964,8 @@
           date: invDate,
           supplier: 'فاتورة مخزن',
           paymentSource: 'worker_cash',
+          workerSlot: state.workerSlot,
+          workerName: getWorkerName(),
           items: itemsPayload,
           totalAmount: finalCost,
           note: 'فاتورة عدد ' + nextInvNum,
@@ -1960,7 +2064,14 @@
         '</form></div>' + sentInvoicesListHtml;
     }
 
-    // ============ التسوية الحالية (جلب خفيف عند الطلب فقط) ============
+    // ============ التسوية الحالية (معزولة لهذا العامل فقط) ============
+    function isMySubmission(obj) {
+      if (!obj) return false;
+      if (obj.submittedBy && state.user && obj.submittedBy === state.user.uid) return true;
+      if (obj.workerSlot) return obj.workerSlot === state.workerSlot;
+      return (state.workerSlot === 'w1' && obj.submittedByRole === 'worker');
+    }
+
     function openSettlementModal() {
       blurActiveInput();
       state.showSettlementModal = true;
@@ -1974,6 +2085,7 @@
       var mySeq = ++_settlementFetchSeq;
       state.settlementLoading = true;
       state.settlementNote = '';
+      state.settlementPendingDays = 0;
       renderModalsOnly();
 
       var base = 'tenants/' + state.cafeId;
@@ -1994,12 +2106,18 @@
         var defWage = getDailyWage();
         var daysNet = 0;
         var workerPaidInvs = 0;
+        var pendingCnt = 0;
 
         Object.keys(daysObj).forEach(function(id) {
           var entry = daysObj[id];
           if (!entry || (entry.submittedByRole === 'owner' && entry.ownerShift)) return;
+          if (!isMySubmission(entry)) return;
           var dec = dayDecs[id] || null;
-          if (!dec || dec.status !== 'approved' || dec.settled) return;
+          if (!dec || dec.status === 'pending') {
+            pendingCnt++;
+            return;
+          }
+          if (dec.status !== 'approved' || dec.settled) return;
           var sales = parseNum(entry.sales);
           var exp = parseNum(entry.expensesTotal);
           var w = (dec.dailyWage !== undefined && dec.dailyWage !== null) ? parseNum(dec.dailyWage) : defWage;
@@ -2009,13 +2127,15 @@
         Object.keys(invsObj).forEach(function(id) {
           var inv = invsObj[id];
           var dec = invDecs[id] || null;
-          if (!inv || !dec || dec.status !== 'approved' || dec.settled) return;
+          if (!inv || !isMySubmission(inv)) return;
+          if (!dec || dec.status !== 'approved' || dec.settled) return;
           if (inv.paymentSource === 'worker_cash') {
             workerPaidInvs += parseNum(inv.totalAmount);
           }
         });
 
         state.settlementLoading = false;
+        state.settlementPendingDays = pendingCnt;
         state.ownerSettlementNet = Math.round(daysNet - workerPaidInvs);
         state.settlementNote = '✓ محدّث الآن لشهر ' + mk;
         safeSetStorage(sKey('settlement_net'), String(state.ownerSettlementNet));
@@ -2040,24 +2160,33 @@
       if (!state.showSettlementModal) return '';
       var currentSettlement = parseSignedNum(state.ownerSettlementNet);
       var amtColor = currentSettlement < 0 ? 'text-red-400' : 'text-amber-300';
+      var pendingNote = state.settlementPendingDays > 0
+        ? '<div class="text-[11px] font-bold text-amber-200 text-center">⏳ لديك ' + fmt(state.settlementPendingDays) + ' يومية بانتظار اعتماد الإدارة</div>'
+        : '';
       var bodyBox = state.settlementLoading
-        ? '<div class="bg-[#1f1610] border-2 border-[#d4af37] rounded-xl p-3.5 text-center"><span class="text-[13px] font-extrabold text-teal-300">⏳ جاري حساب التسوية من السحابة...</span></div>'
+        ? '<div class="bg-[#1f1610] border-2 border-[#d4af37] rounded-xl p-3.5 text-center"><span class="text-[13px] font-extrabold text-teal-300">⏳ جاري حساب تسويتك من السحابة...</span></div>'
         : '<div class="bg-[#1f1610] border-2 border-[#d4af37] rounded-xl p-3.5 flex justify-between items-center gap-2">' +
             '<span class="text-[13px] font-extrabold text-amber-200">المستحق لـ ' + escapeHtmlLocal(getOwnerName()) + ':</span>' +
             '<b class="text-[16px] font-mono font-extrabold whitespace-nowrap ' + amtColor + '">' + fmt(currentSettlement) + ' مي</b>' +
           '</div>' +
-          (state.settlementNote ? '<div class="text-[11px] font-bold text-stone-300 text-center">' + escapeHtmlLocal(state.settlementNote) + '</div>' : '');
+          pendingNote +
+          (state.settlementNote ? '<div class="text-[11px] font-bold text-stone-300 text-center">' + formatMixedRtlText(state.settlementNote) + '</div>' : '');
 
       return '<div class="karawan-modal-overlay">' +
         '<div class="karawan-modal-box text-right space-y-3">' +
-          '<h3 class="text-[15px] font-extrabold text-[#d4af37] text-center">💰 التسوية الحالية</h3>' +
+          '<h3 class="text-[15px] font-extrabold text-[#d4af37] text-center">💰 تسوية ' + escapeHtmlLocal(getWorkerName()) + '</h3>' +
           bodyBox +
           '<button type="button" onclick="closeSettlementModal()" class="btn-tap w-full py-2.5 bg-stone-800 border border-stone-600 text-stone-200 font-extrabold rounded-xl text-[14px]">إغلاق</button>' +
         '</div>' +
       '</div>';
     }
 
-    // ============ إرسال اليومية ============
+    // ============ إرسال اليومية (مع اختيار الوردية) ============
+    function selectCloseDayShift(shiftKey) {
+      state.selectedShift = shiftKey;
+      renderModalsOnly();
+    }
+
     function openCloseDayModal() {
       blurActiveInput();
       var unInp = document.getElementById('unclassifiedExpInput');
@@ -2067,6 +2196,7 @@
       if (state.todaySales.length === 0 && state.todayExpenses.length === 0) {
         return showToast('يرجى تسجيل المبيعات أو المصاريف أولاً قبل إرسال اليومية!', 'error');
       }
+      state.selectedShift = getDefaultShiftForWorker();
       state.showCloseDayModal = true;
       renderModalsOnly();
     }
@@ -2080,6 +2210,7 @@
 
       var closedDate = isValidDateStr(state.date) ? state.date : getLocalTodayDateStr();
       var monthKey = getMonthKeyFromDate(closedDate);
+      var shiftToSend = state.selectedShift || getDefaultShiftForWorker();
       var salesSnapshot = state.todaySales.slice();
       var rev = 0;
       var itemsSold = [];
@@ -2126,7 +2257,7 @@
 
       state.showCloseDayModal = false;
       state.isSendingToOwner = true;
-      state.sendingStepText = 'جاري تثبيت اليومية وإرسالها إلى ' + escapeHtmlLocal(getOwnerName()) + '...';
+      state.sendingStepText = 'جاري تثبيت ' + getShiftLabel(shiftToSend) + ' وإرسالها إلى ' + escapeHtmlLocal(getOwnerName()) + '...';
       renderModalsOnly();
 
       var nowTs = Date.now();
@@ -2134,6 +2265,10 @@
 
       db.ref('tenants/' + state.cafeId + '/submissions/' + monthKey + '/days/' + entryId).set({
         date: closedDate,
+        shift: shiftToSend,
+        workerSlot: state.workerSlot,
+        workerName: getWorkerName(),
+        expectedWage: getDailyWage(),
         sales: rev,
         itemsSold: itemsSold,
         expenses: dailyExpensesPayload,
@@ -2148,7 +2283,6 @@
       }).then(function() {
         db.ref('tenants/' + state.cafeId + '/live/signals/lastDayAt').set(nowTs).catch(function() {});
 
-        // خصم فوري محلي لعرض المتبقي التقريبي حتى التحديث القادم من الإدارة
         stockUsage.forEach(function(u) {
           if (state.stockObj[u.itemId]) {
             state.stockObj[u.itemId].qty = Math.max(0, Number(((Number(state.stockObj[u.itemId].qty) || 0) - u.qty).toFixed(3)));
@@ -2168,7 +2302,7 @@
 
         state.isSendingToOwner = false;
         state.sendingStepText = '';
-        state.thankYouModal = { closedDate: closedDate, nextDate: state.date };
+        state.thankYouModal = { closedDate: closedDate, shiftLabel: getShiftLabel(shiftToSend), nextDate: state.date };
         lastRenderedMainHtml = '';
         render();
         window.scrollTo(0, 0);
@@ -2193,18 +2327,30 @@
       });
       var wage = getDailyWage();
       var net = rev - (dailyExpSum + invExpSum + wage);
-      var warningsHtml = (state.todaySales.length === 0 ? '<div class="bg-red-950 border border-red-600 rounded-xl p-2.5 text-[11px] text-red-200 font-extrabold text-right">⚠️ تنبيه: لم تسجّل أي مبيعات لهذا اليوم بعد (المداخيل ' + fmt(0) + ')! تأكّد قبل الإرسال.</div>' : '') +
+      var warningsHtml = (state.todaySales.length === 0 ? '<div class="bg-red-950 border border-red-600 rounded-xl p-2.5 text-[11px] text-red-200 font-extrabold text-right">⚠️ تنبيه: لم تسجّل أي مبيعات بعد (المداخيل ' + fmt(0) + ')! تأكّد قبل الإرسال.</div>' : '') +
         (state.stockInvDraftItems && state.stockInvDraftItems.length > 0 ? '<div class="bg-amber-950 border border-amber-500 rounded-xl p-2.5 text-[11px] text-amber-200 font-extrabold text-right">⚠️ لديك فاتورة مخزن لم تُرسلها بعد في تبويب «الفواتير» (' + fmt(state.stockInvDraftItems.length) + ' مواد).</div>' : '');
+
+      var sh = state.selectedShift || getDefaultShiftForWorker();
+      var shiftPickerHtml =
+        '<div class="text-right">' +
+          '<div class="text-[11px] font-extrabold text-amber-200 mb-1">الوردية:</div>' +
+          '<div class="grid grid-cols-3 gap-2">' +
+            '<button type="button" onclick="selectCloseDayShift(\'morning\')" class="slot-btn' + (sh === 'morning' ? ' slot-btn-active' : '') + '">☀️ صباح</button>' +
+            '<button type="button" onclick="selectCloseDayShift(\'evening\')" class="slot-btn' + (sh === 'evening' ? ' slot-btn-active' : '') + '">🌙 عشية</button>' +
+            '<button type="button" onclick="selectCloseDayShift(\'full\')" class="slot-btn' + (sh === 'full' ? ' slot-btn-active' : '') + '">📅 يوم كامل</button>' +
+          '</div>' +
+        '</div>';
 
       return '<div class="karawan-modal-overlay"><div class="karawan-modal-box text-center space-y-3">' +
         '<div class="w-12 h-12 rounded-2xl bg-[#1f1610] border border-[#a87434] flex items-center justify-center mx-auto text-xl">📤</div>' +
         '<div><h3 class="text-[15px] font-extrabold text-[#d4af37]" dir="rtl">إرسال يومية (' + safeLtr(state.date) + ') إلى ' + escapeHtmlLocal(getOwnerName()) + '</h3><p class="text-[11px] text-teal-300 font-bold mt-0.5">📤 مراجعة الحساب النهائي قبل الإرسال</p></div>' +
+        shiftPickerHtml +
         warningsHtml +
         '<div class="bg-[#1f1610] p-3 rounded-xl text-[12px] space-y-2 text-right font-mono border border-stone-700">' +
-          '<div class="flex justify-between text-stone-200"><span class="font-sans font-bold">مداخيل اليوم:</span><b class="text-green-400">' + fmt(rev) + ' مي</b></div>' +
+          '<div class="flex justify-between text-stone-200"><span class="font-sans font-bold">مداخيل الوردية:</span><b class="text-green-400">' + fmt(rev) + ' مي</b></div>' +
           '<div class="flex justify-between text-stone-200"><span class="font-sans font-bold">مصاريف اليومية:</span><b class="text-red-400">' + fmt(-dailyExpSum) + ' مي</b></div>' +
           invoiceItemsRows.join('') +
-          '<div class="flex justify-between text-stone-200"><span class="font-sans font-bold">أجر اليوم:</span><b class="text-red-400">' + fmt(-wage) + ' مي</b></div>' +
+          '<div class="flex justify-between text-stone-200"><span class="font-sans font-bold">أجر العامل:</span><b class="text-red-400">' + fmt(-wage) + ' مي</b></div>' +
           '<div class="flex justify-between border-t border-stone-700 pt-2 ' + (net < 0 ? 'text-red-400' : 'text-amber-300') + ' font-extrabold text-[13px]"><span class="font-sans">الصافي المودع:</span><b>' + fmt(net) + ' مي</b></div>' +
         '</div>' +
         '<div class="flex gap-2 pt-1"><button type="button" onclick="executeCloseDay()" class="btn-tap flex-1 py-3 bg-[#d4af37] text-stone-950 font-extrabold rounded-xl text-[14px]">📤 إرسال الآن</button><button type="button" onclick="closeCloseDayModal()" class="btn-tap px-4 py-3 bg-stone-800 border border-stone-600 text-stone-200 font-bold rounded-xl text-[14px]">إلغاء</button></div>' +
@@ -2249,7 +2395,7 @@
             '<p class="text-[11px] font-bold text-emerald-300 leading-relaxed">ربي يبارك في صحتك وفي رزقك.</p>' +
           '</div>' +
           '<div class="bg-emerald-950 border border-emerald-500 rounded-2xl py-2.5 px-3 text-[11px] space-y-1 font-bold">' +
-            '<div class="text-emerald-200" dir="rtl">✓ وصلت اليومية إلى ' + escapeHtmlLocal(getOwnerName()) + ' ليوم (' + safeLtr(info.closedDate) + ')</div>' +
+            '<div class="text-emerald-200" dir="rtl">✓ وصلت ' + escapeHtmlLocal(info.shiftLabel) + ' ليوم (' + safeLtr(info.closedDate) + ') إلى ' + escapeHtmlLocal(getOwnerName()) + '</div>' +
             '<div class="text-amber-300" dir="rtl">✨ اليوم المفتوح الجديد: ' + safeLtr(info.nextDate) + '</div>' +
           '</div>' +
           '<button type="button" onclick="closeThankYouModal()" class="btn-tap w-full py-3 bg-[#d4af37] text-stone-950 font-extrabold rounded-xl text-[14px]">🌺 بارك الله فيكم — متابعة</button>' +
@@ -2348,7 +2494,7 @@
           '<div id="expListBox">' + buildExpensesListInnerHtml() + '</div>' +
         '</div>' +
         '<div class="bg-[#2b1f17] border border-[#a87434]/50 rounded-2xl p-3 mt-3 space-y-2.5 text-right">' +
-          '<div class="flex justify-between items-center"><h2 class="text-[13px] font-extrabold text-[#d4af37]">📋 مبيعات اليوم المسجلة (<span id="salesCountSpan">' + fmt(state.todaySales.length) + '</span>)</h2><span class="text-[10px] text-teal-300 font-extrabold">✓ جاهزة للإرسال</span></div>' +
+          '<div class="flex justify-between items-center"><h2 class="text-[13px] font-extrabold text-[#d4af37]">📋 مبيعات الوردية المسجلة (<span id="salesCountSpan">' + fmt(state.todaySales.length) + '</span>)</h2><span class="text-[10px] text-teal-300 font-extrabold">✓ جاهزة للإرسال</span></div>' +
           '<div id="salesListBox" class="space-y-2">' + buildSalesListInnerHtml() + '</div>' +
         '</div>' +
         '<button type="button" onclick="openCloseDayModal()" dir="rtl" class="btn-tap w-full py-3.5 mt-3.5 bg-[#d4af37] text-stone-950 font-extrabold rounded-xl text-[14px] block">📤 إرسال يومية (' + safeLtr(state.date) + ') إلى ' + escapeHtmlLocal(getOwnerName()) + '</button>';
@@ -2375,7 +2521,7 @@
           '<div class="flex items-center justify-between gap-2 max-w-lg mx-auto">' +
             '<div class="min-w-0">' +
               '<h1 class="text-[15px] font-extrabold text-[#d4af37] truncate">☕ ' + escapeHtmlLocal(getCafeName()) + ' — ' + escapeHtmlLocal(getWorkerName()) + '</h1>' +
-              '<div class="text-[11px] text-stone-200 font-bold mt-0.5" dir="rtl">التاريخ: <b class="text-amber-300 text-[12px]">' + safeLtr(state.date) + '</b></div>' +
+              '<div class="text-[11px] text-stone-200 font-bold mt-0.5" dir="rtl"><b class="text-amber-300 text-[12px]">' + safeLtr(state.date) + '</b> • ' + getShiftLabel(getDefaultShiftForWorker()) + '</div>' +
             '</div>' +
             '<div class="flex items-center gap-1.5 flex-shrink-0">' +
               '<button type="button" onclick="manualRefreshWorkerCloud()" title="تحديث من السحابة" class="text-[11px] px-2 py-1 rounded-xl bg-[#1f1610] border border-stone-600 text-amber-200 font-extrabold whitespace-nowrap">🔄</button>' +
