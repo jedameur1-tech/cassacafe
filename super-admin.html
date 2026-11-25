@@ -179,6 +179,7 @@
     .btn-success { background: #063b27; color: #9ef8d8; border: 1.5px solid #06d6a0; }
     .btn-wa { background: #15803d; color: #ffffff; border: 1.5px solid #22c55e; }
     .btn-danger { background: #470d1b; color: #ffc2cd; border: 1.5px solid #ef233c; }
+    .btn-danger-solid { background: #dc2626; color: #ffffff; border: 1.5px solid #f87171; }
     .btn-info { background: #092c47; color: #90e0ef; border: 1.5px solid #00b4d8; }
     .btn-sm { padding: 6px 10px; font-size: 0.78rem; }
     .btn-full { width: 100%; }
@@ -340,6 +341,7 @@
       padding: 16px;
       margin: 8px auto 24px;
     }
+    .modal-danger { border-color: var(--danger); }
     .modal-lg { max-width: 680px; }
     .modal-header {
       display: flex;
@@ -675,6 +677,27 @@
     </div>
   </div>
 
+  <!-- نافذة الحذف النهائي للمقهى -->
+  <div id="deleteCafeModal" class="modal-backdrop hidden">
+    <div class="modal modal-danger">
+      <div class="modal-header">
+        <h2 id="dcTitle" style="color: var(--danger);">🗑️ حذف المقهى نهائياً</h2>
+        <button type="button" class="close-btn" data-close="deleteCafeModal">&times;</button>
+      </div>
+      <div id="dcSummary" class="error-msg" style="line-height: 1.6;"></div>
+      <form id="deleteCafeForm">
+        <div class="form-group">
+          <label id="dcPromptLbl" for="dcConfirmInput">للتأكيد النهائي اكتب الرمز المطلوب:</label>
+          <input id="dcConfirmInput" type="text" required autocomplete="off" dir="ltr" class="num-input-ltr" />
+        </div>
+        <div class="row-flex">
+          <button id="dcSubmitBtn" type="submit" class="btn-danger-solid btn-full">🗑️ نعم، احذف المقهى نهائياً</button>
+          <button type="button" class="btn-secondary" data-close="deleteCafeModal">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- نافذة تجديد الاشتراك -->
   <div id="renewModal" class="modal-backdrop hidden">
     <div class="modal">
@@ -949,6 +972,8 @@
       activeCafeId: null,
       credsCafeId: null,
       setupCafeId: null,
+      deleteCafeId: null,
+      deleteExpectedToken: "",
       setupTab: "prods",
       editingProdId: null,
       editingStockId: null,
@@ -1139,17 +1164,18 @@
       toastTimer = setTimeout(() => el.classList.add("hidden"), 3800);
     }
 
-    function showInfoModal(title, text, phone = "") {
+    function showInfoModal(title, text, phone = "", hideWa = false) {
       state.lastInfoText = text;
       state.lastInfoPhone = phone || "";
       document.getElementById("infoModalTitle").textContent = title;
       document.getElementById("infoModalBody").textContent = text;
+      document.getElementById("infoWaBtn").classList.toggle("hidden", hideWa);
       openModal("infoModal");
     }
     document.getElementById("infoCopyBtn").addEventListener("click", async () => {
       try {
         await navigator.clipboard.writeText(state.lastInfoText);
-        showToast("تم نسخ البيانات بنجاح.");
+        showToast("تم نسخ النص بنجاح.");
       } catch (_) {
         showToast("انسخ النص يدوياً من المربع.", "err");
       }
@@ -1348,6 +1374,7 @@
               <button class="${c.meta.active === true ? "btn-danger" : "btn-success"} btn-sm" data-action="toggle" data-id="${escapeHtml(c.id)}">
                 ${c.meta.active === true ? "⛔ إيقاف" : "✅ تفعيل"}
               </button>
+              <button class="btn-danger btn-sm" data-action="delete" data-id="${escapeHtml(c.id)}">🗑️ حذف</button>
             </div>
           </div>
         `;
@@ -1561,6 +1588,7 @@
       else if (action === "creds") openCredsModal(cafeId);
       else if (action === "mode") openModeModal(cafeId);
       else if (action === "renew") openRenewModal(cafeId);
+      else if (action === "delete") openDeleteCafeModal(cafeId);
       else if (action === "wa") {
         const txt = buildCafeCredentialsText(cafeId, true);
         showInfoModal("📲 إرسال بيانات المقهى", txt, (tenant.meta && tenant.meta.phone) || "");
@@ -1573,6 +1601,115 @@
         } catch (err) {
           showToast("فشل التحديث: " + err.message, "err");
         }
+      }
+    });
+
+    // ============ 2.5 الحذف النهائي للمقهى ============
+    function openDeleteCafeModal(cafeId) {
+      const t = state.tenants[cafeId];
+      if (!t) return;
+      const name = (t.config && t.config.cafeName) || (t.meta && t.meta.name) || "هذا المقهى";
+      const code = getCafeCode(cafeId, t);
+      const token = code || "حذف";
+      state.deleteCafeId = cafeId;
+      state.deleteExpectedToken = token;
+
+      document.getElementById("dcTitle").textContent = `🗑️ حذف «${name}» نهائياً`;
+      document.getElementById("dcSummary").innerHTML =
+        `تحذير: سيتم مسح مقهى <strong>${escapeHtml(name)}</strong> وجميع يومياته وفواتيره ومخزونه وحساباته من قاعدة البيانات نهائياً، ولا يمكن التراجع عن هذه العملية.`;
+      document.getElementById("dcPromptLbl").innerHTML =
+        `للتأكيد النهائي اكتب (<span class="secret-val">${escapeHtml(token)}</span>) في الخانة التالية:`;
+      const inp = document.getElementById("dcConfirmInput");
+      inp.value = "";
+      inp.placeholder = token;
+      openModal("deleteCafeModal");
+    }
+
+    document.getElementById("deleteCafeForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const cafeId = state.deleteCafeId;
+      const t = state.tenants[cafeId];
+      if (!cafeId || !t) { closeModal("deleteCafeModal"); return; }
+
+      const typed = (document.getElementById("dcConfirmInput").value || "").trim().toLowerCase();
+      if (typed !== String(state.deleteExpectedToken || "").toLowerCase()) {
+        showToast(`الرمز غير مطابق! اكتب (${state.deleteExpectedToken}) للتأكيد.`, "err");
+        return;
+      }
+
+      const btn = document.getElementById("dcSubmitBtn");
+      btn.disabled = true;
+      btn.textContent = "جارٍ الحذف...";
+
+      const meta = t.meta || {};
+      const code = getCafeCode(cafeId, t);
+      const wi = getWorkersInfo(t);
+      const ownerSecret = (state.adminSecrets[cafeId] && state.adminSecrets[cafeId].owner) || {};
+      const myEmail = String((state.user && state.user.email) || "").toLowerCase();
+      const myUid = (state.user && state.user.uid) || "";
+
+      const authAccounts = [];
+      if (meta.ownerEmail && meta.ownerUid !== myUid && meta.ownerEmail.toLowerCase() !== myEmail) {
+        authAccounts.push({ label: "المالك", email: meta.ownerEmail, secret: (ownerSecret.pass || "").trim() });
+      }
+      if (wi.w1.uid) {
+        authAccounts.push({ label: "العامل 1", email: wi.w1.email || (code ? `w_${code}@cassacafe.app` : ""), secret: (wi.w1.pin || "").trim() });
+      }
+      if (wi.w2.uid) {
+        authAccounts.push({ label: "العامل 2", email: wi.w2.email || (code ? `w2_${code}@cassacafe.app` : ""), secret: (wi.w2.pin || "").trim() });
+      }
+
+      const manualAuthCleanup = [];
+      const secAuth = getSecondaryAuth();
+      try {
+        for (const acc of authAccounts) {
+          if (!acc.email) continue;
+          if (!acc.secret) {
+            manualAuthCleanup.push(`${acc.label}: ${acc.email}`);
+            continue;
+          }
+          try {
+            const cred = await secAuth.signInWithEmailAndPassword(acc.email, acc.secret);
+            await cred.user.delete();
+          } catch (authErr) {
+            if (!authErr || authErr.code !== "auth/user-not-found") {
+              manualAuthCleanup.push(`${acc.label}: ${acc.email}`);
+            }
+          } finally {
+            await secAuth.signOut().catch(() => {});
+          }
+        }
+
+        const updates = {};
+        updates[`tenants/${cafeId}`] = null;
+        updates[`super_admin_secrets/${cafeId}`] = null;
+        if (meta.ownerUid && meta.ownerUid !== myUid) updates[`users/${meta.ownerUid}`] = null;
+        if (wi.w1.uid && wi.w1.uid !== myUid) updates[`users/${wi.w1.uid}`] = null;
+        if (wi.w2.uid && wi.w2.uid !== myUid) updates[`users/${wi.w2.uid}`] = null;
+
+        await db.ref().update(updates);
+
+        state.deleteCafeId = null;
+        if (state.activeCafeId === cafeId) state.activeCafeId = null;
+        if (state.credsCafeId === cafeId) state.credsCafeId = null;
+        if (state.setupCafeId === cafeId) state.setupCafeId = null;
+
+        closeModal("deleteCafeModal");
+        showToast("✅ تم حذف المقهى وبياناته نهائياً.");
+
+        if (manualAuthCleanup.length) {
+          const note =
+            `تم حذف المقهى وجميع بياناته من قاعدة البيانات وإيقاف الدخول نهائياً.\n\n` +
+            `ملاحظة: الحسابات التالية لم تكن كلماتها السرية محفوظة أو تم تغييرها، فبقيت في Firebase Authentication فقط (احذفها يدوياً من Firebase Console ← Authentication فقط إذا أردت إعادة استخدام نفس البريد أو رمز المقهى):\n` +
+            manualAuthCleanup.map((l) => `• ${l}`).join("\n");
+          showInfoModal("⚠️ تنبيه لحسابات Authentication", note, "", true);
+        }
+      } catch (err) {
+        showToast("فشل الحذف: " + translateAuthError(err), "err");
+      } finally {
+        secAuth.signOut().catch(() => {});
+        btn.disabled = false;
+        btn.textContent = "🗑️ نعم، احذف المقهى نهائياً";
       }
     });
 
