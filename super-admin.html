@@ -2,2587 +2,844 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CassaCafe — لوحة المشرف العام</title>
-  <style>
-    :root {
-      --bg: #0f0c1b;
-      --surface: #1d1630;
-      --surface-2: #2b2342;
-      --input-bg: #141022;
-      --border: #3b2d5e;
-      --text: #ffffff;
-      --muted: #c4b5e3;
-      --primary: #ffb703;
-      --primary-text: #0b0814;
-      --success: #06d6a0;
-      --danger: #ff4d6d;
-      --warning: #fb8500;
-      --info: #48cae4;
-      --radius: 14px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body {
-      font-family: Tahoma, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.45;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    .hidden { display: none !important; }
-    .flex-1 { flex: 1 1 0%; }
-
-    .num-ltr {
-      direction: ltr !important;
-      unicode-bidi: isolate !important;
-      display: inline-block !important;
-      white-space: nowrap !important;
-    }
-    input.num-input-ltr {
-      direction: ltr !important;
-      text-align: center !important;
-      font-family: monospace, Tahoma, sans-serif;
-      font-weight: 800;
-    }
-    input.num-input-ltr::placeholder { direction: rtl; unicode-bidi: plaintext; }
-
-    .center-wrap {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-    .auth-card {
-      width: 100%;
-      max-width: 390px;
-      background: var(--surface);
-      border: 2px solid var(--primary);
-      border-radius: 18px;
-      padding: 24px 20px;
-    }
-    .brand { text-align: center; margin-bottom: 20px; }
-    .brand h1 { font-size: 1.55rem; color: var(--primary); }
-    .brand p { color: var(--muted); font-size: 0.88rem; margin-top: 4px; }
-
-    header {
-      background: var(--surface);
-      border-bottom: 2px solid var(--border);
-      padding: 10px 14px;
-      position: sticky;
-      top: 0;
-      z-index: 40;
-    }
-    .header-inner {
-      max-width: 1080px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .title-wrap { display: flex; align-items: center; gap: 8px; }
-    .title-wrap h1 { font-size: 1.2rem; color: var(--primary); }
-
-    main { max-width: 1080px; margin: 0 auto; padding: 14px 12px 40px; }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    @media (min-width: 700px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
-    .stat-card {
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 12px;
-    }
-    .stat-label { font-size: 0.8rem; color: var(--muted); font-weight: 700; }
-    .stat-val { font-size: 1.65rem; font-weight: 800; margin-top: 3px; }
-
-    .search-box { margin-bottom: 10px; }
-    .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-    .filter-pill {
-      background: var(--surface);
-      color: var(--muted);
-      border: 1.5px solid var(--border);
-      padding: 6px 11px;
-      border-radius: 999px;
-      font-size: 0.79rem;
-      font-weight: 700;
-    }
-    .filter-pill.active {
-      background: var(--primary);
-      color: var(--primary-text);
-      border-color: var(--primary);
-    }
-
-    .cafes-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    @media (min-width: 760px) { .cafes-grid { grid-template-columns: repeat(2, 1fr); } }
-    .cafe-card {
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 9px;
-    }
-    .cafe-card.suspended { border-color: var(--danger); opacity: 0.85; }
-    .cafe-card.expired { border-color: var(--warning); }
-    .cafe-name { font-size: 1.05rem; font-weight: 800; color: #ffd166; }
-    .cafe-meta { font-size: 0.82rem; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
-    .cafe-meta strong { color: var(--text); }
-    .cafe-actions { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 8px; border-top: 1px solid var(--border); }
-
-    .pill {
-      font-size: 0.72rem;
-      font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 999px;
-      white-space: nowrap;
-      display: inline-block;
-    }
-    .pill-ok { background: #063b27; color: #7bf1a8; border: 1px solid #06d6a0; }
-    .pill-warn { background: #3b2308; color: #ffea9f; border: 1px solid #ffb703; }
-    .pill-err { background: #470d1b; color: #ffc2cd; border: 1px solid #ff4d6d; }
-    .pill-info { background: #092c47; color: #90e0ef; border: 1px solid #00b4d8; }
-    .pill-muted { background: #2b2342; color: #d3c9f0; border: 1px solid #52437a; }
-    .pill-primary { background: #3b2308; color: #ffd166; border: 1px solid #ffb703; }
-    .pill-hot { background: #380e1a; color: #ffb3c1; border: 1px solid #ff4d6d; }
-    .pill-cold { background: #092c47; color: #90e0ef; border: 1px solid #00b4d8; }
-    .pill-food { background: #3d1d05; color: #ffd6a5; border: 1px solid #fb8500; }
-    .pill-fun { background: #2e0d42; color: #e0aaff; border: 1px solid #c77dff; }
-
-    button {
-      font-family: Tahoma, Arial, sans-serif;
-      cursor: pointer;
-      border: none;
-      border-radius: 10px;
-      padding: 9px 12px;
-      font-size: 0.86rem;
-      font-weight: 800;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-    }
-    button:active { opacity: 0.85; }
-    button:disabled { opacity: 0.55; cursor: not-allowed; }
-    .btn-primary { background: var(--primary); color: var(--primary-text); }
-    .btn-secondary { background: var(--surface-2); color: var(--text); border: 1.5px solid #52437a; }
-    .btn-success { background: #063b27; color: #9ef8d8; border: 1.5px solid #06d6a0; }
-    .btn-wa { background: #15803d; color: #ffffff; border: 1.5px solid #22c55e; }
-    .btn-danger { background: #470d1b; color: #ffc2cd; border: 1.5px solid #ef233c; }
-    .btn-danger-solid { background: #dc2626; color: #ffffff; border: 1.5px solid #f87171; }
-    .btn-info { background: #092c47; color: #90e0ef; border: 1.5px solid #00b4d8; }
-    .btn-sm { padding: 6px 10px; font-size: 0.78rem; }
-    .btn-full { width: 100%; }
-
-    .opt-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
-    .opt-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
-    .opt-btn {
-      background: var(--input-bg);
-      color: #ffea9f;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 9px 7px;
-      font-size: 0.8rem;
-      font-weight: 800;
-      text-align: center;
-      width: 100%;
-      flex-direction: column;
-      line-height: 1.3;
-    }
-    .opt-btn small { font-size: 0.7rem; font-weight: 700; opacity: 0.85; }
-    .opt-btn.col-span-2 { grid-column: span 2; }
-    .opt-btn.active { background: var(--primary); color: var(--primary-text); border-color: #ffe169; }
-
-    .form-group { margin-bottom: 12px; }
-    label { display: block; font-size: 0.82rem; color: #ffea9f; font-weight: 800; margin-bottom: 5px; }
-    input, textarea {
-      width: 100%;
-      background: var(--input-bg);
-      color: var(--text);
-      border: 1.5px solid #52437a;
-      border-radius: 10px;
-      padding: 10px 11px;
-      font-size: 16px;
-      font-family: Tahoma, Arial, sans-serif;
-    }
-    input:focus, textarea:focus { outline: none; border-color: var(--primary); }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-    .row-flex { display: flex; gap: 7px; align-items: center; }
-    .hint { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
-    .error-msg {
-      color: #ffc2cd;
-      background: #470d1b;
-      border: 1.5px solid #ef233c;
-      padding: 9px 12px;
-      border-radius: 10px;
-      font-size: 0.84rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-    .empty-box {
-      text-align: center;
-      padding: 22px 14px;
-      color: var(--muted);
-      font-size: 0.86rem;
-      font-weight: 700;
-      border: 1.5px dashed var(--border);
-      border-radius: var(--radius);
-      grid-column: 1 / -1;
-    }
-
-    .seg-bar {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      background: var(--input-bg);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 4px;
-      margin-bottom: 12px;
-    }
-    .seg-btn {
-      background: transparent;
-      color: var(--muted);
-      padding: 8px 4px;
-      border-radius: 8px;
-      font-size: 0.79rem;
-      font-weight: 800;
-    }
-    .seg-btn.active { background: var(--primary); color: var(--primary-text); }
-
-    .list-stack { display: flex; flex-direction: column; gap: 8px; }
-    .item-card {
-      background: var(--input-bg);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 11px;
-    }
-    .item-card.inactive { opacity: 0.6; border-style: dashed; }
-    .item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
-    .item-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
-    .section-box {
-      background: rgba(15, 12, 27, 0.7);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 11px;
-      margin-bottom: 12px;
-    }
-    .section-box h3 { font-size: 0.86rem; color: #ffd166; margin-bottom: 8px; }
-
-    .chips-wrap { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--surface-2);
-      border: 1px solid #52437a;
-      border-radius: 999px;
-      padding: 5px 10px;
-      font-size: 0.82rem;
-      font-weight: 700;
-    }
-    .chip-del { background: transparent; color: #ff8fa3; padding: 0 3px; font-size: 1rem; line-height: 1; }
-
-    .creds-pre {
-      background: var(--input-bg);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 0.86rem;
-      line-height: 1.65;
-      white-space: pre-wrap;
-      word-break: break-word;
-      color: #ffea9f;
-      margin-bottom: 12px;
-      user-select: text;
-    }
-    .secret-val {
-      display: inline-block;
-      background: #2b2342;
-      border: 1px solid #ffb703;
-      color: #ffd166;
-      padding: 2px 9px;
-      border-radius: 8px;
-      font-family: monospace;
-      font-weight: 800;
-      font-size: 0.95rem;
-      direction: ltr;
-      user-select: text;
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(9, 7, 18, 0.92);
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 12px;
-      z-index: 100;
-      overflow-y: auto;
-    }
-    .modal-backdrop.sub-modal { z-index: 130; }
-    .modal {
-      width: 100%;
-      max-width: 560px;
-      background: var(--surface);
-      border: 2px solid var(--primary);
-      border-radius: 18px;
-      padding: 16px;
-      margin: 8px auto 24px;
-    }
-    .modal-danger { border-color: var(--danger); }
-    .modal-lg { max-width: 680px; }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 13px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
-    }
-    .modal-header h2 { font-size: 1.02rem; color: #ffd166; }
-    .close-btn {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
-      background: #470d1b;
-      border: 1.5px solid #ef233c;
-      color: #ffc2cd;
-      font-size: 1.15rem;
-      padding: 0;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #0b0814;
-      color: var(--text);
-      border: 2px solid var(--success);
-      padding: 10px 16px;
-      border-radius: 12px;
-      font-size: 0.85rem;
-      font-weight: 800;
-      z-index: 220;
-      max-width: 92vw;
-      text-align: center;
-    }
-    .toast.err { border-color: var(--danger); color: #ffc2cd; }
-  </style>
+  <link rel="stylesheet" href="./core/styles.css" />
 </head>
 <body>
-
-  <!-- 1. شاشة دخول المشرف العام -->
-  <section id="loginView" class="center-wrap">
-    <div class="auth-card">
-      <div class="brand">
-        <h1>☕ CassaCafe</h1>
-        <p>لوحة المشرف العام (إدارة وتجهيز الحرفاء)</p>
-      </div>
-      <div id="loginError" class="error-msg hidden"></div>
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="loginEmail">بريد المشرف العام</label>
-          <input id="loginEmail" type="email" required autocomplete="username" dir="ltr" />
-        </div>
-        <div class="form-group">
-          <label for="loginPass">كلمة السر</label>
-          <input id="loginPass" type="password" required autocomplete="current-password" dir="ltr" />
-        </div>
-        <button id="loginBtn" type="submit" class="btn-primary btn-full">دخول</button>
-      </form>
+  <div id="app" v-cloak>
+    <!-- شاشة التحميل الأولي -->
+    <div v-if="booting" class="container" style="text-align:center; padding-top:80px;">
+      <p class="muted">جارٍ التحقق من الجلسة...</p>
     </div>
-  </section>
 
-  <!-- 2. التطبيق الرئيسي -->
-  <section id="appView" class="hidden">
-    <header>
-      <div class="header-inner">
-        <div class="title-wrap">
-          <h1>☕ CassaCafe</h1>
-          <span class="pill pill-primary">المشرف العام</span>
-        </div>
-        <div class="row-flex">
-          <button id="addCafeBtn" class="btn-primary btn-sm">+ إضافة مقهى</button>
-          <button id="logoutBtn" class="btn-secondary btn-sm">خروج</button>
-        </div>
-      </div>
-    </header>
+    <!-- شاشة تسجيل الدخول -->
+    <div v-else-if="!member" class="container">
+      <div class="card login-box">
+        <h2 style="margin:0 0 6px;">CassaCafe — المشرف العام</h2>
+        <p class="muted" style="margin:0 0 18px;">دخول مخصّص لإدارة المقاهي والاشتراكات</p>
 
-    <main>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">إجمالي المقاهي</div>
-          <div id="stTotal" class="stat-val">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">نشطة حالياً</div>
-          <div id="stActive" class="stat-val" style="color: var(--success);">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">قريب / منتهي الاشتراك</div>
-          <div id="stExpiring" class="stat-val" style="color: var(--warning);">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">موقوفة يدوياً</div>
-          <div id="stSuspended" class="stat-val" style="color: var(--danger);">0</div>
-        </div>
-      </div>
-
-      <div class="search-box">
-        <input id="searchInput" type="search" placeholder="ابحث باسم المقهى، الرمز، بريد المالك أو الهاتف..." />
-      </div>
-
-      <div id="filterBar" class="filters">
-        <button class="filter-pill active" data-filter="all">الكل</button>
-        <button class="filter-pill" data-filter="active">نشط</button>
-        <button class="filter-pill" data-filter="expiring">قريب / منتهٍ</button>
-        <button class="filter-pill" data-filter="suspended">موقوف</button>
-        <button class="filter-pill" data-filter="owner_only">مالك وحده</button>
-        <button class="filter-pill" data-filter="owner_with_worker">مالك + عامل</button>
-        <button class="filter-pill" data-filter="worker_only">عامل وحده</button>
-        <button class="filter-pill" data-filter="worker_owner">عامل صباح + مالك مساء</button>
-        <button class="filter-pill" data-filter="two_workers">عاملان</button>
-      </div>
-
-      <div id="cafesGrid" class="cafes-grid"></div>
-    </main>
-  </section>
-
-  <!-- نافذة إضافة مقهى جديد -->
-  <div id="addCafeModal" class="modal-backdrop hidden">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>+ إضافة مقهى (حريف جديد)</h2>
-        <button type="button" class="close-btn" data-close="addCafeModal">&times;</button>
-      </div>
-      <form id="addCafeForm">
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="acName">اسم المقهى *</label>
-            <input id="acName" type="text" required placeholder="مثال: مقهى الياسمين" />
+        <form @submit.prevent="login">
+          <div class="field">
+            <label>البريد الإلكتروني</label>
+            <input type="email" v-model.trim="loginForm.email" required autocomplete="username" class="ltr" />
           </div>
-          <div class="form-group">
-            <label for="acCode">رمز المقهى (إنجليزي/أرقام) *</label>
-            <input id="acCode" type="text" required dir="ltr" class="num-input-ltr" placeholder="مثال: 101" />
+          <div class="field">
+            <label>كلمة السر</label>
+            <input type="password" v-model="loginForm.password" required autocomplete="current-password" class="ltr" />
           </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="acOwnerName">اسم المالك *</label>
-            <input id="acOwnerName" type="text" required placeholder="مثال: أحمد" />
-          </div>
-          <div class="form-group">
-            <label for="acPhone">رقم الهاتف (واتساب)</label>
-            <input id="acPhone" type="tel" dir="ltr" class="num-input-ltr" placeholder="20123456" />
-          </div>
-        </div>
-
-        <div class="section-box">
-          <h3>حساب المالك (للدخول إلى index.html)</h3>
-          <div class="form-group">
-            <label for="acOwnerEmail">البريد الإلكتروني للمالك *</label>
-            <input id="acOwnerEmail" type="email" required dir="ltr" placeholder="owner@gmail.com" />
-          </div>
-          <div class="grid-2">
-            <div class="form-group">
-              <label for="acOwnerPass">كلمة السر *</label>
-              <div class="row-flex">
-                <input id="acOwnerPass" type="text" required minlength="6" dir="ltr" class="num-input-ltr" />
-                <button type="button" id="acGenPassBtn" class="btn-secondary btn-sm">🎲</button>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="acDays">مدة الاشتراك (أيام) *</label>
-              <input id="acDays" type="tel" inputmode="numeric" value="30" required class="num-input-ltr" />
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>نمط تشغيل المقهى *</label>
-          <div id="acPatternBtns" class="opt-grid-2">
-            <button type="button" class="opt-btn active" data-ac-pat="owner_only">👤 مالك وحده<small>تطبيق المالك فقط — بدون عمال</small></button>
-            <button type="button" class="opt-btn" data-ac-pat="owner_with_worker">🤝 مالك + عامل معاً<small>الكاسة عند المالك + متابعة الأجر</small></button>
-            <button type="button" class="opt-btn" data-ac-pat="worker_only">👷 عامل وحده<small>نموذج الكروان — يوم كامل للعامل</small></button>
-            <button type="button" class="opt-btn" data-ac-pat="worker_owner">☀️🌙 عامل صباحاً + مالك مساءً<small>تناوب: العامل الصباح والمالك العشية</small></button>
-            <button type="button" class="opt-btn col-span-2" data-ac-pat="two_workers">👷👷 عامل صباحاً + عامل مساءً<small>حسابان مستقلان (صباح 1 + عشية 2) بتسوية منفصلة</small></button>
-          </div>
-        </div>
-
-        <div id="acWorkersSection" class="section-box hidden">
-          <h3>بيانات العمال والأجور (بالمليم مي)</h3>
-
-          <div id="acWCountWrap" class="form-group hidden">
-            <label>عدد العمال المساعدين</label>
-            <div id="acWorkerCountBtns" class="opt-grid-2">
-              <button type="button" class="opt-btn active" data-ac-wcount="1">👷 عامل واحد</button>
-              <button type="button" class="opt-btn" data-ac-wcount="2">👷👷 عاملان</button>
-            </div>
-          </div>
-
-          <div id="acW1Box" class="item-card" style="margin-bottom: 8px;">
-            <div id="acW1Title" style="font-size: 0.82rem; font-weight: 800; color: var(--info); margin-bottom: 6px;">☀️ العامل 1</div>
-            <div class="grid-2">
-              <div class="form-group" style="margin-bottom: 8px;">
-                <label for="acW1Name">الاسم</label>
-                <input id="acW1Name" type="text" value="العامل" />
-              </div>
-              <div class="form-group" style="margin-bottom: 8px;">
-                <label for="acW1Wage">الأجر اليومي (مي)</label>
-                <input id="acW1Wage" type="tel" inputmode="numeric" class="num-input-ltr" value="25 000" />
-              </div>
-            </div>
-            <div id="acW1PinWrap" class="form-group hidden" style="margin-bottom: 0;">
-              <label for="acW1Pin">الرمز السري PIN للعامل 1 (6 أرقام فأكثر) *</label>
-              <div class="row-flex">
-                <input id="acW1Pin" type="text" dir="ltr" class="num-input-ltr" />
-                <button type="button" id="acGenPin1Btn" class="btn-secondary btn-sm">🎲 توليد</button>
-              </div>
-            </div>
-          </div>
-
-          <div id="acW2Box" class="item-card hidden">
-            <div id="acW2Title" style="font-size: 0.82rem; font-weight: 800; color: #e0aaff; margin-bottom: 6px;">🌙 العامل 2 (عشية)</div>
-            <div class="grid-2">
-              <div class="form-group" style="margin-bottom: 8px;">
-                <label for="acW2Name">الاسم</label>
-                <input id="acW2Name" type="text" value="عامل العشية" />
-              </div>
-              <div class="form-group" style="margin-bottom: 8px;">
-                <label for="acW2Wage">الأجر اليومي (مي)</label>
-                <input id="acW2Wage" type="tel" inputmode="numeric" class="num-input-ltr" value="25 000" />
-              </div>
-            </div>
-            <div id="acW2PinWrap" class="form-group hidden" style="margin-bottom: 0;">
-              <label for="acW2Pin">الرمز السري PIN للعامل 2 (6 أرقام فأكثر) *</label>
-              <div class="row-flex">
-                <input id="acW2Pin" type="text" dir="ltr" class="num-input-ltr" />
-                <button type="button" id="acGenPin2Btn" class="btn-secondary btn-sm">🎲 توليد</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row-flex">
-          <button id="acSubmitBtn" type="submit" class="btn-primary btn-full">إنشاء المقهى</button>
-          <button type="button" class="btn-secondary" data-close="addCafeModal">إلغاء</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- نافذة تعديل النمط والعمال -->
-  <div id="modeModal" class="modal-backdrop hidden">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="mmCafeTitle">النمط والعمال</h2>
-        <button type="button" class="close-btn" data-close="modeModal">&times;</button>
-      </div>
-      <form id="modeForm">
-        <div class="form-group">
-          <label>نمط تشغيل المقهى</label>
-          <div id="mmPatternBtns" class="opt-grid-2">
-            <button type="button" class="opt-btn" data-mm-pat="owner_only">👤 مالك وحده</button>
-            <button type="button" class="opt-btn" data-mm-pat="owner_with_worker">🤝 مالك + عامل معاً</button>
-            <button type="button" class="opt-btn" data-mm-pat="worker_only">👷 عامل وحده</button>
-            <button type="button" class="opt-btn" data-mm-pat="worker_owner">☀️🌙 عامل صباحاً + مالك مساءً</button>
-            <button type="button" class="opt-btn col-span-2" data-mm-pat="two_workers">👷👷 عامل صباحاً + عامل مساءً</button>
-          </div>
-        </div>
-
-        <div id="mmWorkersSection" class="section-box hidden">
-          <div id="mmWCountWrap" class="form-group hidden">
-            <label>عدد العمال المساعدين</label>
-            <div id="mmWorkerCountBtns" class="opt-grid-2">
-              <button type="button" class="opt-btn" data-mm-wcount="1">👷 عامل واحد</button>
-              <button type="button" class="opt-btn" data-mm-wcount="2">👷👷 عاملان</button>
-            </div>
-          </div>
-
-          <div id="mmW1Box" class="item-card" style="margin-bottom: 8px;">
-            <div id="mmW1Title" style="font-size: 0.82rem; font-weight: 800; color: var(--info); margin-bottom: 6px;">☀️ العامل 1</div>
-            <div class="grid-2">
-              <div class="form-group" style="margin-bottom: 8px;">
-                <label for="mmW1Name">الاسم</label>
-                <input id="mmW1Name" type="text" />
-              </div>
-              <div class="form-group" style="margin-bottom: 8px;">
-                <label for="mmW1Wage">الأجر اليومي (مي)</label>
-                <input id="mmW1Wage" type="tel" inputmode="numeric" class="num-input-ltr" />
-              </div>
-            </div>
-            <div id="mmW1PinWrap" class="form-group hidden" style="margin-bottom: 0;">
-              <label for="mmW1Pin">الرمز السري PIN للعامل 1 *</label>
-              <div class="row-flex">
-                <input id="mmW1Pin" type="text" dir="ltr" class="num-input-ltr" />
-                <button type="button" id="mmGenPin1Btn" class="btn-secondary btn-sm">🎲 توليد</button>
-              </div>
-            </div>
-            <div id="mmW1ExistingHint" class="hint hidden" style="color: var(--success);"></div>
-          </div>
-
-          <div id="mmW2Box" class="item-card hidden">
-            <div id="mmW2Title" style="font-size: 0.82rem; font-weight: 800; color: #e0aaff; margin-bottom: 6px;">🌙 العامل 2 (عشية)</div>
-            <div class="grid-2">
-              <div class="form-group" style="margin-bottom: 8px;">
-                <label for="mmW2Name">الاسم</label>
-                <input id="mmW2Name" type="text" />
-              </div>
-              <div class="form-group" style="margin-bottom: 8px;">
-                <label for="mmW2Wage">الأجر اليومي (مي)</label>
-                <input id="mmW2Wage" type="tel" inputmode="numeric" class="num-input-ltr" />
-              </div>
-            </div>
-            <div id="mmW2PinWrap" class="form-group hidden" style="margin-bottom: 0;">
-              <label for="mmW2Pin">الرمز السري PIN للعامل 2 *</label>
-              <div class="row-flex">
-                <input id="mmW2Pin" type="text" dir="ltr" class="num-input-ltr" />
-                <button type="button" id="mmGenPin2Btn" class="btn-secondary btn-sm">🎲 توليد</button>
-              </div>
-            </div>
-            <div id="mmW2ExistingHint" class="hint hidden" style="color: var(--success);"></div>
-          </div>
-        </div>
-
-        <div class="row-flex">
-          <button id="mmSubmitBtn" type="submit" class="btn-primary btn-full">حفظ التغييرات</button>
-          <button type="button" class="btn-secondary" data-close="modeModal">إلغاء</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- نافذة إدارة الحسابات وتغيير كلمة السر والـ PIN + الإرسال عبر واتساب -->
-  <div id="credsModal" class="modal-backdrop hidden">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="cmCafeTitle">🔑 الحسابات والـ PIN</h2>
-        <button type="button" class="close-btn" data-close="credsModal">&times;</button>
-      </div>
-      <div id="cmBody" class="list-stack"></div>
-    </div>
-  </div>
-
-  <!-- نافذة الحذف النهائي للمقهى -->
-  <div id="deleteCafeModal" class="modal-backdrop hidden">
-    <div class="modal modal-danger">
-      <div class="modal-header">
-        <h2 id="dcTitle" style="color: var(--danger);">🗑️ حذف المقهى نهائياً</h2>
-        <button type="button" class="close-btn" data-close="deleteCafeModal">&times;</button>
-      </div>
-      <div id="dcSummary" class="error-msg" style="line-height: 1.6;"></div>
-      <form id="deleteCafeForm">
-        <div class="form-group">
-          <label id="dcPromptLbl" for="dcConfirmInput">للتأكيد النهائي اكتب الرمز المطلوب:</label>
-          <input id="dcConfirmInput" type="text" required autocomplete="off" dir="ltr" class="num-input-ltr" />
-        </div>
-        <div class="row-flex">
-          <button id="dcSubmitBtn" type="submit" class="btn-danger-solid btn-full">🗑️ نعم، احذف المقهى نهائياً</button>
-          <button type="button" class="btn-secondary" data-close="deleteCafeModal">إلغاء</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- نافذة تجديد الاشتراك -->
-  <div id="renewModal" class="modal-backdrop hidden">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="rmCafeTitle">تجديد الاشتراك</h2>
-        <button type="button" class="close-btn" data-close="renewModal">&times;</button>
-      </div>
-      <div id="rmCurrentEnd" class="hint" style="margin-bottom: 12px; font-size: 0.88rem;"></div>
-      <div class="row-flex" style="flex-wrap: wrap; margin-bottom: 12px;">
-        <button type="button" class="btn-success btn-sm" data-add-days="30">+ 30 يوم</button>
-        <button type="button" class="btn-success btn-sm" data-add-days="90">+ 3 أشهر</button>
-        <button type="button" class="btn-success btn-sm" data-add-days="180">+ 6 أشهر</button>
-        <button type="button" class="btn-info btn-sm" data-add-days="365">+ سنة</button>
-      </div>
-      <form id="renewForm">
-        <div class="form-group">
-          <label for="rmCustomDate">تاريخ انتهاء الاشتراك:</label>
-          <input id="rmCustomDate" type="date" required dir="ltr" />
-        </div>
-        <div class="row-flex">
-          <button id="rmSubmitBtn" type="submit" class="btn-primary btn-full">حفظ تاريخ الاشتراك</button>
-          <button type="button" class="btn-secondary" data-close="renewModal">إلغاء</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- نافذة تجهيز المقهى (3 أقسام: مباعة / مخزن / استهلاكية) -->
-  <div id="setupModal" class="modal-backdrop hidden">
-    <div class="modal modal-lg">
-      <div class="modal-header">
-        <h2 id="setupCafeTitle">⚙️ تجهيز المقهى</h2>
-        <button type="button" class="close-btn" data-close="setupModal">&times;</button>
-      </div>
-
-      <div class="seg-bar">
-        <button type="button" id="setupSubProds" class="seg-btn active" data-setup-tab="prods">☕ السلع المباعة</button>
-        <button type="button" id="setupSubStock" class="seg-btn" data-setup-tab="stock">📦 سلع المخزن</button>
-        <button type="button" id="setupSubCons" class="seg-btn" data-setup-tab="cons">🛒 الاستهلاكية</button>
-      </div>
-
-      <div id="sp-prods">
-        <div class="row-flex" style="justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap;">
-          <span class="hint" style="margin: 0;">أزرار البيع بالأسعار بالمليم (مرتبطة بالمخزن أو تحضير مباشر).</span>
-          <div class="row-flex">
-            <button type="button" id="spSeedBtn" class="btn-secondary btn-sm">⚡ قائمة مبدئية</button>
-            <button type="button" id="spAddProdBtn" class="btn-primary btn-sm">+ سلعة مباعة</button>
-          </div>
-        </div>
-        <div id="spProdList" class="list-stack"></div>
-      </div>
-
-      <div id="sp-stock" class="hidden">
-        <div class="row-flex" style="justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap;">
-          <span class="hint" style="margin: 0;">مواد المخزن التي لها رصيد وجرد وفواتير (بن، ماء، قازوز...).</span>
-          <button type="button" id="spAddStockBtn" class="btn-primary btn-sm">+ مادة مخزن</button>
-        </div>
-        <div id="spStockList" class="list-stack"></div>
-      </div>
-
-      <div id="sp-cons" class="hidden">
-        <div class="section-box">
-          <h3>🛒 السلع الاستهلاكية اليومية (مصاريف الكاسة)</h3>
-          <div class="hint" style="margin-bottom: 10px;">
-            السكر، الحليب، الماء المصفّى، مواد التنظيف... تظهر كأزرار داخل نافذة «المواد اليومية».
-          </div>
-          <div class="row-flex">
-            <input id="spConsInput" type="text" placeholder="أضف مادة استهلاكية..." />
-            <button type="button" id="spAddConsBtn" class="btn-primary btn-sm">+ إضافة</button>
-          </div>
-          <div id="spConsList" class="chips-wrap"></div>
-        </div>
-
-        <form id="spLimitsForm" class="section-box">
-          <h3>عتبات تنبيه نقص المخزون</h3>
-          <div class="grid-2">
-            <div class="form-group">
-              <label for="spLowWeight">عتبة نقص الوزن (غرام)</label>
-              <input id="spLowWeight" type="tel" inputmode="numeric" class="num-input-ltr" />
-            </div>
-            <div class="form-group">
-              <label for="spLowUnit">عتبة نقص الوحدات (قطعة)</label>
-              <input id="spLowUnit" type="tel" inputmode="numeric" class="num-input-ltr" />
-            </div>
-          </div>
-          <button type="submit" class="btn-secondary btn-sm btn-full">حفظ العتبات</button>
+          <button type="submit" class="btn btn-primary btn-block" :disabled="busy">
+            {{ busy ? "جارٍ الدخول..." : "تسجيل الدخول" }}
+          </button>
         </form>
       </div>
     </div>
-  </div>
 
-  <!-- نافذة فرعية: إضافة / تعديل سلعة مباعة -->
-  <div id="saProdModal" class="modal-backdrop sub-modal hidden">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="saProdTitle">☕ إضافة سلعة مباعة</h2>
-        <button type="button" class="close-btn" data-close="saProdModal">&times;</button>
+    <!-- لوحة التحكم الرئيسية -->
+    <template v-else>
+      <header class="topbar">
+        <div>
+          <h1>CassaCafe — المشرف العام</h1>
+          <div style="font-size:0.75rem; opacity:0.85;">{{ serverToday || "توقيت تونس" }}</div>
+        </div>
+        <div class="row">
+          <button class="btn btn-sm btn-outline" @click="refreshAll" :disabled="busy">تحديث</button>
+          <button class="btn btn-sm btn-danger" @click="logout">خروج</button>
+        </div>
+      </header>
+
+      <main class="container">
+        <!-- إحصائيات سريعة -->
+        <div class="grid-3" style="margin-bottom:14px;">
+          <div class="stat">
+            <div class="stat-val">{{ cafes.length }}</div>
+            <div class="stat-lbl">إجمالي المقاهي</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val" style="color:var(--ok);">{{ activeCafesCount }}</div>
+            <div class="stat-lbl">نشطة ومشتركة</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val" style="color:var(--warn);">{{ openFeedbackCount }}</div>
+            <div class="stat-lbl">ملاحظات مفتوحة</div>
+          </div>
+        </div>
+
+        <!-- التبويبات -->
+        <div class="tabs">
+          <button class="tab" :class="{ active: tab === 'cafes' }" @click="tab = 'cafes'">
+            المقاهي ({{ cafes.length }})
+          </button>
+          <button class="tab" :class="{ active: tab === 'feedback' }" @click="tab = 'feedback'">
+            ملاحظات التجربة ({{ feedback.length }})
+          </button>
+          <button class="tab" :class="{ active: tab === 'errors' }" @click="tab = 'errors'">
+            سجل الأعطال ({{ errors.length }})
+          </button>
+        </div>
+
+        <!-- تبويب المقاهي -->
+        <section v-if="tab === 'cafes'">
+          <div class="row" style="margin-bottom:12px;">
+            <input
+              type="text"
+              v-model.trim="search"
+              placeholder="ابحث بالاسم أو الرمز أو الهاتف..."
+              style="flex:1; min-width:200px;"
+            />
+            <button class="btn btn-primary" @click="openCreateModal">+ مقهى جديد</button>
+          </div>
+
+          <div v-if="!filteredCafes.length" class="card" style="text-align:center;">
+            <p class="muted">لا توجد مقاهٍ مطابقة بعد. اضغط «+ مقهى جديد» لإضافة أول مقهى.</p>
+          </div>
+
+          <div v-for="cafe in filteredCafes" :key="cafe.id" class="card">
+            <div class="row" style="margin-bottom:8px;">
+              <div>
+                <strong style="font-size:1.05rem;">{{ cafe.name }}</strong>
+                <span class="badge badge-info ltr" style="margin-right:6px;">{{ cafe.code }}</span>
+              </div>
+              <span class="badge" :class="statusBadge(cafe).cls">{{ statusBadge(cafe).label }}</span>
+            </div>
+
+            <div class="muted" style="margin-bottom:8px;">
+              المالك: <strong>{{ cafe.owner_name || "—" }}</strong>
+              <span v-if="cafe.phone"> • هاتف: <span class="ltr">{{ cafe.phone }}</span></span>
+              <br />
+              النمط: <strong>{{ WORK_PATTERNS[cafe.work_pattern] || cafe.work_pattern }}</strong>
+              • نهاية الاشتراك: <strong>{{ formatDate(cafe.subscription_until) }}</strong>
+              ({{ daysLabel(cafe.subscription_until) }})
+            </div>
+
+            <!-- شارات الميزات المفعّلة -->
+            <div class="chip-grid" style="margin-bottom:10px;">
+              <span
+                v-for="(lbl, key) in FEATURE_LABELS"
+                :key="key"
+                class="badge"
+                :class="cafe.features?.[key] ? 'badge-ok' : ''"
+                :style="cafe.features?.[key] ? '' : 'background:#f3f4f6;color:#9ca3af;'"
+              >
+                {{ lbl }}
+              </span>
+            </div>
+
+            <!-- أزرار الإجراءات -->
+            <div class="row">
+              <div class="row">
+                <button class="btn btn-sm btn-primary" @click="openManageModal(cafe)">إدارة وتعديل</button>
+                <a class="btn btn-sm btn-outline" :href="`./owner.html?cafe_id=${cafe.id}`">
+                  دخول لتسيير المقهى
+                </a>
+              </div>
+              <div class="row">
+                <button class="btn btn-sm btn-outline" @click="quickExtend(cafe, 30)" :disabled="busy">+30 يوم</button>
+                <button
+                  class="btn btn-sm"
+                  :class="cafe.active ? 'btn-warn' : 'btn-primary'"
+                  @click="toggleActive(cafe)"
+                  :disabled="busy"
+                >
+                  {{ cafe.active ? "إيقاف" : "تفعيل" }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- تبويب ملاحظات التجربة -->
+        <section v-if="tab === 'feedback'">
+          <div v-if="!feedback.length" class="card" style="text-align:center;">
+            <p class="muted">لا توجد ملاحظات مسجّلة حتى الآن.</p>
+          </div>
+          <div v-for="fb in feedback" :key="fb.id" class="card">
+            <div class="row" style="margin-bottom:6px;">
+              <strong>{{ cafeNameById(fb.cafe_id) }}</strong>
+              <span class="badge" :class="fb.status === 'done' ? 'badge-ok' : fb.status === 'reviewed' ? 'badge-info' : 'badge-warn'">
+                {{ fb.status === 'done' ? 'مُنجز' : fb.status === 'reviewed' ? 'قيد المراجعة' : 'جديد' }}
+              </span>
+            </div>
+            <p style="margin:6px 0;">{{ fb.note }}</p>
+            <div class="row">
+              <span class="muted">الشاشة: {{ fb.screen || "—" }} • {{ formatDate(fb.created_at) }}</span>
+              <div class="row">
+                <button v-if="fb.status !== 'reviewed'" class="btn btn-sm btn-outline" @click="setFeedbackStatus(fb, 'reviewed')">مراجعة</button>
+                <button v-if="fb.status !== 'done'" class="btn btn-sm btn-primary" @click="setFeedbackStatus(fb, 'done')">تم التنفيذ</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- تبويب الأعطال -->
+        <section v-if="tab === 'errors'">
+          <div v-if="!errors.length" class="card" style="text-align:center;">
+            <p class="muted">لا توجد أعطال مسجّلة.</p>
+          </div>
+          <div v-for="er in errors" :key="er.id" class="card">
+            <div class="row" style="margin-bottom:4px;">
+              <strong>{{ cafeNameById(er.cafe_id) }} ({{ er.app_role || "—" }})</strong>
+              <span class="muted">{{ formatDate(er.created_at) }}</span>
+            </div>
+            <div class="ltr" style="font-family:monospace; font-size:0.84rem; color:var(--danger); word-break:break-word;">
+              {{ er.message }}
+            </div>
+            <div class="muted" style="margin-top:4px;">الشاشة: {{ er.screen || "—" }} • الإصدار: {{ er.app_version || "—" }}</div>
+          </div>
+        </section>
+      </main>
+    </template>
+
+    <!-- نافذة إنشاء مقهى جديد -->
+    <div v-if="showCreate" class="modal-backdrop" @click.self="showCreate = false">
+      <div class="modal">
+        <div class="row" style="margin-bottom:10px;">
+          <h3 style="margin:0;">إنشاء مقهى جديد</h3>
+          <button class="btn btn-sm btn-outline" @click="showCreate = false">إغلاق</button>
+        </div>
+
+        <form @submit.prevent="createCafe">
+          <div class="grid-2">
+            <div class="field">
+              <label>اسم المقهى *</label>
+              <input type="text" v-model.trim="createForm.name" required placeholder="مثال: مقهى الكروان" />
+            </div>
+            <div class="field">
+              <label>رمز المقهى (حروف إنجليزية صغيرة) *</label>
+              <input type="text" v-model.trim="createForm.code" required pattern="[a-z0-9]{3,12}" placeholder="karawan" class="ltr" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label>اسم المالك</label>
+              <input type="text" v-model.trim="createForm.owner_name" placeholder="الاسم الكامل" />
+            </div>
+            <div class="field">
+              <label>رقم الهاتف</label>
+              <input type="tel" v-model.trim="createForm.phone" placeholder="22123456" class="ltr" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label>بريد دخول المالك *</label>
+              <input type="email" v-model.trim="createForm.owner_email" required class="ltr" placeholder="owner@example.com" />
+            </div>
+            <div class="field">
+              <label>كلمة سر المالك (6+ أحرف) *</label>
+              <input type="text" v-model="createForm.owner_password" required minlength="6" class="ltr" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label>نمط العمل</label>
+              <select v-model="createForm.work_pattern">
+                <option v-for="(lbl, key) in WORK_PATTERNS" :key="key" :value="key">{{ lbl }}</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>مدة الاشتراك بالأيام</label>
+              <input type="number" v-model.number="createForm.days" min="1" max="3650" />
+            </div>
+          </div>
+
+          <!-- إعداد العامل الأول عند الحاجة -->
+          <div v-if="createForm.work_pattern !== 'owner_only'" class="card" style="background:#f9fafb;">
+            <strong style="display:block; margin-bottom:8px;">العامل 1 (w1)</strong>
+            <div class="grid-3">
+              <div class="field">
+                <label>الاسم</label>
+                <input type="text" v-model.trim="createForm.w1_name" placeholder="اختياري" />
+              </div>
+              <div class="field">
+                <label>الأجر اليومي (د.ت)</label>
+                <input type="number" step="0.5" min="0" v-model.number="createForm.w1_wage_tnd" class="ltr" />
+              </div>
+              <div class="field" v-if="patternNeedsW1Pin(createForm.work_pattern)">
+                <label>رمز PIN (4-8 أرقام)</label>
+                <input type="text" v-model.trim="createForm.w1_pin" pattern="\d{4,8}" class="ltr" />
+              </div>
+            </div>
+          </div>
+
+          <!-- إعداد العامل الثاني -->
+          <div v-if="createForm.work_pattern === 'two_workers'" class="card" style="background:#f9fafb;">
+            <strong style="display:block; margin-bottom:8px;">العامل 2 (w2)</strong>
+            <div class="grid-3">
+              <div class="field">
+                <label>الاسم</label>
+                <input type="text" v-model.trim="createForm.w2_name" placeholder="اختياري" />
+              </div>
+              <div class="field">
+                <label>الأجر اليومي (د.ت)</label>
+                <input type="number" step="0.5" min="0" v-model.number="createForm.w2_wage_tnd" class="ltr" />
+              </div>
+              <div class="field">
+                <label>رمز PIN (4-8 أرقام)</label>
+                <input type="text" v-model.trim="createForm.w2_pin" pattern="\d{4,8}" class="ltr" />
+              </div>
+            </div>
+          </div>
+
+          <!-- الميزات المفعّلة -->
+          <div class="field">
+            <label>الميزات المفعّلة لهذا المقهى</label>
+            <div class="chip-grid">
+              <label
+                v-for="(lbl, key) in FEATURE_LABELS"
+                :key="key"
+                class="toggle-chip"
+                :class="{ on: createForm.features[key] }"
+              >
+                <input type="checkbox" v-model="createForm.features[key]" />
+                {{ lbl }}
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" :disabled="busy">
+            {{ busy ? "جارٍ الإنشاء..." : "حفظ وإنشاء الحسابات" }}
+          </button>
+        </form>
       </div>
-      <form id="saProdForm">
+    </div>
+
+    <!-- نافذة إدارة مقهى موجود -->
+    <div v-if="selectedCafe" class="modal-backdrop" @click.self="selectedCafe = null">
+      <div class="modal">
+        <div class="row" style="margin-bottom:10px;">
+          <h3 style="margin:0;">إدارة: {{ selectedCafe.name }}</h3>
+          <button class="btn btn-sm btn-outline" @click="selectedCafe = null">إغلاق</button>
+        </div>
+
         <div class="grid-2">
-          <div class="form-group">
-            <label for="saPName">اسم السلعة *</label>
-            <input id="saPName" type="text" required placeholder="مثال: بن، شاي، ماء 1.5ل..." />
+          <div class="field">
+            <label>اسم المقهى</label>
+            <input type="text" v-model.trim="editForm.name" />
           </div>
-          <div class="form-group">
-            <label for="saPPrice">السعر (بالمليم مي) *</label>
-            <input id="saPPrice" type="tel" inputmode="numeric" required class="num-input-ltr" placeholder="1 500" />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>الفئة (لون البطاقة)</label>
-          <div id="saPCatBtns" class="opt-grid-2">
-            <button type="button" class="opt-btn active" data-pcat="hot">☕ ساخن</button>
-            <button type="button" class="opt-btn" data-pcat="cold">🧊 بارد</button>
-            <button type="button" class="opt-btn" data-pcat="food">🥐 مأكولات</button>
-            <button type="button" class="opt-btn" data-pcat="fun">🎯 ترفيه</button>
+          <div class="field">
+            <label>اسم المالك</label>
+            <input type="text" v-model.trim="editForm.owner_name" />
           </div>
         </div>
 
-        <div class="form-group">
-          <label>وحدة البيع</label>
-          <div id="saPUnitBtns" class="opt-grid-3">
-            <button type="button" class="opt-btn active" data-punit="كأس">كأس</button>
-            <button type="button" class="opt-btn" data-punit="قارورة">قارورة</button>
-            <button type="button" class="opt-btn" data-punit="علبة">علبة</button>
-            <button type="button" class="opt-btn" data-punit="قطعة">قطعة</button>
-            <button type="button" class="opt-btn" data-punit="غرام">غرام</button>
-            <button type="button" class="opt-btn" data-punit="طرح">طرح</button>
+        <div class="grid-2">
+          <div class="field">
+            <label>الهاتف</label>
+            <input type="tel" v-model.trim="editForm.phone" class="ltr" />
+          </div>
+          <div class="field">
+            <label>نمط العمل</label>
+            <select v-model="editForm.work_pattern">
+              <option v-for="(lbl, key) in WORK_PATTERNS" :key="key" :value="key">{{ lbl }}</option>
+            </select>
           </div>
         </div>
 
-        <div class="section-box">
-          <h3>الربط بمادة مخزن</h3>
-          <div id="saPStockBtns" class="opt-grid-2" style="margin-bottom: 10px;"></div>
-          <div id="saPDeductWrap" class="form-group hidden" style="margin-bottom: 0;">
-            <label id="saPDeductLbl" for="saPDeduct">الكمية المخصومة لكل وحدة مباعة *</label>
-            <input id="saPDeduct" type="tel" inputmode="numeric" class="num-input-ltr" placeholder="1 أو 7" />
-            <div class="hint">البيع بالغرام (مثل البن = 150 مي/غرام): اكتب <strong>1</strong>. بالكأس (إكسبراس): اكتب <strong>7</strong>.</div>
+        <div class="field">
+          <label>الميزات المعزولة</label>
+          <div class="chip-grid">
+            <label
+              v-for="(lbl, key) in FEATURE_LABELS"
+              :key="key"
+              class="toggle-chip"
+              :class="{ on: editForm.features[key] }"
+            >
+              <input type="checkbox" v-model="editForm.features[key]" />
+              {{ lbl }}
+            </label>
           </div>
         </div>
 
-        <div class="form-group">
-          <label style="display: flex; align-items: center; gap: 8px; color: var(--text); cursor: pointer;">
-            <input id="saPActive" type="checkbox" checked style="width: auto;" />
-            <span>السلعة مفعّلة وتظهر في شاشة البيع</span>
-          </label>
-        </div>
-        <div class="row-flex">
-          <button type="submit" class="btn-primary btn-full">حفظ السلعة</button>
-          <button type="button" class="btn-secondary" data-close="saProdModal">إلغاء</button>
-        </div>
-      </form>
-    </div>
-  </div>
+        <button class="btn btn-primary btn-block" @click="saveCafeChanges" :disabled="busy">
+          حفظ التعديلات
+        </button>
 
-  <!-- نافذة فرعية: إضافة / تعديل مادة مخزن -->
-  <div id="saStockModal" class="modal-backdrop sub-modal hidden">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="saStockTitle">📦 إضافة مادة مخزن</h2>
-        <button type="button" class="close-btn" data-close="saStockModal">&times;</button>
-      </div>
-      <form id="saStockForm">
-        <div class="form-group">
-          <label for="saStName">اسم مادة المخزن *</label>
-          <input id="saStName" type="text" required placeholder="مثال: بن، ماء 1.5ل، قازوز بلار..." />
-        </div>
+        <hr class="divider" />
 
-        <div class="form-group">
-          <label>وحدة الجرد *</label>
-          <div id="saStUnitBtns" class="opt-grid-2">
-            <button type="button" class="opt-btn active" data-stunit="unit">بالوحدة / القارورة / العلبة</button>
-            <button type="button" class="opt-btn" data-stunit="g">بالوزن (غرام)</button>
+        <!-- إدارة الاشتراك -->
+        <div class="field">
+          <label>تعديل الاشتراك (ينتهي: {{ formatDate(selectedCafe.subscription_until) }})</label>
+          <div class="row">
+            <button class="btn btn-sm btn-outline" @click="quickExtend(selectedCafe, 30)" :disabled="busy">+30 يوم</button>
+            <button class="btn btn-sm btn-outline" @click="quickExtend(selectedCafe, 90)" :disabled="busy">+90 يوم</button>
+            <button class="btn btn-sm btn-outline" @click="quickExtend(selectedCafe, 365)" :disabled="busy">+سنة</button>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>وحدة الشراء في فواتير المخزن *</label>
-          <div id="saStPackBtns" class="opt-grid-2"></div>
+        <hr class="divider" />
+
+        <!-- تغيير كلمة سر المالك -->
+        <div class="field">
+          <label>تغيير كلمة سر المالك ({{ selectedCafe.owner_email }})</label>
+          <div class="row">
+            <input type="text" v-model="ownerNewPass" placeholder="كلمة سر جديدة (6+ أحرف)" class="ltr" style="flex:1;" />
+            <button class="btn btn-sm btn-primary" @click="changeOwnerPassword" :disabled="busy || ownerNewPass.length < 6">
+              تغيير
+            </button>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label id="saStQtyLbl" for="saStQty">الرصيد الحالي *</label>
-          <input id="saStQty" type="tel" inputmode="numeric" required class="num-input-ltr" value="0" />
-          <div class="hint">أدخل الرصيد بالغرام للموزون أو بالقطعة للوحدات.</div>
-        </div>
-
-        <div class="row-flex">
-          <button type="submit" class="btn-primary btn-full">حفظ المادة</button>
-          <button type="button" class="btn-secondary" data-close="saStockModal">إلغاء</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- نافذة عرض ونسخ وإرسال البيانات عبر واتساب -->
-  <div id="infoModal" class="modal-backdrop sub-modal hidden">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="infoModalTitle">بيانات الدخول</h2>
-        <button type="button" class="close-btn" data-close="infoModal">&times;</button>
-      </div>
-      <div id="infoModalBody" class="creds-pre"></div>
-      <div class="grid-2" style="margin-bottom: 8px;">
-        <button type="button" id="infoWaBtn" class="btn-wa btn-full">📲 إرسال عبر واتساب</button>
-        <button type="button" id="infoCopyBtn" class="btn-primary btn-full">📋 نسخ البيانات</button>
-      </div>
-      <button type="button" class="btn-secondary btn-full" data-close="infoModal">إغلاق</button>
-    </div>
-  </div>
-
-  <div id="toast" class="toast hidden"></div>
-
-  <!-- Firebase Compat SDK v10.12.2 -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyC49QHKlszAR2objtwOGo9g5vEz8AY2AJQ",
-      authDomain: "cassacafe-12a0a.firebaseapp.com",
-      databaseURL: "https://cassacafe-12a0a-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "cassacafe-12a0a",
-      storageBucket: "cassacafe-12a0a.firebasestorage.app",
-      messagingSenderId: "986243350617",
-      appId: "1:986243350617:web:b8a31aa0c0095aba953148"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-
-    const APP_BASE_URL = "https://jedameur1-tech.github.io/cassacafe";
-
-    const PATTERN_META = {
-      owner_only:        { label: "👤 مالك وحده",                   pill: "pill-muted", opMode: "solo", needsAuth: 0, hasWorkers: false, fixedCount: 0, w1Shift: "morning" },
-      owner_with_worker: { label: "🤝 مالك + عامل معاً",            pill: "pill-warn",  opMode: "solo", needsAuth: 0, hasWorkers: true,  fixedCount: 0, w1Shift: "full" },
-      worker_only:       { label: "👷 عامل وحده",                   pill: "pill-info",  opMode: "team", needsAuth: 1, hasWorkers: true,  fixedCount: 1, w1Shift: "full" },
-      worker_owner:      { label: "☀️🌙 عامل صباحاً + مالك مساءً",  pill: "pill-info",  opMode: "team", needsAuth: 1, hasWorkers: true,  fixedCount: 1, w1Shift: "morning" },
-      two_workers:       { label: "👷👷 عامل صباحاً + عامل مساءً",  pill: "pill-fun",   opMode: "team", needsAuth: 2, hasWorkers: true,  fixedCount: 2, w1Shift: "morning" }
-    };
-
-    const CATEGORY_INFO = {
-      hot: { label: "☕ ساخن", pill: "pill-hot" },
-      cold: { label: "🧊 بارد", pill: "pill-cold" },
-      food: { label: "🥐 مأكولات", pill: "pill-food" },
-      fun: { label: "🎯 ترفيه", pill: "pill-fun" }
-    };
-
-    const PACK_OPTIONS = {
-      g: [
-        { size: 1000, label: "كغ", fullLabel: "كغ (×1 000 غ)" },
-        { size: 500, label: "نصف كغ", fullLabel: "نصف كغ (×500 غ)" },
-        { size: 1, label: "غرام", fullLabel: "غرام (×1 غ)" }
-      ],
-      unit: [
-        { size: 1, label: "وحدة", fullLabel: "وحدة / قطعة (×1)" },
-        { size: 6, label: "ستيكة", fullLabel: "ستيكة (×6)" },
-        { size: 12, label: "ستيكة", fullLabel: "ستيكة (×12)" },
-        { size: 24, label: "كاجو", fullLabel: "كاجو (×24)" }
-      ]
-    };
-
-    const state = {
-      user: null,
-      tenants: {},
-      adminSecrets: {},
-      filter: "all",
-      search: "",
-      activeCafeId: null,
-      credsCafeId: null,
-      setupCafeId: null,
-      deleteCafeId: null,
-      deleteExpectedToken: "",
-      setupTab: "prods",
-      editingProdId: null,
-      editingStockId: null,
-      acPattern: "owner_only",
-      acWCount: 1,
-      mmPattern: "owner_only",
-      mmWCount: 1,
-      saPCat: "hot",
-      saPUnit: "كأس",
-      saPStockId: "",
-      saStUnit: "unit",
-      saStPackSize: 1,
-      lastInfoText: "",
-      lastInfoPhone: ""
-    };
-
-    let tenantsRef = null;
-    let secretsRef = null;
-
-    function getSecondaryAuth() {
-      const name = "secondary-creator-app";
-      const existing = firebase.apps.find((a) => a.name === name);
-      const app = existing || firebase.initializeApp(firebaseConfig, name);
-      return app.auth();
-    }
-
-    function getCurrentMonthKey() {
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    }
-    function escapeHtml(str) {
-      return String(str == null ? "" : str)
-        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-    }
-    function parseNum(val) {
-      if (typeof val === "number") return isFinite(val) && val > 0 ? Math.round(val) : 0;
-      const clean = String(val == null ? "" : val)
-        .replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
-        .replace(/[^\d]/g, "");
-      return parseInt(clean, 10) || 0;
-    }
-    function fmtPlain(v) {
-      const n = Math.round(Number(v) || 0);
-      return (n < 0 ? "-" : "") + Math.abs(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u00A0");
-    }
-    function fmtMi(v) { return `<span class="num-ltr" dir="ltr">${fmtPlain(v)}</span> مي`; }
-    function fmtInputVal(v) {
-      const n = parseNum(v);
-      return n > 0 ? String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ") : "";
-    }
-    function formatInputWithSpaces(el) {
-      if (!el) return;
-      let raw = String(el.value || "")
-        .replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
-        .replace(/[^\d]/g, "");
-      if (!raw) { el.value = ""; return; }
-      raw = raw.replace(/^0+(?=\d)/, "");
-      if (raw.length > 9) raw = raw.slice(0, 9);
-      el.value = raw.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    }
-    function formatQty(qty, unit) {
-      const n = Math.round(Number(qty) || 0);
-      return `<span class="num-ltr" dir="ltr">${fmtPlain(n)}</span> ${unit === "g" ? "غرام" : "وحدة"}`;
-    }
-    function formatDate(ms) {
-      if (!ms) return "—";
-      const d = new Date(ms);
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-    }
-    function randomPass(len = 8) {
-      const chars = "abcdefghjkmnpqrstuvwxyz23456789";
-      let out = "";
-      for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
-      return out;
-    }
-    function randomPin(len = 6) {
-      let out = "";
-      for (let i = 0; i < len; i++) out += Math.floor(Math.random() * 10);
-      return out;
-    }
-
-    function normalizeTunisiaPhone(rawPhone) {
-      let digits = String(rawPhone || "").replace(/[^\d]/g, "");
-      if (!digits) return "";
-      if (digits.startsWith("00")) digits = digits.slice(2);
-      if (digits.length === 8) digits = "216" + digits;
-      return digits;
-    }
-
-    function openWhatsAppMessage(phone, text) {
-      const clean = normalizeTunisiaPhone(phone);
-      const url = clean
-        ? `https://wa.me/${clean}?text=${encodeURIComponent(text)}`
-        : `https://wa.me/?text=${encodeURIComponent(text)}`;
-      window.open(url, "_blank");
-    }
-
-    function getCafeCode(cafeId, tenant) {
-      const meta = (tenant && tenant.meta) || {};
-      if (meta.code) return String(meta.code).trim().toLowerCase();
-      const w1Email = (meta.workers && meta.workers.w1 && meta.workers.w1.email) || meta.workerEmail || "";
-      const m1 = String(w1Email).match(/^w2?_([^@]+)@/i);
-      if (m1) return m1[1].toLowerCase();
-      const w2Email = (meta.workers && meta.workers.w2 && meta.workers.w2.email) || "";
-      const m2 = String(w2Email).match(/^w2?_([^@]+)@/i);
-      if (m2) return m2[1].toLowerCase();
-      const m3 = String(cafeId || "").match(/^cafe_([a-z0-9]+)_/i);
-      return m3 ? m3[1].toLowerCase() : "";
-    }
-
-    function resolveWorkPattern(tenant) {
-      const cfg = (tenant && tenant.config) || {};
-      if (cfg.workPattern && PATTERN_META[cfg.workPattern]) return cfg.workPattern;
-      if (cfg.operationMode === "assisted") return "owner_with_worker";
-      if (cfg.operationMode === "team") {
-        if (cfg.workers && cfg.workers.w2 && cfg.workers.w2.active) return "two_workers";
-        return "worker_only";
-      }
-      return "owner_only";
-    }
-
-    function getWorkersInfo(tenant) {
-      const cfg = (tenant && tenant.config) || {};
-      const meta = (tenant && tenant.meta) || {};
-      const cw = cfg.workers || {};
-      const mw = meta.workers || {};
-      const pat = resolveWorkPattern(tenant);
-      const pm = PATTERN_META[pat];
-      const os = (tenant && tenant.owner_secrets && tenant.owner_secrets.workers) || {};
-
-      const w1 = {
-        name: (cw.w1 && cw.w1.name) || cfg.workerName || (pat === "worker_only" ? "العامل" : "عامل الصباح"),
-        defaultWage: parseNum((cw.w1 && cw.w1.defaultWage != null) ? cw.w1.defaultWage : cfg.defaultDailyWage),
-        shift: (cw.w1 && cw.w1.shift) || pm.w1Shift,
-        active: pm.hasWorkers && (cw.w1 ? cw.w1.active !== false : true),
-        uid: (mw.w1 && mw.w1.uid) || meta.workerUid || null,
-        email: (mw.w1 && mw.w1.email) || meta.workerEmail || null,
-        pin: (os.w1 && os.w1.pin) || ""
-      };
-      const w2 = {
-        name: (cw.w2 && cw.w2.name) || "عامل العشية",
-        defaultWage: parseNum(cw.w2 && cw.w2.defaultWage),
-        shift: "evening",
-        active: pat === "two_workers" || (pat === "owner_with_worker" && Boolean(cw.w2 && cw.w2.active)),
-        uid: (mw.w2 && mw.w2.uid) || null,
-        email: (mw.w2 && mw.w2.email) || null,
-        pin: (os.w2 && os.w2.pin) || ""
-      };
-      const count = !pm.hasWorkers ? 0 : (w2.active ? 2 : 1);
-      return { w1, w2, count, pattern: pat };
-    }
-
-    function buildCafeCredentialsText(cafeId, includeSecrets = true) {
-      const t = state.tenants[cafeId];
-      if (!t) return "";
-      const name = (t.config && t.config.cafeName) || (t.meta && t.meta.name) || "";
-      const code = getCafeCode(cafeId, t);
-      const pat = resolveWorkPattern(t);
-      const pm = PATTERN_META[pat];
-      const wi = getWorkersInfo(t);
-      const ownerSecret = (state.adminSecrets[cafeId] && state.adminSecrets[cafeId].owner) || {};
-
-      let txt = `☕ بيانات تطبيق مقهى ${name}\n`;
-      txt += `النمط: ${pm.label}\n`;
-      txt += `• تطبيق المالك: ${APP_BASE_URL}/\n`;
-      txt += `  البريد: ${(t.meta && t.meta.ownerEmail) || ""}\n`;
-      if (includeSecrets && ownerSecret.pass) {
-        txt += `  كلمة السر: ${ownerSecret.pass}\n`;
-      }
-      if (pm.needsAuth >= 1) {
-        txt += `——————————\n• تطبيق العامل: ${APP_BASE_URL}/worker.html\n`;
-        txt += `  رمز المقهى: ${code}\n`;
-        txt += `  - ${wi.w1.name} (صباح / 1)${includeSecrets && wi.w1.pin ? ` — PIN: ${wi.w1.pin}` : ""}\n`;
-        if (pm.needsAuth >= 2) {
-          txt += `  - ${wi.w2.name} (عشية / 2)${includeSecrets && wi.w2.pin ? ` — PIN: ${wi.w2.pin}` : ""}\n`;
-        }
-      }
-      return txt;
-    }
-
-    let toastTimer = null;
-    function showToast(msg, type = "ok") {
-      const el = document.getElementById("toast");
-      el.textContent = msg;
-      el.className = "toast " + (type === "err" ? "err" : "ok");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.classList.add("hidden"), 3800);
-    }
-
-    function showInfoModal(title, text, phone = "", hideWa = false) {
-      state.lastInfoText = text;
-      state.lastInfoPhone = phone || "";
-      document.getElementById("infoModalTitle").textContent = title;
-      document.getElementById("infoModalBody").textContent = text;
-      document.getElementById("infoWaBtn").classList.toggle("hidden", hideWa);
-      openModal("infoModal");
-    }
-    document.getElementById("infoCopyBtn").addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(state.lastInfoText);
-        showToast("تم نسخ النص بنجاح.");
-      } catch (_) {
-        showToast("انسخ النص يدوياً من المربع.", "err");
-      }
-    });
-    document.getElementById("infoWaBtn").addEventListener("click", () => {
-      openWhatsAppMessage(state.lastInfoPhone, state.lastInfoText);
-    });
-
-    function openModal(id) { document.getElementById(id).classList.remove("hidden"); }
-    function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
-    document.querySelectorAll("[data-close]").forEach((b) => {
-      b.addEventListener("click", () => closeModal(b.dataset.close));
-    });
-
-    ["acW1Wage", "acW2Wage", "mmW1Wage", "mmW2Wage", "saPPrice", "saPDeduct", "saStQty", "spLowWeight", "spLowUnit"].forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) el.addEventListener("input", () => formatInputWithSpaces(el));
-    });
-
-    function translateAuthError(err) {
-      const map = {
-        "auth/invalid-email": "البريد الإلكتروني غير صالح.",
-        "auth/wrong-password": "كلمة السر أو الرمز السري غير صحيح.",
-        "auth/invalid-credential": "البيانات القديمة غير مطابقة للحساب.",
-        "auth/email-already-in-use": "هذا البريد الإلكتروني مستخدم بالفعل لحساب آخر.",
-        "auth/weak-password": "كلمة السر أو الرمز السري يجب أن يكون 6 أحرف/أرقام على الأقل.",
-        "auth/too-many-requests": "محاولات كثيرة متتالية، انتظر قليلاً.",
-        "auth/network-request-failed": "تحقّق من الاتصال بالإنترنت."
-      };
-      return (err && map[err.code]) || (err && err.message) || "حدث خطأ غير متوقع.";
-    }
-
-    // المصادقة
-    auth.onAuthStateChanged(async (user) => {
-      if (tenantsRef) { tenantsRef.off(); tenantsRef = null; }
-      if (secretsRef) { secretsRef.off(); secretsRef = null; }
-      state.user = user;
-
-      const loginView = document.getElementById("loginView");
-      const appView = document.getElementById("appView");
-      const errEl = document.getElementById("loginError");
-
-      if (!user) {
-        appView.classList.add("hidden");
-        loginView.classList.remove("hidden");
-        return;
-      }
-
-      try {
-        const snap = await db.ref(`super_admins/${user.uid}`).once("value");
-        if (snap.val() !== true) {
-          await auth.signOut();
-          errEl.textContent = "هذا الحساب لا يملك صلاحية المشرف العام.";
-          errEl.classList.remove("hidden");
-          return;
-        }
-        loginView.classList.add("hidden");
-        appView.classList.remove("hidden");
-        startListeningData();
-      } catch (err) {
-        errEl.textContent = "تعذّر التحقق من الصلاحية: " + translateAuthError(err);
-        errEl.classList.remove("hidden");
-      }
-    });
-
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("loginEmail").value.trim();
-      const pass = document.getElementById("loginPass").value;
-      const errEl = document.getElementById("loginError");
-      const btn = document.getElementById("loginBtn");
-      errEl.classList.add("hidden");
-      btn.disabled = true;
-      btn.textContent = "جارٍ الدخول...";
-      try {
-        await auth.signInWithEmailAndPassword(email, pass);
-      } catch (err) {
-        errEl.textContent = translateAuthError(err);
-        errEl.classList.remove("hidden");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "دخول";
-      }
-    });
-
-    document.getElementById("logoutBtn").addEventListener("click", () => auth.signOut());
-
-    function startListeningData() {
-      tenantsRef = db.ref("tenants");
-      tenantsRef.on("value", (snap) => {
-        state.tenants = snap.val() || {};
-        renderDashboard();
-        if (state.setupCafeId && !document.getElementById("setupModal").classList.contains("hidden")) renderSetupLists();
-        if (state.credsCafeId && !document.getElementById("credsModal").classList.contains("hidden")) renderCredsModalBody();
-      }, (err) => showToast("خطأ في قراءة المقاهي: " + err.message, "err"));
-
-      secretsRef = db.ref("super_admin_secrets");
-      secretsRef.on("value", (snap) => {
-        state.adminSecrets = snap.val() || {};
-        if (state.credsCafeId && !document.getElementById("credsModal").classList.contains("hidden")) renderCredsModalBody();
-      }, () => {});
-    }
-
-    function renderDashboard() {
-      const now = Date.now();
-      const entries = Object.entries(state.tenants).map(([id, data]) => {
-        const meta = data.meta || {};
-        const config = data.config || {};
-        const live = data.live || {};
-        const code = getCafeCode(id, data);
-        const subUntil = Number(meta.subscriptionUntil) || 0;
-        const daysLeft = Math.ceil((subUntil - now) / 86400000);
-        const pattern = resolveWorkPattern(data);
-        const workers = getWorkersInfo(data);
-        const prodCount = config.products ? Object.keys(config.products).length : 0;
-        const stockCount = (live.stock_state && live.stock_state.stock) ? Object.keys(live.stock_state.stock).length : 0;
-        const consCount = Array.isArray(config.consumableQuickTags) ? config.consumableQuickTags.length : 0;
-        return { id, code, meta, config, live, subUntil, daysLeft, pattern, workers, prodCount, stockCount, consCount };
-      }).sort((a, b) => (b.meta.createdAt || 0) - (a.meta.createdAt || 0));
-
-      let activeCnt = 0, expCnt = 0, suspCnt = 0;
-      entries.forEach((c) => {
-        if (c.meta.active !== true) suspCnt++;
-        else if (c.daysLeft <= 0) expCnt++;
-        else { activeCnt++; if (c.daysLeft <= 7) expCnt++; }
-      });
-
-      document.getElementById("stTotal").textContent = entries.length;
-      document.getElementById("stActive").textContent = activeCnt;
-      document.getElementById("stExpiring").textContent = expCnt;
-      document.getElementById("stSuspended").textContent = suspCnt;
-
-      const q = state.search.trim().toLowerCase();
-      const filtered = entries.filter((c) => {
-        if (state.filter === "active" && !(c.meta.active === true && c.daysLeft > 0)) return false;
-        if (state.filter === "expiring" && !(c.meta.active === true && c.daysLeft <= 7)) return false;
-        if (state.filter === "suspended" && c.meta.active === true) return false;
-        if (PATTERN_META[state.filter] && c.pattern !== state.filter) return false;
-        if (q) {
-          const hay = [c.meta.name, c.config.cafeName, c.code, c.meta.ownerEmail, c.meta.phone, c.meta.ownerName]
-            .join(" ").toLowerCase();
-          if (!hay.includes(q)) return false;
-        }
-        return true;
-      });
-
-      const grid = document.getElementById("cafesGrid");
-      if (!filtered.length) {
-        grid.innerHTML = `<div class="empty-box">لا توجد مقاهٍ مطابقة حالياً. اضغط «+ إضافة مقهى» لإنشاء حريف جديد.</div>`;
-        return;
-      }
-
-      grid.innerHTML = filtered.map((c) => {
-        let statusBadge = `<span class="pill pill-ok">نشط (${c.daysLeft} يوم)</span>`;
-        let cardCls = "cafe-card";
-        if (c.meta.active !== true) {
-          statusBadge = `<span class="pill pill-err">موقوف يدوياً</span>`;
-          cardCls += " suspended";
-        } else if (c.daysLeft <= 0) {
-          statusBadge = `<span class="pill pill-err">منتهي الاشتراك</span>`;
-          cardCls += " expired";
-        } else if (c.daysLeft <= 7) {
-          statusBadge = `<span class="pill pill-warn">ينتهي خلال ${c.daysLeft} يوم</span>`;
-        }
-
-        const pm = PATTERN_META[c.pattern] || PATTERN_META.owner_only;
-        const patBadge = `<span class="pill ${pm.pill}">${pm.label}</span>`;
-
-        const workersSummary = c.workers.count === 0
-          ? ""
-          : `<div>العمال: <strong>${escapeHtml(c.workers.w1.name)}</strong> (${fmtMi(c.workers.w1.defaultWage)})${c.workers.count === 2 ? ` • <strong>${escapeHtml(c.workers.w2.name)}</strong> (${fmtMi(c.workers.w2.defaultWage)})` : ""}</div>`;
-
-        return `
-          <div class="${cardCls}">
-            <div>
-              <div class="cafe-name">${escapeHtml(c.config.cafeName || c.meta.name || "بدون اسم")}</div>
-              <div style="margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap;">
-                ${statusBadge}
-                ${patBadge}
-                <span class="pill pill-muted" dir="ltr">#${escapeHtml(c.code || "—")}</span>
-              </div>
+        <!-- إدارة العمال -->
+        <div v-if="cafeWorkers.length">
+          <hr class="divider" />
+          <label style="display:block; font-size:0.85rem; font-weight:700; margin-bottom:8px;">العمال المرتبطون بالمقهى</label>
+          <div v-for="w in cafeWorkers" :key="w.id" class="card" style="background:#f9fafb; padding:10px;">
+            <div class="row" style="margin-bottom:6px;">
+              <strong>{{ w.display_name }} ({{ w.slot }})</strong>
+              <span class="muted">الأجر: {{ miToTnd(w.default_wage_mi) }} د.ت • جلسة #{{ w.session_version }}</span>
             </div>
-            <div class="cafe-meta">
-              <div>المالك: <strong>${escapeHtml(c.config.ownerName || c.meta.ownerName || "—")}</strong> (<span dir="ltr">${escapeHtml(c.meta.ownerEmail || "—")}</span>)</div>
-              ${c.meta.phone ? `<div>الهاتف: <strong dir="ltr">${escapeHtml(c.meta.phone)}</strong></div>` : ""}
-              ${workersSummary}
-              <div>ينتهي الاشتراك في: <strong class="num-ltr" dir="ltr">${formatDate(c.subUntil)}</strong></div>
-              <div>التجهيز: <strong>${c.prodCount}</strong> مباعة • <strong>${c.stockCount}</strong> مخزن • <strong>${c.consCount}</strong> استهلاكية</div>
-            </div>
-            <div class="cafe-actions">
-              <button class="btn-primary btn-sm" data-action="setup" data-id="${escapeHtml(c.id)}">⚙️ السلع والمخزون</button>
-              <button class="btn-info btn-sm" data-action="creds" data-id="${escapeHtml(c.id)}">🔑 الحسابات والـ PIN</button>
-              <button class="btn-secondary btn-sm" data-action="mode" data-id="${escapeHtml(c.id)}">👥 النمط والعمال</button>
-              <button class="btn-success btn-sm" data-action="renew" data-id="${escapeHtml(c.id)}">⏳ الاشتراك</button>
-              <button class="btn-wa btn-sm" data-action="wa" data-id="${escapeHtml(c.id)}">📲 واتساب</button>
-              <button class="${c.meta.active === true ? "btn-danger" : "btn-success"} btn-sm" data-action="toggle" data-id="${escapeHtml(c.id)}">
-                ${c.meta.active === true ? "⛔ إيقاف" : "✅ تفعيل"}
+            <div class="row">
+              <button v-if="w.user_id" class="btn btn-sm btn-outline" @click="promptWorkerPin(w)" :disabled="busy">
+                تغيير PIN
               </button>
-              <button class="btn-danger btn-sm" data-action="delete" data-id="${escapeHtml(c.id)}">🗑️ حذف</button>
+              <button class="btn btn-sm btn-warn" @click="promptResetWorker(w)" :disabled="busy">
+                تصفير لعامل جديد
+              </button>
             </div>
           </div>
-        `;
-      }).join("");
-    }
+        </div>
 
-    document.getElementById("searchInput").addEventListener("input", (e) => { state.search = e.target.value; renderDashboard(); });
-    document.getElementById("filterBar").addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-filter]");
-      if (!btn) return;
-      state.filter = btn.dataset.filter;
-      document.querySelectorAll("[data-filter]").forEach((b) => b.classList.toggle("active", b === btn));
-      renderDashboard();
-    });
+        <hr class="divider" />
 
-    // ============ 1. إضافة مقهى جديد ============
-    function getEffectiveWorkerCount(pat, chosenCount) {
-      const pm = PATTERN_META[pat] || PATTERN_META.owner_only;
-      if (!pm.hasWorkers) return 0;
-      if (pm.fixedCount > 0) return pm.fixedCount;
-      return chosenCount === 2 ? 2 : 1;
-    }
+        <!-- حذف نهائي -->
+        <button class="btn btn-danger-soft btn-block" @click="deleteCafe(selectedCafe)" :disabled="busy">
+          حذف المقهى وحساباته نهائياً
+        </button>
+      </div>
+    </div>
 
-    function syncAddCafeUI() {
-      const pat = state.acPattern;
-      const pm = PATTERN_META[pat];
-      const effCount = getEffectiveWorkerCount(pat, state.acWCount);
+    <!-- إشعار Toast -->
+    <div v-if="toast.text" class="toast" :class="toast.type">{{ toast.text }}</div>
+  </div>
 
-      document.querySelectorAll("[data-ac-pat]").forEach((b) => b.classList.toggle("active", b.dataset.acPat === pat));
-      document.querySelectorAll("[data-ac-wcount]").forEach((b) => b.classList.toggle("active", Number(b.dataset.acWcount) === state.acWCount));
+  <script type="module">
+    import { createApp, ref, reactive, computed, onMounted } from "https://cdn.jsdelivr.net/npm/vue@3/dist/vue.esm-browser.prod.js";
+    import {
+      supabase,
+      callManageAccounts,
+      getServerTime,
+      miToTnd,
+      tndToMi,
+      daysRemaining,
+      formatDate,
+      translateError,
+      logAppError,
+      WORK_PATTERNS,
+      FEATURE_LABELS,
+    } from "./core/supabase.js";
 
-      document.getElementById("acWorkersSection").classList.toggle("hidden", !pm.hasWorkers);
-      document.getElementById("acWCountWrap").classList.toggle("hidden", pat !== "owner_with_worker");
+    createApp({
+      setup() {
+        const booting = ref(true);
+        const busy = ref(false);
+        const member = ref(null);
+        const serverToday = ref("");
+        const tab = ref("cafes");
+        const search = ref("");
 
-      document.getElementById("acW1Title").textContent = pat === "worker_only"
-        ? "👷 العامل (يوم كامل — حساب تطبيق العامل)"
-        : (pat === "worker_owner" || pat === "two_workers" ? "☀️ العامل 1 (وردية الصباح)" : "👷 العامل 1");
-      document.getElementById("acW2Title").textContent = pat === "two_workers" ? "🌙 العامل 2 (وردية العشية)" : "👷 العامل 2";
+        const cafes = ref([]);
+        const members = ref([]);
+        const feedback = ref([]);
+        const errors = ref([]);
 
-      document.getElementById("acW1PinWrap").classList.toggle("hidden", pm.needsAuth < 1);
-      document.getElementById("acW1Pin").required = pm.needsAuth >= 1;
+        const loginForm = reactive({ email: "", password: "" });
+        const toast = reactive({ text: "", type: "" });
+        let toastTimer = null;
 
-      document.getElementById("acW2Box").classList.toggle("hidden", effCount < 2);
-      document.getElementById("acW2PinWrap").classList.toggle("hidden", pm.needsAuth < 2);
-      document.getElementById("acW2Pin").required = pm.needsAuth >= 2;
-    }
-
-    document.getElementById("acPatternBtns").addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-ac-pat]");
-      if (!btn) return;
-      state.acPattern = btn.dataset.acPat;
-      syncAddCafeUI();
-    });
-    document.getElementById("acWorkerCountBtns").addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-ac-wcount]");
-      if (!btn) return;
-      state.acWCount = Number(btn.dataset.acWcount) || 1;
-      syncAddCafeUI();
-    });
-    document.getElementById("acGenPassBtn").addEventListener("click", () => { document.getElementById("acOwnerPass").value = randomPass(8); });
-    document.getElementById("acGenPin1Btn").addEventListener("click", () => { document.getElementById("acW1Pin").value = randomPin(6); });
-    document.getElementById("acGenPin2Btn").addEventListener("click", () => { document.getElementById("acW2Pin").value = randomPin(6); });
-
-    document.getElementById("addCafeBtn").addEventListener("click", () => {
-      document.getElementById("addCafeForm").reset();
-      state.acPattern = "owner_only";
-      state.acWCount = 1;
-      document.getElementById("acOwnerPass").value = randomPass(8);
-      document.getElementById("acDays").value = "30";
-      document.getElementById("acW1Name").value = "عامل الصباح";
-      document.getElementById("acW1Wage").value = "25 000";
-      document.getElementById("acW1Pin").value = randomPin(6);
-      document.getElementById("acW2Name").value = "عامل العشية";
-      document.getElementById("acW2Wage").value = "25 000";
-      document.getElementById("acW2Pin").value = randomPin(6);
-      syncAddCafeUI();
-      openModal("addCafeModal");
-    });
-
-    document.getElementById("addCafeForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const name = document.getElementById("acName").value.trim();
-      const code = document.getElementById("acCode").value.trim().toLowerCase();
-      const ownerName = document.getElementById("acOwnerName").value.trim();
-      const phone = document.getElementById("acPhone").value.trim();
-      const ownerEmail = document.getElementById("acOwnerEmail").value.trim();
-      const ownerPass = document.getElementById("acOwnerPass").value.trim();
-      const days = Math.max(1, parseNum(document.getElementById("acDays").value) || 30);
-
-      const pat = state.acPattern;
-      const pm = PATTERN_META[pat];
-      const wCount = getEffectiveWorkerCount(pat, state.acWCount);
-      const w1Name = document.getElementById("acW1Name").value.trim() || (pat === "worker_only" ? "العامل" : "عامل الصباح");
-      const w1Wage = parseNum(document.getElementById("acW1Wage").value);
-      const w1Pin = document.getElementById("acW1Pin").value.trim();
-      const w2Name = document.getElementById("acW2Name").value.trim() || "عامل العشية";
-      const w2Wage = parseNum(document.getElementById("acW2Wage").value);
-      const w2Pin = document.getElementById("acW2Pin").value.trim();
-
-      if (!/^[a-z0-9]{3,12}$/.test(code)) {
-        showToast("رمز المقهى يجب أن يكون من 3 إلى 12 حرفاً/رقماً إنجليزياً بدون مسافات.", "err");
-        return;
-      }
-      const codeExists = Object.entries(state.tenants).some(([id, t]) => getCafeCode(id, t) === code);
-      if (codeExists) {
-        showToast("رمز المقهى هذا مستخدم بالفعل لمقهى آخر.", "err");
-        return;
-      }
-      if (ownerPass.length < 6) { showToast("كلمة سر المالك يجب أن تكون 6 أحرف على الأقل.", "err"); return; }
-      if (pm.needsAuth >= 1 && w1Pin.length < 6) { showToast("الرمز السري للعامل 1 يجب أن يكون 6 أرقام/أحرف على الأقل.", "err"); return; }
-      if (pm.needsAuth >= 2 && w2Pin.length < 6) { showToast("الرمز السري للعامل 2 يجب أن يكون 6 أرقام/أحرف على الأقل.", "err"); return; }
-
-      const btn = document.getElementById("acSubmitBtn");
-      btn.disabled = true;
-      btn.textContent = "جارٍ الإنشاء...";
-      const secAuth = getSecondaryAuth();
-      try {
-        const ownerCred = await secAuth.createUserWithEmailAndPassword(ownerEmail, ownerPass);
-        const ownerUid = ownerCred.user.uid;
-        await secAuth.signOut();
-
-        let w1Uid = null, w1Email = null;
-        let w2Uid = null, w2Email = null;
-        if (pm.needsAuth >= 1) {
-          w1Email = `w_${code}@cassacafe.app`;
-          const c1 = await secAuth.createUserWithEmailAndPassword(w1Email, w1Pin);
-          w1Uid = c1.user.uid;
-          await secAuth.signOut();
-        }
-        if (pm.needsAuth >= 2) {
-          w2Email = `w2_${code}@cassacafe.app`;
-          const c2 = await secAuth.createUserWithEmailAndPassword(w2Email, w2Pin);
-          w2Uid = c2.user.uid;
-          await secAuth.signOut();
-        }
-
-        const nowMs = Date.now();
-        const subUntil = nowMs + days * 86400000;
-        const cafeId = `cafe_${code}_${nowMs.toString(36)}`;
-        const updates = {};
-
-        updates[`users/${ownerUid}`] = { role: "owner", cafeId, active: true, email: ownerEmail, name: ownerName, createdAt: nowMs };
-        updates[`super_admin_secrets/${cafeId}/owner`] = { email: ownerEmail, pass: ownerPass, updatedAt: nowMs };
-
-        if (w1Uid) {
-          updates[`users/${w1Uid}`] = { role: "worker", cafeId, active: true, email: w1Email, name: w1Name, slot: "w1", shift: pm.w1Shift, createdAt: nowMs };
-          updates[`tenants/${cafeId}/owner_secrets/workers/w1`] = { email: w1Email, pin: w1Pin, updatedAt: nowMs };
-        }
-        if (w2Uid) {
-          updates[`users/${w2Uid}`] = { role: "worker", cafeId, active: true, email: w2Email, name: w2Name, slot: "w2", shift: "evening", createdAt: nowMs };
-          updates[`tenants/${cafeId}/owner_secrets/workers/w2`] = { email: w2Email, pin: w2Pin, updatedAt: nowMs };
-        }
-
-        updates[`tenants/${cafeId}/meta`] = {
-          name, code, phone, ownerUid, ownerEmail, ownerName,
-          workerUid: w1Uid, workerEmail: w1Email,
-          workers: { w1: { uid: w1Uid, email: w1Email }, w2: { uid: w2Uid, email: w2Email } },
-          active: true, subscriptionUntil: subUntil, createdAt: nowMs
+        const notify = (text, type = "ok") => {
+          toast.text = text;
+          toast.type = type;
+          clearTimeout(toastTimer);
+          toastTimer = setTimeout(() => { toast.text = ""; }, 3500);
         };
 
-        updates[`tenants/${cafeId}/config`] = {
-          cafeName: name, ownerName, operationMode: pm.opMode, workPattern: pat,
-          workerName: w1Name, defaultDailyWage: w1Wage,
-          workers: {
-            w1: { name: w1Name, defaultWage: w1Wage, shift: pm.w1Shift, active: wCount >= 1 },
-            w2: { name: w2Name, defaultWage: w2Wage, shift: "evening", active: wCount === 2 }
+        const showCreate = ref(false);
+        const defaultCreateForm = () => ({
+          name: "",
+          code: "",
+          owner_name: "",
+          phone: "",
+          owner_email: "",
+          owner_password: "",
+          work_pattern: "worker_only",
+          days: 30,
+          w1_name: "",
+          w1_wage_tnd: 25,
+          w1_pin: "1234",
+          w2_name: "",
+          w2_wage_tnd: 25,
+          w2_pin: "5678",
+          features: {
+            stock: true,
+            credit: false,
+            waste: false,
+            partners: false,
+            tables: false,
+            maintenance: false,
+            trial_feedback: true,
           },
-          lowStockWeightLimit: 1000, lowStockUnitLimit: 10,
-          consumableQuickTags: ["ماء إمصفي", "مواد تنظيف", "سكر", "حليب", "شكولين", "زهر", "كؤوس بلورية"],
-          fixedExpensePresets: [
-            { name: "كراء المحل", amount: 0 }, { name: "فاتورة كهرباء", amount: 0 },
-            { name: "فاتورة ماء", amount: 0 }, { name: "أنترنت", amount: 0 }
-          ],
-          products: {}
+        });
+        const createForm = reactive(defaultCreateForm());
+
+        const selectedCafe = ref(null);
+        const ownerNewPass = ref("");
+        const editForm = reactive({
+          name: "",
+          owner_name: "",
+          phone: "",
+          work_pattern: "owner_only",
+          features: {},
+        });
+
+        const filteredCafes = computed(() => {
+          const q = search.value.toLowerCase();
+          if (!q) return cafes.value;
+          return cafes.value.filter((c) =>
+            [c.name, c.code, c.owner_name, c.phone, c.owner_email]
+              .some((v) => String(v || "").toLowerCase().includes(q))
+          );
+        });
+
+        const activeCafesCount = computed(() =>
+          cafes.value.filter((c) => c.active && daysRemaining(c.subscription_until) > 0).length
+        );
+
+        const openFeedbackCount = computed(() =>
+          feedback.value.filter((f) => f.status === "open").length
+        );
+
+        const cafeWorkers = computed(() => {
+          if (!selectedCafe.value) return [];
+          return members.value.filter(
+            (m) => m.cafe_id === selectedCafe.value.id && m.role === "worker" && m.active
+          );
+        });
+
+        const cafeNameById = (id) => {
+          if (!id) return "النظام";
+          return cafes.value.find((c) => c.id === id)?.name || "مقهى محذوف";
         };
 
-        updates[`tenants/${cafeId}/live`] = {
-          active_month: getCurrentMonthKey(), last_invoice_number: 0,
-          stock_state: { stock: {}, updatedAt: nowMs }
+        const patternNeedsW1Pin = (p) => ["worker_only", "worker_owner", "two_workers"].includes(p);
+
+        const statusBadge = (cafe) => {
+          if (!cafe.active) return { label: "موقوف", cls: "badge-danger" };
+          const d = daysRemaining(cafe.subscription_until);
+          if (d <= 0) return { label: "منتهي", cls: "badge-danger" };
+          if (d <= 5) return { label: `ينتهي خلال ${d} أيام`, cls: "badge-warn" };
+          return { label: "نشط", cls: "badge-ok" };
         };
 
-        await db.ref().update(updates);
-        closeModal("addCafeModal");
-        showToast(`تم إنشاء «${name}». جهّز سلعه ومخزونه الآن.`);
+        const daysLabel = (iso) => {
+          const d = daysRemaining(iso);
+          if (d <= 0) return "منتهي";
+          return `متبقي ${d} يوم`;
+        };
 
-        let summary = `☕ بيانات دخول مقهى ${name}\nالنمط: ${pm.label}\n• تطبيق المالك: ${APP_BASE_URL}/\n  البريد: ${ownerEmail}\n  كلمة السر: ${ownerPass}\n`;
-        if (pm.needsAuth >= 1) {
-          summary += `——————————\n• تطبيق العامل: ${APP_BASE_URL}/worker.html\n  رمز المقهى: ${code}\n  - ${w1Name} (صباح / 1) — PIN: ${w1Pin}\n`;
-          if (pm.needsAuth >= 2) summary += `  - ${w2Name} (عشية / 2) — PIN: ${w2Pin}\n`;
-        }
-        showInfoModal("✅ تم إنشاء المقهى بنجاح", summary, phone);
-      } catch (err) {
-        showToast("فشل الإنشاء: " + translateAuthError(err), "err");
-      } finally {
-        secAuth.signOut().catch(() => {});
-        btn.disabled = false;
-        btn.textContent = "إنشاء المقهى";
-      }
-    });
-
-    // ============ 2. إجراءات بطاقة المقهى ============
-    document.getElementById("cafesGrid").addEventListener("click", async (e) => {
-      const btn = e.target.closest("[data-action]");
-      if (!btn) return;
-      const action = btn.dataset.action;
-      const cafeId = btn.dataset.id;
-      const tenant = state.tenants[cafeId];
-      if (!tenant) return;
-
-      if (action === "setup") openSetupModal(cafeId);
-      else if (action === "creds") openCredsModal(cafeId);
-      else if (action === "mode") openModeModal(cafeId);
-      else if (action === "renew") openRenewModal(cafeId);
-      else if (action === "delete") openDeleteCafeModal(cafeId);
-      else if (action === "wa") {
-        const txt = buildCafeCredentialsText(cafeId, true);
-        showInfoModal("📲 إرسال بيانات المقهى", txt, (tenant.meta && tenant.meta.phone) || "");
-      } else if (action === "toggle") {
-        const next = !(tenant.meta && tenant.meta.active === true);
-        if (!confirm(next ? "إعادة تفعيل هذا المقهى؟" : "إيقاف حساب هذا المقهى مؤقتاً؟")) return;
-        try {
-          await db.ref(`tenants/${cafeId}/meta/active`).set(next);
-          showToast(next ? "تم تفعيل المقهى." : "تم إيقاف المقهى.");
-        } catch (err) {
-          showToast("فشل التحديث: " + err.message, "err");
-        }
-      }
-    });
-
-    // ============ 2.5 الحذف النهائي للمقهى ============
-    function openDeleteCafeModal(cafeId) {
-      const t = state.tenants[cafeId];
-      if (!t) return;
-      const name = (t.config && t.config.cafeName) || (t.meta && t.meta.name) || "هذا المقهى";
-      const code = getCafeCode(cafeId, t);
-      const token = code || "حذف";
-      state.deleteCafeId = cafeId;
-      state.deleteExpectedToken = token;
-
-      document.getElementById("dcTitle").textContent = `🗑️ حذف «${name}» نهائياً`;
-      document.getElementById("dcSummary").innerHTML =
-        `تحذير: سيتم مسح مقهى <strong>${escapeHtml(name)}</strong> وجميع يومياته وفواتيره ومخزونه وحساباته من قاعدة البيانات نهائياً، ولا يمكن التراجع عن هذه العملية.`;
-      document.getElementById("dcPromptLbl").innerHTML =
-        `للتأكيد النهائي اكتب (<span class="secret-val">${escapeHtml(token)}</span>) في الخانة التالية:`;
-      const inp = document.getElementById("dcConfirmInput");
-      inp.value = "";
-      inp.placeholder = token;
-      openModal("deleteCafeModal");
-    }
-
-    document.getElementById("deleteCafeForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const cafeId = state.deleteCafeId;
-      const t = state.tenants[cafeId];
-      if (!cafeId || !t) { closeModal("deleteCafeModal"); return; }
-
-      const typed = (document.getElementById("dcConfirmInput").value || "").trim().toLowerCase();
-      if (typed !== String(state.deleteExpectedToken || "").toLowerCase()) {
-        showToast(`الرمز غير مطابق! اكتب (${state.deleteExpectedToken}) للتأكيد.`, "err");
-        return;
-      }
-
-      const btn = document.getElementById("dcSubmitBtn");
-      btn.disabled = true;
-      btn.textContent = "جارٍ الحذف...";
-
-      const meta = t.meta || {};
-      const code = getCafeCode(cafeId, t);
-      const wi = getWorkersInfo(t);
-      const ownerSecret = (state.adminSecrets[cafeId] && state.adminSecrets[cafeId].owner) || {};
-      const myEmail = String((state.user && state.user.email) || "").toLowerCase();
-      const myUid = (state.user && state.user.uid) || "";
-
-      const authAccounts = [];
-      if (meta.ownerEmail && meta.ownerUid !== myUid && meta.ownerEmail.toLowerCase() !== myEmail) {
-        authAccounts.push({ label: "المالك", email: meta.ownerEmail, secret: (ownerSecret.pass || "").trim() });
-      }
-      if (wi.w1.uid) {
-        authAccounts.push({ label: "العامل 1", email: wi.w1.email || (code ? `w_${code}@cassacafe.app` : ""), secret: (wi.w1.pin || "").trim() });
-      }
-      if (wi.w2.uid) {
-        authAccounts.push({ label: "العامل 2", email: wi.w2.email || (code ? `w2_${code}@cassacafe.app` : ""), secret: (wi.w2.pin || "").trim() });
-      }
-
-      const manualAuthCleanup = [];
-      const secAuth = getSecondaryAuth();
-      try {
-        for (const acc of authAccounts) {
-          if (!acc.email) continue;
-          if (!acc.secret) {
-            manualAuthCleanup.push(`${acc.label}: ${acc.email}`);
-            continue;
-          }
+        const checkSession = async () => {
+          booting.value = true;
           try {
-            const cred = await secAuth.signInWithEmailAndPassword(acc.email, acc.secret);
-            await cred.user.delete();
-          } catch (authErr) {
-            if (!authErr || authErr.code !== "auth/user-not-found") {
-              manualAuthCleanup.push(`${acc.label}: ${acc.email}`);
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.user) {
+              member.value = null;
+              return;
             }
+            const { data, error } = await supabase
+              .from("cafe_members")
+              .select("*")
+              .eq("user_id", session.user.id)
+              .eq("role", "super_admin")
+              .eq("active", true)
+              .maybeSingle();
+
+            if (error || !data) {
+              await supabase.auth.signOut();
+              member.value = null;
+              notify("هذا الحساب لا يملك صلاحية المشرف العام.", "err");
+              return;
+            }
+            member.value = data;
+            await refreshAll();
+          } catch (e) {
+            notify(translateError(e), "err");
           } finally {
-            await secAuth.signOut().catch(() => {});
+            booting.value = false;
           }
-        }
-
-        const updates = {};
-        updates[`tenants/${cafeId}`] = null;
-        updates[`super_admin_secrets/${cafeId}`] = null;
-        if (meta.ownerUid && meta.ownerUid !== myUid) updates[`users/${meta.ownerUid}`] = null;
-        if (wi.w1.uid && wi.w1.uid !== myUid) updates[`users/${wi.w1.uid}`] = null;
-        if (wi.w2.uid && wi.w2.uid !== myUid) updates[`users/${wi.w2.uid}`] = null;
-
-        await db.ref().update(updates);
-
-        state.deleteCafeId = null;
-        if (state.activeCafeId === cafeId) state.activeCafeId = null;
-        if (state.credsCafeId === cafeId) state.credsCafeId = null;
-        if (state.setupCafeId === cafeId) state.setupCafeId = null;
-
-        closeModal("deleteCafeModal");
-        showToast("✅ تم حذف المقهى وبياناته نهائياً.");
-
-        if (manualAuthCleanup.length) {
-          const note =
-            `تم حذف المقهى وجميع بياناته من قاعدة البيانات وإيقاف الدخول نهائياً.\n\n` +
-            `ملاحظة: الحسابات التالية لم تكن كلماتها السرية محفوظة أو تم تغييرها، فبقيت في Firebase Authentication فقط (احذفها يدوياً من Firebase Console ← Authentication فقط إذا أردت إعادة استخدام نفس البريد أو رمز المقهى):\n` +
-            manualAuthCleanup.map((l) => `• ${l}`).join("\n");
-          showInfoModal("⚠️ تنبيه لحسابات Authentication", note, "", true);
-        }
-      } catch (err) {
-        showToast("فشل الحذف: " + translateAuthError(err), "err");
-      } finally {
-        secAuth.signOut().catch(() => {});
-        btn.disabled = false;
-        btn.textContent = "🗑️ نعم، احذف المقهى نهائياً";
-      }
-    });
-
-    // ============ 3. نافذة إدارة الحسابات وتغيير كلمة السر والـ PIN ============
-    function openCredsModal(cafeId) {
-      state.credsCafeId = cafeId;
-      const t = state.tenants[cafeId];
-      if (!t) return;
-      const name = (t.config && t.config.cafeName) || (t.meta && t.meta.name) || "";
-      document.getElementById("cmCafeTitle").textContent = `🔑 الحسابات والـ PIN — ${name}`;
-      renderCredsModalBody();
-      openModal("credsModal");
-    }
-
-    function renderCredsModalBody() {
-      const cafeId = state.credsCafeId;
-      const t = state.tenants[cafeId];
-      if (!t) return;
-      const wi = getWorkersInfo(t);
-      const meta = t.meta || {};
-      const code = getCafeCode(cafeId, t);
-      const ownerSecret = (state.adminSecrets[cafeId] && state.adminSecrets[cafeId].owner) || {};
-      const savedOwnerPass = ownerSecret.pass || "";
-
-      function buildAccountBox(type, title, email, savedVal, isPin) {
-        const label = isPin ? "PIN" : "كلمة السر";
-        const newId = `cmNew_${type}`;
-        const oldId = `cmOld_${type}`;
-        return `
-          <div class="section-box" style="margin-bottom:0;">
-            <h3>${title}</h3>
-            <div style="font-size:0.82rem;color:var(--muted);margin-bottom:8px;">
-              الحساب: <strong dir="ltr" style="color:#fff;">${escapeHtml(email || "—")}</strong><br/>
-              ${label} المحفوظة: ${savedVal ? `<span class="secret-val">${escapeHtml(savedVal)}</span>` : `<span class="pill pill-warn">غير محفوظة (حساب قديم)</span>`}
-            </div>
-            ${!savedVal ? `
-              <div class="form-group" style="margin-bottom:8px;">
-                <label for="${oldId}">${label} الحالية (مطلوبة مرة واحدة للحسابات القديمة):</label>
-                <input id="${oldId}" type="text" dir="ltr" class="num-input-ltr" placeholder="اكتب ${label} الحالية..." />
-              </div>
-            ` : ""}
-            <div class="form-group" style="margin-bottom:8px;">
-              <label for="${newId}">${label} الجديدة (6 أحرف/أرقام فأكثر):</label>
-              <div class="row-flex">
-                <input id="${newId}" type="text" dir="ltr" class="num-input-ltr" placeholder="${isPin ? "مثال: 482910" : "كلمة سر جديدة..."}" />
-                <button type="button" class="btn-secondary btn-sm" data-gen-secret="${type}">🎲</button>
-              </div>
-            </div>
-            <div class="row-flex" style="flex-wrap:wrap;">
-              <button type="button" class="btn-primary btn-sm flex-1" data-change-secret="${type}">🔄 تغيير ${label} الآن</button>
-              ${type === "owner" ? `<button type="button" class="btn-info btn-sm" data-reset-owner-email="1">📧 رابط استعادة بالبريد</button>` : ""}
-            </div>
-          </div>
-        `;
-      }
-
-      let html = `
-        <div class="item-card list-stack" style="font-size:0.82rem;">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-            <span>رمز المقهى (للعامل):</span>
-            <div class="row-flex">
-              <input id="cmCodeInput" type="text" dir="ltr" class="num-input-ltr" value="${escapeHtml(code)}" placeholder="مثال: 101" style="width:120px;padding:6px 8px;" />
-              <button type="button" class="btn-secondary btn-sm" data-save-code="1">حفظ</button>
-            </div>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-            <span>رقم هاتف المالك (واتساب):</span>
-            <div class="row-flex">
-              <input id="cmPhoneInput" type="tel" dir="ltr" class="num-input-ltr" value="${escapeHtml(meta.phone || "")}" placeholder="20123456" style="width:140px;padding:6px 8px;" />
-              <button type="button" class="btn-secondary btn-sm" data-save-phone="1">حفظ</button>
-            </div>
-          </div>
-        </div>
-      `;
-
-      html += buildAccountBox("owner", "👑 حساب صاحب المقهى (index.html)", meta.ownerEmail, savedOwnerPass, false);
-
-      if (wi.w1.uid) {
-        html += buildAccountBox("w1", `☀️ ${escapeHtml(wi.w1.name)} — صباح / 1 (رمز المقهى: ${escapeHtml(code || "—")})`, wi.w1.email || `w_${code}@cassacafe.app`, wi.w1.pin, true);
-      }
-      if (wi.w2.uid) {
-        html += buildAccountBox("w2", `🌙 ${escapeHtml(wi.w2.name)} — عشية / 2 (رمز المقهى: ${escapeHtml(code || "—")})`, wi.w2.email || `w2_${code}@cassacafe.app`, wi.w2.pin, true);
-      }
-
-      html += `
-        <div class="grid-2" style="margin-top:4px;">
-          <button type="button" class="btn-wa btn-full" data-send-creds-wa="1">📲 إرسال الكل عبر واتساب</button>
-          <button type="button" class="btn-secondary btn-full" data-copy-creds="1">📋 نسخ كل البيانات</button>
-        </div>
-      `;
-
-      document.getElementById("cmBody").innerHTML = html;
-    }
-
-    document.getElementById("cmBody").addEventListener("click", async (e) => {
-      const cafeId = state.credsCafeId;
-      const t = state.tenants[cafeId];
-      if (!cafeId || !t) return;
-
-      const genBtn = e.target.closest("[data-gen-secret]");
-      if (genBtn) {
-        const type = genBtn.dataset.genSecret;
-        const inp = document.getElementById(`cmNew_${type}`);
-        if (inp) inp.value = (type === "owner") ? randomPass(8) : randomPin(6);
-        return;
-      }
-
-      if (e.target.closest("[data-save-code]")) {
-        const newCode = (document.getElementById("cmCodeInput").value || "").trim().toLowerCase();
-        if (!/^[a-z0-9]{3,12}$/.test(newCode)) {
-          showToast("رمز المقهى يجب أن يكون من 3 إلى 12 حرفاً/رقماً إنجليزياً.", "err");
-          return;
-        }
-        const dup = Object.entries(state.tenants).some(([id, ten]) => id !== cafeId && getCafeCode(id, ten) === newCode);
-        if (dup) {
-          showToast("رمز المقهى هذا مستخدم لمقهى آخر.", "err");
-          return;
-        }
-        try {
-          await db.ref(`tenants/${cafeId}/meta/code`).set(newCode);
-          showToast("تم حفظ رمز المقهى بنجاح.");
-        } catch (err) { showToast("فشل الحفظ: " + err.message, "err"); }
-        return;
-      }
-
-      if (e.target.closest("[data-save-phone]")) {
-        const phone = (document.getElementById("cmPhoneInput").value || "").trim();
-        try {
-          await db.ref(`tenants/${cafeId}/meta/phone`).set(phone);
-          showToast("تم حفظ رقم الهاتف.");
-        } catch (err) { showToast("فشل الحفظ: " + err.message, "err"); }
-        return;
-      }
-
-      if (e.target.closest("[data-reset-owner-email]")) {
-        const email = t.meta && t.meta.ownerEmail;
-        if (!email) return;
-        if (!confirm(`إرسال رابط تغيير كلمة السر إلى بريد المالك (${email})؟`)) return;
-        try {
-          await auth.sendPasswordResetEmail(email);
-          showToast("تم إرسال رابط استعادة كلمة السر إلى بريد المالك.");
-        } catch (err) { showToast(translateAuthError(err), "err"); }
-        return;
-      }
-
-      if (e.target.closest("[data-send-creds-wa]")) {
-        openWhatsAppMessage((t.meta && t.meta.phone) || "", buildCafeCredentialsText(cafeId, true));
-        return;
-      }
-
-      if (e.target.closest("[data-copy-creds]")) {
-        const txt = buildCafeCredentialsText(cafeId, true);
-        try { await navigator.clipboard.writeText(txt); showToast("تم نسخ كل بيانات الدخول."); }
-        catch (_) { showInfoModal("📋 بيانات الدخول", txt, (t.meta && t.meta.phone) || ""); }
-        return;
-      }
-
-      const chBtn = e.target.closest("[data-change-secret]");
-      if (chBtn) {
-        const type = chBtn.dataset.changeSecret;
-        const wi = getWorkersInfo(t);
-        const meta = t.meta || {};
-        const code = getCafeCode(cafeId, t);
-        const newVal = (document.getElementById(`cmNew_${type}`).value || "").trim();
-        if (newVal.length < 6) {
-          showToast("يجب أن تكون القيمة الجديدة 6 أحرف/أرقام على الأقل.", "err");
-          return;
-        }
-
-        let email = "", oldVal = "";
-        if (type === "owner") {
-          email = meta.ownerEmail || "";
-          oldVal = ((state.adminSecrets[cafeId] && state.adminSecrets[cafeId].owner && state.adminSecrets[cafeId].owner.pass) || "").trim();
-        } else if (type === "w1") {
-          email = wi.w1.email || `w_${code}@cassacafe.app`;
-          oldVal = (wi.w1.pin || "").trim();
-        } else {
-          email = wi.w2.email || `w2_${code}@cassacafe.app`;
-          oldVal = (wi.w2.pin || "").trim();
-        }
-
-        if (!oldVal) {
-          const oldInp = document.getElementById(`cmOld_${type}`);
-          oldVal = oldInp ? oldInp.value.trim() : "";
-        }
-        if (!oldVal) {
-          showToast(type === "owner"
-            ? "أدخل كلمة السر الحالية أو استخدم زر «📧 رابط استعادة بالبريد»."
-            : "أدخل الـ PIN الحالي أولاً لتحديثه وحفظه.", "err");
-          return;
-        }
-
-        chBtn.disabled = true;
-        const origTxt = chBtn.textContent;
-        chBtn.textContent = "جارٍ التغيير...";
-        const secAuth = getSecondaryAuth();
-        try {
-          const cred = await secAuth.signInWithEmailAndPassword(email, oldVal);
-          if (newVal !== oldVal) {
-            await cred.user.updatePassword(newVal);
-          }
-          await secAuth.signOut();
-
-          const nowMs = Date.now();
-          if (type === "owner") {
-            await db.ref(`super_admin_secrets/${cafeId}/owner`).set({ email, pass: newVal, updatedAt: nowMs });
-          } else {
-            await db.ref(`tenants/${cafeId}/owner_secrets/workers/${type}`).set({ email, pin: newVal, updatedAt: nowMs });
-          }
-
-          showToast(type === "owner" ? "✅ تم تغيير كلمة سر المالك بنجاح." : "✅ تم تغيير الـ PIN بنجاح وحفظه.");
-          renderCredsModalBody();
-        } catch (err) {
-          if (type === "owner" && (err.code === "auth/wrong-password" || err.code === "auth/invalid-credential")) {
-            showToast("كلمة السر المحفوظة لم تعد مطابقة (ربما غيّرها المالك بنفسه). أرسل له «📧 رابط استعادة بالبريد».", "err");
-          } else {
-            showToast("تعذّر التغيير: " + translateAuthError(err), "err");
-          }
-        } finally {
-          secAuth.signOut().catch(() => {});
-          chBtn.disabled = false;
-          chBtn.textContent = origTxt;
-        }
-      }
-    });
-
-    // ============ 4. تعديل النمط والعمال ============
-    function syncModeModalUI() {
-      const tenant = state.tenants[state.activeCafeId];
-      const wi = getWorkersInfo(tenant);
-      const pat = state.mmPattern;
-      const pm = PATTERN_META[pat];
-      const effCount = getEffectiveWorkerCount(pat, state.mmWCount);
-
-      document.querySelectorAll("[data-mm-pat]").forEach((b) => b.classList.toggle("active", b.dataset.mmPat === pat));
-      document.querySelectorAll("[data-mm-wcount]").forEach((b) => b.classList.toggle("active", Number(b.dataset.mmWcount) === state.mmWCount));
-
-      document.getElementById("mmWorkersSection").classList.toggle("hidden", !pm.hasWorkers);
-      document.getElementById("mmWCountWrap").classList.toggle("hidden", pat !== "owner_with_worker");
-
-      document.getElementById("mmW1Title").textContent = pat === "worker_only"
-        ? "👷 العامل (يوم كامل)"
-        : (pat === "worker_owner" || pat === "two_workers" ? "☀️ العامل 1 (وردية الصباح)" : "👷 العامل 1");
-      document.getElementById("mmW2Title").textContent = pat === "two_workers" ? "🌙 العامل 2 (وردية العشية)" : "👷 العامل 2";
-
-      const hasW1Auth = Boolean(wi.w1.uid);
-      const needNewAuth1 = pm.needsAuth >= 1 && !hasW1Auth;
-      document.getElementById("mmW1PinWrap").classList.toggle("hidden", !needNewAuth1);
-      document.getElementById("mmW1Pin").required = needNewAuth1;
-      const w1Hint = document.getElementById("mmW1ExistingHint");
-      if (pm.needsAuth >= 1 && hasW1Auth) {
-        w1Hint.textContent = `✓ حساب العامل 1 جاهز${wi.w1.pin ? ` — PIN: ${wi.w1.pin}` : ""} (لتغييره افتح «🔑 الحسابات والـ PIN»)`;
-        w1Hint.classList.remove("hidden");
-      } else {
-        w1Hint.classList.add("hidden");
-      }
-
-      const hasW2Auth = Boolean(wi.w2.uid);
-      const needNewAuth2 = pm.needsAuth >= 2 && !hasW2Auth;
-      document.getElementById("mmW2Box").classList.toggle("hidden", effCount < 2);
-      document.getElementById("mmW2PinWrap").classList.toggle("hidden", !needNewAuth2);
-      document.getElementById("mmW2Pin").required = needNewAuth2;
-      const w2Hint = document.getElementById("mmW2ExistingHint");
-      if (pm.needsAuth >= 2 && hasW2Auth) {
-        w2Hint.textContent = `✓ حساب العامل 2 جاهز${wi.w2.pin ? ` — PIN: ${wi.w2.pin}` : ""} (لتغييره افتح «🔑 الحسابات والـ PIN»)`;
-        w2Hint.classList.remove("hidden");
-      } else {
-        w2Hint.classList.add("hidden");
-      }
-    }
-
-    document.getElementById("mmPatternBtns").addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-mm-pat]");
-      if (!btn) return;
-      state.mmPattern = btn.dataset.mmPat;
-      syncModeModalUI();
-    });
-    document.getElementById("mmWorkerCountBtns").addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-mm-wcount]");
-      if (!btn) return;
-      state.mmWCount = Number(btn.dataset.mmWcount) || 1;
-      syncModeModalUI();
-    });
-    document.getElementById("mmGenPin1Btn").addEventListener("click", () => { document.getElementById("mmW1Pin").value = randomPin(6); });
-    document.getElementById("mmGenPin2Btn").addEventListener("click", () => { document.getElementById("mmW2Pin").value = randomPin(6); });
-
-    function openModeModal(cafeId) {
-      state.activeCafeId = cafeId;
-      const tenant = state.tenants[cafeId];
-      const cfg = tenant.config || {};
-      const wi = getWorkersInfo(tenant);
-
-      state.mmPattern = wi.pattern;
-      state.mmWCount = wi.count === 2 ? 2 : 1;
-
-      document.getElementById("mmCafeTitle").textContent = `النمط والعمال — ${cfg.cafeName || (tenant.meta && tenant.meta.name) || ""}`;
-      document.getElementById("mmW1Name").value = wi.w1.name;
-      document.getElementById("mmW1Wage").value = fmtInputVal(wi.w1.defaultWage);
-      document.getElementById("mmW1Pin").value = randomPin(6);
-
-      document.getElementById("mmW2Name").value = wi.w2.name;
-      document.getElementById("mmW2Wage").value = fmtInputVal(wi.w2.defaultWage);
-      document.getElementById("mmW2Pin").value = randomPin(6);
-
-      syncModeModalUI();
-      openModal("modeModal");
-    }
-
-    document.getElementById("modeForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const cafeId = state.activeCafeId;
-      const tenant = state.tenants[cafeId];
-      if (!tenant) return;
-
-      const wi = getWorkersInfo(tenant);
-      const pat = state.mmPattern;
-      const pm = PATTERN_META[pat];
-      const wCount = getEffectiveWorkerCount(pat, state.mmWCount);
-      const code = getCafeCode(cafeId, tenant);
-
-      const w1Name = document.getElementById("mmW1Name").value.trim() || (pat === "worker_only" ? "العامل" : "عامل الصباح");
-      const w1Wage = parseNum(document.getElementById("mmW1Wage").value);
-      const w1Pin = document.getElementById("mmW1Pin").value.trim();
-
-      const w2Name = document.getElementById("mmW2Name").value.trim() || "عامل العشية";
-      const w2Wage = parseNum(document.getElementById("mmW2Wage").value);
-      const w2Pin = document.getElementById("mmW2Pin").value.trim();
-
-      if (pm.needsAuth >= 1 && !code) {
-        showToast("رمز المقهى فارغ! افتح «🔑 الحسابات والـ PIN» واحفظ رمز المقهى أولاً.", "err");
-        return;
-      }
-      if (pm.needsAuth >= 1 && !wi.w1.uid && w1Pin.length < 6) {
-        showToast("الرمز السري للعامل 1 يجب أن يكون 6 أرقام/أحرف على الأقل.", "err");
-        return;
-      }
-      if (pm.needsAuth >= 2 && !wi.w2.uid && w2Pin.length < 6) {
-        showToast("الرمز السري للعامل 2 يجب أن يكون 6 أرقام/أحرف على الأقل.", "err");
-        return;
-      }
-
-      const btn = document.getElementById("mmSubmitBtn");
-      btn.disabled = true;
-      const secAuth = getSecondaryAuth();
-      try {
-        const updates = {};
-        const createdLines = [];
-        const nowMs = Date.now();
-
-        if (code && !(tenant.meta && tenant.meta.code)) {
-          updates[`tenants/${cafeId}/meta/code`] = code;
-        }
-        updates[`tenants/${cafeId}/config/operationMode`] = pm.opMode;
-        updates[`tenants/${cafeId}/config/workPattern`] = pat;
-        updates[`tenants/${cafeId}/config/workerName`] = w1Name;
-        updates[`tenants/${cafeId}/config/defaultDailyWage`] = w1Wage;
-        updates[`tenants/${cafeId}/config/workers`] = {
-          w1: { name: w1Name, defaultWage: w1Wage, shift: pm.w1Shift, active: wCount >= 1 },
-          w2: { name: w2Name, defaultWage: w2Wage, shift: "evening", active: wCount === 2 }
         };
 
-        if (pm.needsAuth >= 1 && !wi.w1.uid) {
-          const email1 = `w_${code}@cassacafe.app`;
-          const c1 = await secAuth.createUserWithEmailAndPassword(email1, w1Pin);
-          const uid1 = c1.user.uid;
-          await secAuth.signOut();
-          updates[`users/${uid1}`] = { role: "worker", cafeId, active: true, email: email1, name: w1Name, slot: "w1", shift: pm.w1Shift, createdAt: nowMs };
-          updates[`tenants/${cafeId}/meta/workerUid`] = uid1;
-          updates[`tenants/${cafeId}/meta/workerEmail`] = email1;
-          updates[`tenants/${cafeId}/meta/workers/w1`] = { uid: uid1, email: email1 };
-          updates[`tenants/${cafeId}/owner_secrets/workers/w1`] = { email: email1, pin: w1Pin, updatedAt: nowMs };
-          createdLines.push(`• ${w1Name} (صباح / 1) — PIN: ${w1Pin}`);
-        } else if (wi.w1.uid) {
-          updates[`users/${wi.w1.uid}/active`] = (pm.needsAuth >= 1);
-          updates[`users/${wi.w1.uid}/name`] = w1Name;
-          updates[`users/${wi.w1.uid}/slot`] = "w1";
-          updates[`users/${wi.w1.uid}/shift`] = pm.w1Shift;
-          updates[`tenants/${cafeId}/meta/workers/w1`] = { uid: wi.w1.uid, email: wi.w1.email || `w_${code}@cassacafe.app` };
-        }
+        const refreshAll = async () => {
+          busy.value = true;
+          try {
+            const [t, cRes, mRes, fRes, eRes] = await Promise.all([
+              getServerTime().catch(() => null),
+              supabase.from("cafes").select("*").order("created_at", { ascending: false }),
+              supabase.from("cafe_members").select("*").order("slot", { ascending: true }),
+              supabase.from("trial_feedback").select("*").order("created_at", { ascending: false }).limit(50),
+              supabase.from("app_errors").select("*").order("created_at", { ascending: false }).limit(50),
+            ]);
+            if (t?.today) serverToday.value = `${t.today} • ${t.time_hhmm}`;
+            if (cRes.error) throw cRes.error;
+            cafes.value = cRes.data || [];
+            members.value = mRes.data || [];
+            feedback.value = fRes.data || [];
+            errors.value = eRes.data || [];
 
-        if (pm.needsAuth >= 2 && !wi.w2.uid) {
-          const email2 = `w2_${code}@cassacafe.app`;
-          const c2 = await secAuth.createUserWithEmailAndPassword(email2, w2Pin);
-          const uid2 = c2.user.uid;
-          await secAuth.signOut();
-          updates[`users/${uid2}`] = { role: "worker", cafeId, active: true, email: email2, name: w2Name, slot: "w2", shift: "evening", createdAt: nowMs };
-          updates[`tenants/${cafeId}/meta/workers/w2`] = { uid: uid2, email: email2 };
-          updates[`tenants/${cafeId}/owner_secrets/workers/w2`] = { email: email2, pin: w2Pin, updatedAt: nowMs };
-          createdLines.push(`• ${w2Name} (عشية / 2) — PIN: ${w2Pin}`);
-        } else if (wi.w2.uid) {
-          updates[`users/${wi.w2.uid}/active`] = (pm.needsAuth >= 2);
-          updates[`users/${wi.w2.uid}/name`] = w2Name;
-          updates[`users/${wi.w2.uid}/slot`] = "w2";
-          updates[`users/${wi.w2.uid}/shift`] = "evening";
-        }
-
-        await db.ref().update(updates);
-        closeModal("modeModal");
-        showToast("تم تحديث نمط التشغيل والعمال بنجاح.");
-
-        if (createdLines.length) {
-          const msg = `تم إنشاء حسابات العمال الجديدة:\nالرابط: ${APP_BASE_URL}/worker.html\nرمز المقهى: ${code}\n` + createdLines.join("\n");
-          showInfoModal("✅ حسابات العمال الجديدة", msg, (tenant.meta && tenant.meta.phone) || "");
-        }
-      } catch (err) {
-        showToast("فشل التحديث: " + translateAuthError(err), "err");
-      } finally {
-        secAuth.signOut().catch(() => {});
-        btn.disabled = false;
-      }
-    });
-
-    // ============ 5. تجديد الاشتراك ============
-    function openRenewModal(cafeId) {
-      state.activeCafeId = cafeId;
-      const tenant = state.tenants[cafeId];
-      const cur = (tenant.meta && tenant.meta.subscriptionUntil) || Date.now();
-      document.getElementById("rmCafeTitle").textContent = `الاشتراك — ${(tenant.config && tenant.config.cafeName) || (tenant.meta && tenant.meta.name) || ""}`;
-      document.getElementById("rmCurrentEnd").textContent = `تاريخ الانتهاء الحالي: ${formatDate(cur)}`;
-      const base = Math.max(Date.now(), cur);
-      document.getElementById("rmCustomDate").value = formatDate(base + 30 * 86400000);
-      openModal("renewModal");
-    }
-
-    document.querySelectorAll("[data-add-days]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const tenant = state.tenants[state.activeCafeId];
-        if (!tenant) return;
-        const cur = (tenant.meta && tenant.meta.subscriptionUntil) || 0;
-        const base = Math.max(Date.now(), cur);
-        const days = parseInt(btn.dataset.addDays, 10) || 30;
-        document.getElementById("rmCustomDate").value = formatDate(base + days * 86400000);
-      });
-    });
-
-    document.getElementById("renewForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const cafeId = state.activeCafeId;
-      const dateStr = document.getElementById("rmCustomDate").value;
-      if (!cafeId || !dateStr) return;
-      const ts = new Date(`${dateStr}T23:59:59`).getTime();
-      try {
-        await db.ref(`tenants/${cafeId}/meta/subscriptionUntil`).set(ts);
-        closeModal("renewModal");
-        showToast(`تم تحديث الاشتراك حتى ${dateStr}.`);
-      } catch (err) {
-        showToast("فشل التحديث: " + err.message, "err");
-      }
-    });
-
-    // ============ 6. تجهيز المقهى (مباعة / مخزن / استهلاكية) ============
-    function getTenantStock(cafeId) {
-      const t = state.tenants[cafeId];
-      return (t && t.live && t.live.stock_state && t.live.stock_state.stock) || {};
-    }
-    function getTenantProducts(cafeId) {
-      const t = state.tenants[cafeId];
-      const raw = t && t.config && t.config.products;
-      if (!raw) return [];
-      const arr = [];
-      if (Array.isArray(raw)) {
-        raw.forEach((p, i) => { if (p) arr.push({ ...p, id: p.id || String(i) }); });
-      } else if (typeof raw === "object") {
-        Object.entries(raw).forEach(([k, p]) => { if (p) arr.push({ ...p, id: k }); });
-      }
-      const order = { hot: 1, cold: 2, food: 3, fun: 4 };
-      return arr.sort((a, b) => (order[a.category] || 9) - (order[b.category] || 9) || (a.createdAt || 0) - (b.createdAt || 0));
-    }
-    function getTenantConsumables(cafeId) {
-      const t = state.tenants[cafeId];
-      const list = t && t.config && t.config.consumableQuickTags;
-      return Array.isArray(list) ? list : [];
-    }
-
-    function switchSetupTab(tab) {
-      state.setupTab = tab;
-      document.getElementById("sp-prods").classList.toggle("hidden", tab !== "prods");
-      document.getElementById("sp-stock").classList.toggle("hidden", tab !== "stock");
-      document.getElementById("sp-cons").classList.toggle("hidden", tab !== "cons");
-      document.querySelectorAll("[data-setup-tab]").forEach((b) => b.classList.toggle("active", b.dataset.setupTab === tab));
-    }
-    document.querySelectorAll("[data-setup-tab]").forEach((b) => {
-      b.addEventListener("click", () => switchSetupTab(b.dataset.setupTab));
-    });
-
-    function openSetupModal(cafeId) {
-      state.setupCafeId = cafeId;
-      const t = state.tenants[cafeId];
-      const cfg = (t && t.config) || {};
-      document.getElementById("setupCafeTitle").textContent = `⚙️ تجهيز: ${cfg.cafeName || (t.meta && t.meta.name) || ""}`;
-      document.getElementById("spLowWeight").value = fmtInputVal(cfg.lowStockWeightLimit != null ? cfg.lowStockWeightLimit : 1000);
-      document.getElementById("spLowUnit").value = fmtInputVal(cfg.lowStockUnitLimit != null ? cfg.lowStockUnitLimit : 10);
-      switchSetupTab("prods");
-      renderSetupLists();
-      openModal("setupModal");
-    }
-
-    function renderSetupLists() {
-      const cafeId = state.setupCafeId;
-      if (!cafeId || !state.tenants[cafeId]) return;
-      const stockObj = getTenantStock(cafeId);
-      const prods = getTenantProducts(cafeId);
-      const cons = getTenantConsumables(cafeId);
-
-      const prodEl = document.getElementById("spProdList");
-      if (!prods.length) {
-        prodEl.innerHTML = `<div class="empty-box">لا توجد سلع مباعة بعد.<br/>اضغط <strong>«+ سلعة مباعة»</strong> أو <strong>«⚡ قائمة مبدئية»</strong> لتجهيز أزرار البيع.</div>`;
-      } else {
-        prodEl.innerHTML = prods.map((p) => {
-          const cat = CATEGORY_INFO[p.category] || CATEGORY_INFO.hot;
-          const isActive = p.active !== false;
-          const st = p.stockItemId ? stockObj[p.stockItemId] : null;
-          let linkTxt = "🔒 تحضير مباشر";
-          if (st && Number(p.stockDeduct) > 0) linkTxt = `📦 يخصم <strong>${formatQty(p.stockDeduct, st.unit)}</strong> من <strong>${escapeHtml(st.name)}</strong>`;
-          else if (p.stockItemId && !st) linkTxt = "⚠️ مرتبط بمادة مخزن محذوفة";
-          const unitTxt = p.unit ? ` / ${escapeHtml(p.unit)}` : "";
-          return `
-            <div class="item-card ${isActive ? "" : "inactive"}">
-              <div class="item-top">
-                <div>
-                  <strong>${escapeHtml(p.name)}</strong>
-                  <div style="margin-top: 4px; display: flex; gap: 5px; flex-wrap: wrap;">
-                    <span class="pill ${cat.pill}">${cat.label}</span>
-                    ${isActive ? "" : `<span class="pill pill-muted">مخفية</span>`}
-                  </div>
-                </div>
-                <strong style="color: var(--primary);">${fmtMi(p.price)}${unitTxt}</strong>
-              </div>
-              <div class="hint" style="color: #e2e8f0;">${linkTxt}</div>
-              <div class="item-actions">
-                <button type="button" class="btn-secondary btn-sm" data-sa-prod="edit" data-id="${escapeHtml(p.id)}">✏️ تعديل</button>
-                <button type="button" class="btn-info btn-sm" data-sa-prod="toggle" data-id="${escapeHtml(p.id)}">${isActive ? "إخفاء" : "إظهار"}</button>
-                <button type="button" class="btn-danger btn-sm" data-sa-prod="delete" data-id="${escapeHtml(p.id)}">حذف</button>
-              </div>
-            </div>
-          `;
-        }).join("");
-      }
-
-      const stockArr = Object.entries(stockObj)
-        .map(([id, it]) => ({ id, ...it }))
-        .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "ar"));
-      const stockEl = document.getElementById("spStockList");
-      if (!stockArr.length) {
-        stockEl.innerHTML = `<div class="empty-box">لا توجد سلع مخزن بعد. أضف البن والمياه والقازوز لربطها بالسلع والفواتير.</div>`;
-      } else {
-        stockEl.innerHTML = stockArr.map((it) => {
-          const ps = Number(it.packSize) || (it.unit === "g" ? 1000 : 1);
-          const pl = it.packLabel || (it.unit === "g" ? "كغ" : (ps === 24 ? "كاجو" : (ps > 1 ? "ستيكة" : "وحدة")));
-          return `
-            <div class="item-card">
-              <div class="item-top">
-                <div>
-                  <strong>${escapeHtml(it.name)}</strong>
-                  <div class="hint">الجرد: ${it.unit === "g" ? "بالغرام" : "بالوحدة"} • الشراء: ${escapeHtml(pl)} (<span class="num-ltr" dir="ltr">×${fmtPlain(ps)}</span>)</div>
-                </div>
-                <span class="pill pill-ok">${formatQty(it.qty, it.unit)}</span>
-              </div>
-              <div class="item-actions">
-                <button type="button" class="btn-secondary btn-sm" data-sa-stock="edit" data-id="${escapeHtml(it.id)}">✏️ تعديل</button>
-                <button type="button" class="btn-danger btn-sm" data-sa-stock="delete" data-id="${escapeHtml(it.id)}">حذف</button>
-              </div>
-            </div>
-          `;
-        }).join("");
-      }
-
-      const consEl = document.getElementById("spConsList");
-      consEl.innerHTML = cons.length
-        ? cons.map((name, idx) => `
-            <span class="chip">
-              <span>${escapeHtml(name)}</span>
-              <button type="button" class="chip-del" data-sa-del-cons="${idx}" title="حذف">&times;</button>
-            </span>
-          `).join("")
-        : `<div class="hint">لا توجد سلع استهلاكية مضافة حالياً.</div>`;
-    }
-
-    document.getElementById("spAddConsBtn").addEventListener("click", async () => {
-      const cafeId = state.setupCafeId;
-      const inp = document.getElementById("spConsInput");
-      const val = inp.value.trim();
-      if (!cafeId || !val) return;
-      const cur = getTenantConsumables(cafeId);
-      if (cur.includes(val)) { showToast("هذه المادة موجودة بالفعل.", "err"); return; }
-      try {
-        await db.ref(`tenants/${cafeId}/config/consumableQuickTags`).set([...cur, val]);
-        inp.value = "";
-        showToast(`تمت إضافة «${val}».`);
-      } catch (err) { showToast("فشل الحفظ: " + err.message, "err"); }
-    });
-
-    document.getElementById("spSeedBtn").addEventListener("click", async () => {
-      const cafeId = state.setupCafeId;
-      if (!cafeId) return;
-      if (!confirm("توليد قائمة مبدئية (بن، شاي، مياه، قازوز، كايك، رامي + سلع مخزن واستهلاكية)؟")) return;
-
-      const nowMs = Date.now();
-      const stCoffee = db.ref().push().key;
-      const stW15 = db.ref().push().key;
-      const stW05 = db.ref().push().key;
-      const stSodaGlass = db.ref().push().key;
-      const stSodaCan = db.ref().push().key;
-
-      const updates = {};
-      updates[`live/stock_state/stock/${stCoffee}`] = { name: "بن", unit: "g", packSize: 1000, packLabel: "كغ", qty: 0, createdAt: nowMs };
-      updates[`live/stock_state/stock/${stW15}`] = { name: "ماء 1.5ل", unit: "unit", packSize: 6, packLabel: "ستيكة", qty: 0, createdAt: nowMs + 1 };
-      updates[`live/stock_state/stock/${stW05}`] = { name: "ماء 0.5ل", unit: "unit", packSize: 12, packLabel: "ستيكة", qty: 0, createdAt: nowMs + 2 };
-      updates[`live/stock_state/stock/${stSodaGlass}`] = { name: "قازوز بلار", unit: "unit", packSize: 24, packLabel: "كاجو", qty: 0, createdAt: nowMs + 3 };
-      updates[`live/stock_state/stock/${stSodaCan}`] = { name: "قازوز Boite", unit: "unit", packSize: 12, packLabel: "ستيكة", qty: 0, createdAt: nowMs + 4 };
-      updates[`live/stock_state/updatedAt`] = nowMs;
-
-      const starterProds = [
-        { name: "بن", category: "hot", price: 150, unit: "غرام", stockItemId: stCoffee, stockDeduct: 1 },
-        { name: "شاي", category: "hot", price: 1000, unit: "كأس", stockItemId: "", stockDeduct: 0 },
-        { name: "ماء 1.5ل", category: "cold", price: 1500, unit: "قارورة", stockItemId: stW15, stockDeduct: 1 },
-        { name: "ماء 0.5ل", category: "cold", price: 800, unit: "قارورة", stockItemId: stW05, stockDeduct: 1 },
-        { name: "قازوز بلار", category: "cold", price: 1500, unit: "قارورة", stockItemId: stSodaGlass, stockDeduct: 1 },
-        { name: "قازوز Boite", category: "cold", price: 2000, unit: "علبة", stockItemId: stSodaCan, stockDeduct: 1 },
-        { name: "كايك", category: "food", price: 1000, unit: "قطعة", stockItemId: "", stockDeduct: 0 },
-        { name: "رامي", category: "fun", price: 2000, unit: "طرح", stockItemId: "", stockDeduct: 0 }
-      ];
-
-      starterProds.forEach((p, idx) => {
-        const pid = db.ref().push().key;
-        updates[`config/products/${pid}`] = { id: pid, ...p, active: true, createdAt: nowMs + idx };
-      });
-
-      if (!getTenantConsumables(cafeId).length) {
-        updates[`config/consumableQuickTags`] = ["ماء إمصفي", "مواد تنظيف", "سكر", "حليب", "شكولين", "زهر", "كؤوس بلورية"];
-      }
-
-      try {
-        await db.ref(`tenants/${cafeId}`).update(updates);
-        showToast("تم تجهيز القائمة المبدئية بنجاح.");
-      } catch (err) { showToast("فشل العملية: " + err.message, "err"); }
-    });
-
-    function syncSaProdUI() {
-      document.querySelectorAll("[data-pcat]").forEach((b) => b.classList.toggle("active", b.dataset.pcat === state.saPCat));
-      document.querySelectorAll("[data-punit]").forEach((b) => b.classList.toggle("active", b.dataset.punit === state.saPUnit));
-      document.querySelectorAll("[data-pstock]").forEach((b) => b.classList.toggle("active", b.dataset.pstock === state.saPStockId));
-
-      const stockObj = getTenantStock(state.setupCafeId);
-      const wrap = document.getElementById("saPDeductWrap");
-      const lbl = document.getElementById("saPDeductLbl");
-      const inp = document.getElementById("saPDeduct");
-
-      if (!state.saPStockId || !stockObj[state.saPStockId]) {
-        wrap.classList.add("hidden");
-        inp.required = false;
-      } else {
-        const st = stockObj[state.saPStockId];
-        wrap.classList.remove("hidden");
-        inp.required = true;
-        lbl.textContent = st.unit === "g"
-          ? `الكمية المخصومة لكل بيعة من «${st.name}» (بالغرام) *`
-          : `الكمية المخصومة لكل بيعة من «${st.name}» (بالوحدة) *`;
-        if (!parseNum(inp.value)) inp.value = "1";
-      }
-    }
-
-    document.getElementById("saPCatBtns").addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-pcat]");
-      if (btn) { state.saPCat = btn.dataset.pcat; syncSaProdUI(); }
-    });
-    document.getElementById("saPUnitBtns").addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-punit]");
-      if (btn) { state.saPUnit = btn.dataset.punit; syncSaProdUI(); }
-    });
-    document.getElementById("saPStockBtns").addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-pstock]");
-      if (btn) { state.saPStockId = btn.dataset.pstock; syncSaProdUI(); }
-    });
-
-    function openSaProdModal(prodId = null) {
-      state.editingProdId = prodId;
-      document.getElementById("saProdForm").reset();
-      const stockObj = getTenantStock(state.setupCafeId);
-
-      document.getElementById("saPStockBtns").innerHTML = `<button type="button" class="opt-btn" data-pstock="">🔒 تحضير مباشر</button>` +
-        Object.entries(stockObj).map(([id, st]) =>
-          `<button type="button" class="opt-btn" data-pstock="${escapeHtml(id)}">📦 ${escapeHtml(st.name)}</button>`
-        ).join("");
-
-      if (prodId) {
-        const prod = getTenantProducts(state.setupCafeId).find((p) => p.id === prodId);
-        if (!prod) return;
-        document.getElementById("saProdTitle").textContent = "✏️ تعديل سلعة مباعة";
-        document.getElementById("saPName").value = prod.name || "";
-        document.getElementById("saPPrice").value = fmtInputVal(prod.price);
-        state.saPCat = prod.category || "hot";
-        state.saPUnit = prod.unit || "كأس";
-        state.saPStockId = (prod.stockItemId && stockObj[prod.stockItemId]) ? prod.stockItemId : "";
-        document.getElementById("saPDeduct").value = fmtInputVal(prod.stockDeduct);
-        document.getElementById("saPActive").checked = prod.active !== false;
-      } else {
-        document.getElementById("saProdTitle").textContent = "☕ إضافة سلعة مباعة";
-        state.saPCat = "hot";
-        state.saPUnit = "كأس";
-        state.saPStockId = "";
-        document.getElementById("saPDeduct").value = "1";
-        document.getElementById("saPActive").checked = true;
-      }
-      syncSaProdUI();
-      openModal("saProdModal");
-    }
-
-    document.getElementById("spAddProdBtn").addEventListener("click", () => openSaProdModal(null));
-
-    document.getElementById("saProdForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const cafeId = state.setupCafeId;
-      if (!cafeId) return;
-
-      const name = document.getElementById("saPName").value.trim();
-      const price = parseNum(document.getElementById("saPPrice").value);
-      const stockDeduct = state.saPStockId ? parseNum(document.getElementById("saPDeduct").value) : 0;
-      const active = document.getElementById("saPActive").checked;
-
-      if (!name || price <= 0) { showToast("أدخل اسم السلعة وثمنها بالمليم (مثال: 1 500).", "err"); return; }
-      if (state.saPStockId && stockDeduct <= 0) { showToast("أدخل الكمية المخصومة لكل بيعة.", "err"); return; }
-
-      const id = state.editingProdId || db.ref().push().key;
-      const existing = state.editingProdId ? getTenantProducts(cafeId).find((p) => p.id === id) : null;
-
-      try {
-        await db.ref(`tenants/${cafeId}/config/products/${id}`).set({
-          id, name, category: state.saPCat, unit: state.saPUnit, price,
-          stockItemId: state.saPStockId || "",
-          stockDeduct: state.saPStockId ? stockDeduct : 0,
-          active, createdAt: (existing && existing.createdAt) || Date.now()
-        });
-        closeModal("saProdModal");
-        showToast(state.editingProdId ? "تم تعديل السلعة." : "تمت إضافة السلعة.");
-      } catch (err) { showToast("فشل الحفظ: " + err.message, "err"); }
-    });
-
-    function syncSaStockUI() {
-      document.querySelectorAll("[data-stunit]").forEach((b) => b.classList.toggle("active", b.dataset.stunit === state.saStUnit));
-      const opts = PACK_OPTIONS[state.saStUnit] || PACK_OPTIONS.unit;
-      if (!opts.some((o) => o.size === state.saStPackSize)) state.saStPackSize = opts[0].size;
-      document.getElementById("saStPackBtns").innerHTML = opts.map((o) =>
-        `<button type="button" class="opt-btn ${o.size === state.saStPackSize ? "active" : ""}" data-stpack="${o.size}">${escapeHtml(o.fullLabel)}</button>`
-      ).join("");
-      document.getElementById("saStQtyLbl").textContent = state.saStUnit === "g" ? "الرصيد الحالي (بالغرام) *" : "الرصيد الحالي (بالوحدة) *";
-    }
-
-    document.getElementById("saStUnitBtns").addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-stunit]");
-      if (btn) { state.saStUnit = btn.dataset.stunit; syncSaStockUI(); }
-    });
-    document.getElementById("saStPackBtns").addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-stpack]");
-      if (btn) { state.saStPackSize = Number(btn.dataset.stpack) || 1; syncSaStockUI(); }
-    });
-
-    function openSaStockModal(itemId = null) {
-      state.editingStockId = itemId;
-      document.getElementById("saStockForm").reset();
-      const stockObj = getTenantStock(state.setupCafeId);
-
-      if (itemId && stockObj[itemId]) {
-        const it = stockObj[itemId];
-        document.getElementById("saStockTitle").textContent = "✏️ تعديل مادة مخزن";
-        document.getElementById("saStName").value = it.name || "";
-        state.saStUnit = it.unit === "g" ? "g" : "unit";
-        state.saStPackSize = Number(it.packSize) || (state.saStUnit === "g" ? 1000 : 1);
-        document.getElementById("saStQty").value = fmtInputVal(it.qty) || "0";
-      } else {
-        document.getElementById("saStockTitle").textContent = "📦 إضافة مادة مخزن";
-        state.saStUnit = "unit";
-        state.saStPackSize = 6;
-        document.getElementById("saStQty").value = "0";
-      }
-      syncSaStockUI();
-      openModal("saStockModal");
-    }
-
-    document.getElementById("spAddStockBtn").addEventListener("click", () => openSaStockModal(null));
-
-    document.getElementById("saStockForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const cafeId = state.setupCafeId;
-      if (!cafeId) return;
-
-      const name = document.getElementById("saStName").value.trim();
-      const unit = state.saStUnit;
-      const packSize = state.saStPackSize;
-      const packOpt = (PACK_OPTIONS[unit] || []).find((o) => o.size === packSize);
-      const packLabel = packOpt ? packOpt.label : (unit === "g" ? "كغ" : "وحدة");
-      const qty = parseNum(document.getElementById("saStQty").value);
-      if (!name) return;
-
-      const nowMs = Date.now();
-      const itemId = state.editingStockId || db.ref().push().key;
-      const existing = state.editingStockId ? getTenantStock(cafeId)[itemId] : null;
-
-      try {
-        const updates = {};
-        updates[`live/stock_state/stock/${itemId}`] = {
-          name, unit, packSize, packLabel, qty,
-          createdAt: (existing && existing.createdAt) || nowMs
+            if (selectedCafe.value) {
+              const fresh = cafes.value.find((c) => c.id === selectedCafe.value.id);
+              selectedCafe.value = fresh || null;
+            }
+          } catch (e) {
+            notify(translateError(e), "err");
+            logAppError({ role: "super_admin", screen: "refreshAll", message: e?.message || e });
+          } finally {
+            busy.value = false;
+          }
         };
-        updates[`live/stock_state/updatedAt`] = nowMs;
-        await db.ref(`tenants/${cafeId}`).update(updates);
-        closeModal("saStockModal");
-        showToast(state.editingStockId ? "تم تحديث مادة المخزن." : "تمت إضافة المادة للمخزن.");
-      } catch (err) { showToast("فشل الحفظ: " + err.message, "err"); }
-    });
 
-    document.getElementById("setupModal").addEventListener("click", async (e) => {
-      const cafeId = state.setupCafeId;
-      if (!cafeId) return;
+        const login = async () => {
+          busy.value = true;
+          try {
+            const { error } = await supabase.auth.signInWithPassword({
+              email: loginForm.email,
+              password: loginForm.password,
+            });
+            if (error) throw error;
+            await checkSession();
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
 
-      const pBtn = e.target.closest("[data-sa-prod]");
-      if (pBtn) {
-        const act = pBtn.dataset.saProd;
-        const pid = pBtn.dataset.id;
-        const prod = getTenantProducts(cafeId).find((p) => p.id === pid);
-        if (!prod) return;
-        if (act === "edit") openSaProdModal(pid);
-        else if (act === "toggle") {
-          const next = prod.active === false;
-          await db.ref(`tenants/${cafeId}/config/products/${pid}/active`).set(next);
-          showToast(next ? "تم إظهار السلعة." : "تم إخفاء السلعة.");
-        } else if (act === "delete") {
-          if (!confirm(`حذف سلعة «${prod.name}»؟`)) return;
-          await db.ref(`tenants/${cafeId}/config/products/${pid}`).remove();
-          showToast("تم حذف السلعة.");
-        }
-        return;
-      }
+        const logout = async () => {
+          await supabase.auth.signOut();
+          member.value = null;
+          cafes.value = [];
+        };
 
-      const sBtn = e.target.closest("[data-sa-stock]");
-      if (sBtn) {
-        const act = sBtn.dataset.saStock;
-        const sid = sBtn.dataset.id;
-        const st = getTenantStock(cafeId)[sid];
-        if (!st) return;
-        if (act === "edit") openSaStockModal(sid);
-        else if (act === "delete") {
-          if (!confirm(`حذف مادة «${st.name}» من المخزون؟`)) return;
-          await db.ref(`tenants/${cafeId}/live/stock_state/stock/${sid}`).remove();
-          showToast("تم حذف المادة.");
-        }
-        return;
-      }
+        const openCreateModal = () => {
+          Object.assign(createForm, defaultCreateForm());
+          showCreate.value = true;
+        };
 
-      const cBtn = e.target.closest("[data-sa-del-cons]");
-      if (cBtn) {
-        const idx = parseInt(cBtn.dataset.saDelCons, 10);
-        const cur = getTenantConsumables(cafeId).slice();
-        if (!isNaN(idx) && idx >= 0 && idx < cur.length) {
-          cur.splice(idx, 1);
-          await db.ref(`tenants/${cafeId}/config/consumableQuickTags`).set(cur);
-          showToast("تم حذف المادة الاستهلاكية.");
-        }
-      }
-    });
+        const createCafe = async () => {
+          busy.value = true;
+          try {
+            await callManageAccounts({
+              action: "create_cafe",
+              code: createForm.code.toLowerCase(),
+              name: createForm.name,
+              owner_name: createForm.owner_name,
+              phone: createForm.phone,
+              owner_email: createForm.owner_email,
+              owner_password: createForm.owner_password,
+              work_pattern: createForm.work_pattern,
+              days: Number(createForm.days || 30),
+              features: { ...createForm.features },
+              w1_name: createForm.w1_name,
+              w1_wage_mi: tndToMi(createForm.w1_wage_tnd),
+              w1_pin: createForm.w1_pin,
+              w2_name: createForm.w2_name,
+              w2_wage_mi: tndToMi(createForm.w2_wage_tnd),
+              w2_pin: createForm.w2_pin,
+            });
+            showCreate.value = false;
+            notify("تم إنشاء المقهى وحساباته بنجاح.");
+            await refreshAll();
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
 
-    document.getElementById("spLimitsForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const cafeId = state.setupCafeId;
-      if (!cafeId) return;
-      try {
-        await db.ref(`tenants/${cafeId}/config`).update({
-          lowStockWeightLimit: parseNum(document.getElementById("spLowWeight").value),
-          lowStockUnitLimit: parseNum(document.getElementById("spLowUnit").value)
-        });
-        showToast("تم حفظ عتبات التنبيه.");
-      } catch (err) { showToast("فشل الحفظ: " + err.message, "err"); }
-    });
+        const openManageModal = (cafe) => {
+          selectedCafe.value = cafe;
+          ownerNewPass.value = "";
+          editForm.name = cafe.name;
+          editForm.owner_name = cafe.owner_name || "";
+          editForm.phone = cafe.phone || "";
+          editForm.work_pattern = cafe.work_pattern;
+          editForm.features = {
+            stock: false,
+            credit: false,
+            waste: false,
+            partners: false,
+            tables: false,
+            maintenance: false,
+            trial_feedback: false,
+            ...(cafe.features || {}),
+          };
+        };
+
+        const saveCafeChanges = async () => {
+          if (!selectedCafe.value) return;
+          busy.value = true;
+          try {
+            await callManageAccounts({
+              action: "update_cafe_admin",
+              cafe_id: selectedCafe.value.id,
+              name: editForm.name,
+              owner_name: editForm.owner_name,
+              phone: editForm.phone,
+              work_pattern: editForm.work_pattern,
+              features: { ...editForm.features },
+            });
+            notify("تم حفظ التعديلات.");
+            await refreshAll();
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
+
+        const quickExtend = async (cafe, days) => {
+          busy.value = true;
+          try {
+            await callManageAccounts({
+              action: "update_cafe_admin",
+              cafe_id: cafe.id,
+              extend_days: days,
+            });
+            notify(`تم تمديد الاشتراك +${days} يوم.`);
+            await refreshAll();
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
+
+        const toggleActive = async (cafe) => {
+          busy.value = true;
+          try {
+            await callManageAccounts({
+              action: "update_cafe_admin",
+              cafe_id: cafe.id,
+              active: !cafe.active,
+            });
+            notify(cafe.active ? "تم إيقاف المقهى." : "تم تفعيل المقهى.");
+            await refreshAll();
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
+
+        const changeOwnerPassword = async () => {
+          if (!selectedCafe.value) return;
+          busy.value = true;
+          try {
+            await callManageAccounts({
+              action: "set_owner_password",
+              cafe_id: selectedCafe.value.id,
+              new_password: ownerNewPass.value,
+            });
+            ownerNewPass.value = "";
+            notify("تم تغيير كلمة سر المالك.");
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
+
+        const promptWorkerPin = async (w) => {
+          const pin = window.prompt(`أدخل رمز PIN الجديد للعامل (${w.display_name}) من 4 إلى 8 أرقام:`);
+          if (!pin) return;
+          busy.value = true;
+          try {
+            await callManageAccounts({
+              action: "set_worker_pin",
+              cafe_id: w.cafe_id,
+              slot: w.slot,
+              pin: pin.trim(),
+            });
+            notify("تم تحديث رمز PIN للعامل.");
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
+
+        const promptResetWorker = async (w) => {
+          const newName = window.prompt(`تصفير المقعد (${w.slot}) لعامل جديد.\nأدخل اسم العامل الجديد (أو اتركه فارغاً ليكتبه عند الدخول):`, "");
+          if (newName === null) return;
+          let newPin = "";
+          if (w.user_id) {
+            const p = window.prompt("أدخل رمز PIN الجديد (4-8 أرقام) أو اتركه فارغاً للإبقاء على الحالي:", "");
+            if (p === null) return;
+            newPin = p.trim();
+          }
+          busy.value = true;
+          try {
+            await callManageAccounts({
+              action: "reset_worker_slot",
+              cafe_id: w.cafe_id,
+              slot: w.slot,
+              new_name: newName.trim(),
+              new_pin: newPin || undefined,
+            });
+            notify("تم تصفير المقعد وطرد الجلسة القديمة.");
+            await refreshAll();
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
+
+        const deleteCafe = async (cafe) => {
+          const typed = window.prompt(`تحذير: سيُحذف "${cafe.name}" وكل بياناته وحساباته نهائياً.\nللتأكيد اكتب رمز المقهى (${cafe.code}):`);
+          if (typed !== cafe.code) {
+            if (typed !== null) notify("الرمز غير مطابق، تم إلغاء الحذف.", "err");
+            return;
+          }
+          busy.value = true;
+          try {
+            await callManageAccounts({ action: "delete_cafe", cafe_id: cafe.id });
+            selectedCafe.value = null;
+            notify("تم حذف المقهى نهائياً.");
+            await refreshAll();
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
+
+        const setFeedbackStatus = async (fb, status) => {
+          const { error } = await supabase
+            .from("trial_feedback")
+            .update({ status })
+            .eq("id", fb.id);
+          if (error) return notify(translateError(error), "err");
+          fb.status = status;
+          notify("تم تحديث حالة الملاحظة.");
+        };
+
+        onMounted(checkSession);
+
+        return {
+          booting, busy, member, serverToday, tab, search,
+          cafes, filteredCafes, feedback, errors,
+          activeCafesCount, openFeedbackCount, cafeWorkers,
+          loginForm, toast, showCreate, createForm, selectedCafe, editForm, ownerNewPass,
+          WORK_PATTERNS, FEATURE_LABELS,
+          miToTnd, formatDate, statusBadge, daysLabel, cafeNameById, patternNeedsW1Pin,
+          login, logout, refreshAll, openCreateModal, createCafe,
+          openManageModal, saveCafeChanges, quickExtend, toggleActive,
+          changeOwnerPassword, promptWorkerPin, promptResetWorker, deleteCafe, setFeedbackStatus,
+        };
+      },
+    }).mount("#app");
   </script>
 </body>
 </html>
