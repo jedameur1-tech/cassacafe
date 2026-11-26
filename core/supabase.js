@@ -2,8 +2,8 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 export const APP_VERSION = "1.0.0-mvp";
 export const SUPABASE_URL = "https://xdbnwvbxgrfquetysrmc.supabase.co";
-export const SUPABASE_KEY = "ضع_مفتاح_sb_publishable_هنا";
 
+export const SUPABASE_KEY = "sb_publishable_FDMJB3p2nOFQcRrZTeznyQ_J3744hCd";
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
     persistSession: true,
