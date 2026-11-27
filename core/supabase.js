@@ -1,6 +1,6 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/+esm";
 
-export const APP_VERSION = "1.2.7";
+export const APP_VERSION = "1.3.1";
 export const SUPABASE_URL = "https://xdbnwvbxgrfquetysrmc.supabase.co";
 export const SUPABASE_KEY = "sb_publishable_FDMJB3p2nOFQcRrZTeznyQ_J3744hCd";
 
@@ -120,7 +120,7 @@ const ERROR_MAP = {
   INVOICE_NOT_PENDING: "الفاتورة ليست في حالة انتظار.",
   INVOICE_NOT_APPROVED: "الفاتورة ليست معتمدة لعكسها.",
   INVOICE_ALREADY_SETTLED: "تمّت تسوية هذه الفاتورة ولا يمكن عكسها.",
-  NOTHING_TO_SETTLE: "لا توجد يوميات أو فواتير معتمدة ولا باقٍ مرحّل للتسوية.",
+  NOTHING_TO_SETTLE: "لا توجد تسوية أو يوميات وفواتير معتمدة للتسوية.",
   SETUP_ALREADY_DONE: "تم إكمال إعداد اسم العامل مسبقاً.",
   SUBSCRIPTION_INACTIVE: "اشتراك المقهى متوقّف أو منتهٍ.",
   SESSION_RESET: "تم تصفير جلسة العامل أو تغيير رمزه، أعد تسجيل الدخول.",
@@ -133,13 +133,16 @@ export function translateError(err) {
   if (low.includes("failed to fetch") || low.includes("load failed") || low.includes("networkerror")) {
     return "تعذّر الاتصال بالخادم، تحقق من اتصال الإنترنت.";
   }
+  if (low.includes("abort")) {
+    return ERROR_MAP.NETWORK_TIMEOUT;
+  }
   if (low.includes("cafes_code_key")) {
     return "رمز المقهى مستعمل مسبقاً، اختر رمزاً آخر.";
   }
   if (low.includes("duplicate key")) {
     return "هذا السجل موجود مسبقاً.";
   }
-  if (low.includes("already been registered") || low.includes("already registered") || low.includes("already exists")) {
+  if (low.includes("already been registered") || low.includes("already exists")) {
     return "البريد الإلكتروني مستعمل مسبقاً في حساب آخر.";
   }
   if (low.includes("invalid login credentials")) {
@@ -196,7 +199,9 @@ export async function callManageAccounts(payload, { timeoutMs = 20_000 } = {}) {
       try { data = await res.json(); } catch { data = {}; }
       return { res, data };
     } catch (e) {
-      if (e?.name === "AbortError") throw new Error("NETWORK_TIMEOUT");
+      if (e?.name === "AbortError" || String(e?.message || "").toLowerCase().includes("abort")) {
+        throw new Error("NETWORK_TIMEOUT");
+      }
       throw e;
     } finally {
       clearTimeout(timer);
@@ -220,34 +225,163 @@ export async function callManageAccounts(payload, { timeoutMs = 20_000 } = {}) {
   return data;
 }
 
+let _serverOffsetMs = 0;
+
+export function getServerNowMs() {
+  return Math.round(Date.now() + _serverOffsetMs);
+}
+
 export async function getServerTime() {
+  const t0 = Date.now();
   const { data, error } = await supabase.rpc("get_server_time");
   if (error) throw error;
+  if (data?.epoch_ms) {
+    const t1 = Date.now();
+    const rtt = Math.max(0, t1 - t0);
+    _serverOffsetMs = Math.round(Number(data.epoch_ms) - (t1 - rtt / 2));
+  }
   return data;
 }
 
+export async function callRpc(fnName, params = {}, { timeoutMs = 20_000 } = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const q = supabase.rpc(fnName, params);
+    const { data, error } = await (q.abortSignal ? q.abortSignal(controller.signal) : q);
+    if (error) throw error;
+    return data;
+  } catch (e) {
+    if (e?.name === "AbortError" || String(e?.message || "").toLowerCase().includes("abort")) {
+      throw new Error("NETWORK_TIMEOUT");
+    }
+    throw e;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// ===== تنسيق المليم (المعتمد في worker.html و owner.html المحدّثة) مع فواصل الآلاف =====
+export function formatMi(mi) {
+  const n = Math.round(Number(mi || 0));
+  if (!Number.isFinite(n) || n === 0) return "0";
+  const sign = n < 0 ? "-" : "";
+  const formatted = Math.abs(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return `${sign}${formatted}`;
+}
+
+export function formatMiLabel(mi) {
+  return `${formatMi(mi)} مي`;
+}
+
+// تحويل إدخال المليم (أرقام عربية أو إنجليزية أو فراغات أو سالب) إلى عدد صحيح
+export function inputToMi(val, { allowNegative = false } = {}) {
+  if (typeof val === "number") {
+    if (!Number.isFinite(val) || val === 0) return 0;
+    const rounded = Math.round(val);
+    return allowNegative ? rounded : Math.max(0, rounded);
+  }
+  const s = String(val ?? "0")
+    .replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069\u00A0]/g, "")
+    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[\u2212\u2013\u2014﹣－]/g, "-")
+    .split(".")[0]
+    .split("٫")[0]
+    .replace(/[^\d-]/g, "");
+  if (!s || s === "-") return 0;
+  const isNeg = allowNegative && s.includes("-");
+  const digits = s.replace(/\D/g, "");
+  const n = parseInt(digits, 10);
+  if (!Number.isFinite(n) || n === 0) return 0;
+  return isNeg ? -n : n;
+}
+
+export function formatSpacedIntInput(val, { allowNegative = false } = {}) {
+  const raw = String(val ?? "")
+    .replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069\u00A0]/g, "")
+    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[\u2212\u2013\u2014﹣－]/g, "-")
+    .split(".")[0]
+    .split("٫")[0];
+  const isNeg = allowNegative && raw.includes("-");
+  const digits = raw.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+  if (!digits) return isNeg ? "-" : "";
+  const spaced = digits.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return isNeg ? `-${spaced}` : spaced;
+}
+
+// ===== دوال التحويل الحقيقي بالدينار (للتوافق التام مع super-admin.html والملفات القديمة) =====
 export function miToTnd(mi) {
-  const num = Number(mi || 0);
-  return (num / 1000).toFixed(3);
+  const n = Number(mi || 0);
+  if (!Number.isFinite(n)) return "0.000";
+  const sign = n < 0 ? "-" : "";
+  const abs = Math.round(Math.abs(n));
+  const whole = Math.floor(abs / 1000);
+  const frac = String(abs % 1000).padStart(3, "0");
+  return `${sign}${whole}.${frac}`;
 }
 
 export function tndToMi(val, { allowNegative = false } = {}) {
-  const normalized = String(val ?? "0")
+  const s = String(val ?? "0")
+    .replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, "")
     .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660))
     .replace(/[,٫]/g, ".")
     .replace(/\s+/g, "")
     .trim();
-  const num = Number(normalized);
-  if (!Number.isFinite(num)) return 0;
-  if (!allowNegative && num < 0) return 0;
-  return Math.round(num * 1000);
+  const n = Number(s);
+  if (!Number.isFinite(n)) return 0;
+  const mi = Math.round(n * 1000);
+  return allowNegative ? mi : Math.max(0, mi);
 }
 
-export function daysRemaining(isoDate, nowMs = Date.now()) {
+export function escapeHtmlText(str) {
+  return String(str ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// منع انقلاب الأرقام والتواريخ ورموز الفواتير داخل النصوص العربية
+export function formatMixedRtlText(str) {
+  if (str === null || str === undefined || str === "") return "";
+  const s = String(str);
+  const rx = /#\d+|\d{4}-\d{2}(?:-\d{2})?(?:\s+\d{2}:\d{2})?|[+\-]?\d{1,3}(?:[\s\u00A0]\d{3})+(?!\d)|[+\-]?\d+(?:[.,:/]\d+)?/g;
+  let out = "";
+  let last = 0;
+  let m;
+  while ((m = rx.exec(s)) !== null) {
+    if (m.index > last) out += escapeHtmlText(s.slice(last, m.index));
+    out += `<span class="num-ltr" dir="ltr">${escapeHtmlText(m[0]).replace(/\s+/g, "\u00A0")}</span>`;
+    last = m.index + m[0].length;
+    if (m[0].length === 0) rx.lastIndex++;
+  }
+  if (last < s.length) out += escapeHtmlText(s.slice(last));
+  return out;
+}
+
+// عزل النصوص والأرقام في الإشعارات والرسائل النصية (ntfy / واتساب)
+export function bidiIsolatePlain(val) {
+  const clean = String(val ?? "").replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, "").trim();
+  const locked = clean.replace(/\s+/g, "\u00A0\u200E").replace(/([-/:|+.,_]+)/g, "\u200E$1\u200E");
+  return `\u2066\u200E${locked}\u200E\u2069`;
+}
+
+export function formatNotifMiPlain(mi) {
+  return `${bidiIsolatePlain(formatMi(mi))}\u00A0مي`;
+}
+
+export function formatNotifDatePlain(isoOrDate) {
+  if (!isoOrDate) return "";
+  return `\u2066\u200E${String(isoOrDate).trim().slice(0, 10).replace(/-/g, "\u200E-\u200E")}\u200E\u2069`;
+}
+
+export function daysRemaining(isoDate, nowMs = getServerNowMs()) {
   if (!isoDate) return 0;
   const ts = new Date(isoDate).getTime();
   if (!Number.isFinite(ts)) return 0;
-  return Math.ceil((ts - Number(nowMs || Date.now())) / 86400000);
+  return Math.ceil((ts - Number(nowMs || getServerNowMs())) / 86400000);
 }
 
 export function formatDate(iso) {
@@ -261,6 +395,23 @@ export function formatDate(iso) {
     }).format(new Date(iso));
   } catch {
     return String(iso).slice(0, 10);
+  }
+}
+
+export function formatDateTime(iso) {
+  if (!iso) return "—";
+  try {
+    return new Intl.DateTimeFormat("ar-TN", {
+      timeZone: "Africa/Tunis",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(new Date(iso));
+  } catch {
+    return String(iso).slice(0, 16).replace("T", " ");
   }
 }
 
