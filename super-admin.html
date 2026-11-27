@@ -2,9 +2,10 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f766e" />
   <title>CassaCafe — لوحة المشرف العام</title>
-  <link rel="stylesheet" href="./core/styles.css" />
+  <link rel="stylesheet" href="./core/styles.css?v=1.2.7" />
 </head>
 <body>
   <div id="app" v-cloak>
@@ -82,7 +83,7 @@
         <section v-if="tab === 'cafes'">
           <div class="row" style="margin-bottom:12px;">
             <input
-              type="text"
+              type="search"
               v-model.trim="search"
               placeholder="ابحث بالاسم أو الرمز أو الهاتف..."
               style="flex:1; min-width:200px;"
@@ -162,8 +163,8 @@
             <div class="row">
               <span class="muted">الشاشة: {{ fb.screen || "—" }} • {{ formatDate(fb.created_at) }}</span>
               <div class="row">
-                <button v-if="fb.status !== 'reviewed'" class="btn btn-sm btn-outline" @click="setFeedbackStatus(fb, 'reviewed')">مراجعة</button>
-                <button v-if="fb.status !== 'done'" class="btn btn-sm btn-primary" @click="setFeedbackStatus(fb, 'done')">تم التنفيذ</button>
+                <button v-if="fb.status !== 'reviewed'" class="btn btn-sm btn-outline" @click="setFeedbackStatus(fb, 'reviewed')" :disabled="busy">مراجعة</button>
+                <button v-if="fb.status !== 'done'" class="btn btn-sm btn-primary" @click="setFeedbackStatus(fb, 'done')" :disabled="busy">تم التنفيذ</button>
               </div>
             </div>
           </div>
@@ -188,37 +189,8 @@
       </main>
     </template>
 
-    <!-- نافذة بطاقة مشاركة بيانات الدخول للواتساب -->
-    <div v-if="shareCard" class="modal-backdrop" @click.self="shareCard = null">
-      <div class="modal">
-        <div class="row" style="margin-bottom:10px;">
-          <h3 style="margin:0;">{{ shareCard.title }}</h3>
-          <button class="btn btn-sm btn-outline" @click="shareCard = null">إغلاق</button>
-        </div>
-        <p class="muted" style="margin-top:0;">انسخ الرسالة أو أرسلها مباشرةً إلى صاحب المقهى عبر واتساب:</p>
-        <textarea
-          readonly
-          :value="shareCard.text"
-          rows="10"
-          style="width:100%; font-family:inherit; font-size:0.9rem; line-height:1.6; padding:10px; border:1px solid var(--border); border-radius:8px; background:#f9fafb; margin-bottom:12px;"
-        ></textarea>
-        <div class="row">
-          <button class="btn btn-primary" style="flex:1;" @click="copyShareCard">نسخ الرسالة</button>
-          <a
-            class="btn btn-outline"
-            style="flex:1; text-align:center; background:#dcfce7; color:#166534; border-color:#86efac;"
-            :href="whatsappShareUrl"
-            target="_blank"
-            rel="noopener"
-          >
-            إرسال عبر WhatsApp
-          </a>
-        </div>
-      </div>
-    </div>
-
     <!-- نافذة إنشاء مقهى جديد -->
-    <div v-if="showCreate" class="modal-backdrop" @click.self="showCreate = false">
+    <div v-if="member && showCreate" class="modal-backdrop" @click.self="showCreate = false">
       <div class="modal">
         <div class="row" style="margin-bottom:10px;">
           <h3 style="margin:0;">إنشاء مقهى جديد</h3>
@@ -290,7 +262,7 @@
             <div class="grid-3">
               <div class="field">
                 <label>الاسم</label>
-                <input type="text" v-model.trim="createForm.w1_name" maxlength="60" placeholder="اختياري" />
+                <input type="text" v-model.trim="createForm.w1_name" minlength="2" maxlength="60" placeholder="اختياري" />
               </div>
               <div class="field">
                 <label>الأجر اليومي (د.ت)</label>
@@ -312,7 +284,7 @@
             <div class="grid-3">
               <div class="field">
                 <label>الاسم</label>
-                <input type="text" v-model.trim="createForm.w2_name" maxlength="60" placeholder="اختياري" />
+                <input type="text" v-model.trim="createForm.w2_name" minlength="2" maxlength="60" placeholder="اختياري" />
               </div>
               <div class="field">
                 <label>الأجر اليومي (د.ت)</label>
@@ -352,7 +324,7 @@
     </div>
 
     <!-- نافذة إدارة مقهى موجود -->
-    <div v-if="selectedCafe" class="modal-backdrop" @click.self="selectedCafe = null">
+    <div v-if="member && selectedCafe" class="modal-backdrop" @click.self="selectedCafe = null">
       <div class="modal">
         <div class="row" style="margin-bottom:10px;">
           <h3 style="margin:0;">إدارة: {{ selectedCafe.name }}</h3>
@@ -362,7 +334,7 @@
         <div class="grid-2">
           <div class="field">
             <label>اسم المقهى</label>
-            <input type="text" v-model.trim="editForm.name" maxlength="80" />
+            <input type="text" v-model.trim="editForm.name" minlength="2" maxlength="80" />
           </div>
           <div class="field">
             <label>اسم المالك</label>
@@ -377,10 +349,19 @@
           </div>
           <div class="field">
             <label>نمط العمل</label>
-            <select v-model="editForm.work_pattern">
+            <select v-model="editForm.work_pattern" @change="clearPatternWarning">
               <option v-for="(lbl, key) in WORK_PATTERNS" :key="key" :value="key">{{ lbl }}</option>
             </select>
           </div>
+        </div>
+
+        <!-- تحذير تعارض تغيير النمط -->
+        <div v-if="editForm.patternWarning" class="card" style="background:var(--danger-soft); color:var(--danger); padding:10px;">
+          <div style="font-weight:700; margin-bottom:6px;">{{ editForm.patternWarning }}</div>
+          <label v-if="editForm.patternCanForce" style="display:flex; align-items:center; gap:6px; font-size:0.85rem;">
+            <input type="checkbox" v-model="editForm.patternForce" />
+            تأكيد تغيير النمط الإجباري وتعطيل المقعد مع إبقاء الرصيد المرحّل موثّقاً في سجل التسويات
+          </label>
         </div>
 
         <div class="field">
@@ -398,8 +379,12 @@
           </div>
         </div>
 
-        <button class="btn btn-primary btn-block" @click="saveCafeChanges" :disabled="busy">
-          حفظ التعديلات
+        <button
+          class="btn btn-primary btn-block"
+          @click="saveCafeChanges"
+          :disabled="busy || editForm.name.length < 2 || (Boolean(editForm.patternWarning) && (!editForm.patternCanForce || !editForm.patternForce))"
+        >
+          {{ busy ? "جارٍ الحفظ..." : "حفظ التعديلات" }}
         </button>
 
         <hr class="divider" />
@@ -416,9 +401,9 @@
         <hr class="divider" />
 
         <div class="field">
-          <label>تغيير كلمة سر المالك ({{ selectedCafe.owner_email }})</label>
+          <label>تغيير كلمة سر المالك (<span class="ltr">{{ selectedCafe.owner_email }}</span>)</label>
           <div class="row">
-            <input type="text" v-model="ownerNewPass" placeholder="كلمة سر جديدة (6+ أحرف)" autocapitalize="none" class="ltr" style="flex:1;" />
+            <input type="text" v-model="ownerNewPass" maxlength="128" placeholder="كلمة سر جديدة (6+ أحرف)" autocapitalize="none" class="ltr" style="flex:1;" />
             <button class="btn btn-sm btn-primary" @click="changeOwnerPassword" :disabled="busy || ownerNewPass.trim().length < 6">
               تغيير
             </button>
@@ -431,7 +416,7 @@
           <div v-for="w in cafeWorkers" :key="w.id" class="card" style="background:#f9fafb; padding:10px;">
             <div class="row" style="margin-bottom:6px;">
               <strong>{{ w.display_name }} ({{ w.slot }})</strong>
-              <span class="muted">الأجر: {{ miToTnd(w.default_wage_mi) }} د.ت • جلسة #{{ w.session_version }}</span>
+              <span class="muted num">الأجر: {{ miToTnd(w.default_wage_mi) }} د.ت • جلسة #{{ w.session_version }}</span>
             </div>
             <div class="row">
               <button v-if="w.user_id" class="btn btn-sm btn-outline" @click="openPinModal(w)" :disabled="busy">
@@ -453,7 +438,7 @@
     </div>
 
     <!-- نافذة تغيير PIN عامل -->
-    <div v-if="pinModal.worker" class="modal-backdrop" @click.self="pinModal.worker = null">
+    <div v-if="member && pinModal.worker" class="modal-backdrop" style="z-index:60;" @click.self="pinModal.worker = null">
       <div class="modal">
         <div class="row" style="margin-bottom:10px;">
           <h3 style="margin:0;">تغيير PIN: {{ pinModal.worker.display_name }}</h3>
@@ -473,7 +458,7 @@
     </div>
 
     <!-- نافذة تصفير مقعد عامل -->
-    <div v-if="resetModal.worker" class="modal-backdrop" @click.self="resetModal.worker = null">
+    <div v-if="member && resetModal.worker" class="modal-backdrop" style="z-index:60;" @click.self="resetModal.worker = null">
       <div class="modal">
         <div class="row" style="margin-bottom:10px;">
           <h3 style="margin:0;">تصفير المقعد ({{ resetModal.worker.slot }}) لعامل جديد</h3>
@@ -483,7 +468,7 @@
         <form @submit.prevent="submitResetWorker">
           <div class="field">
             <label>اسم العامل الجديد (اختياري — يمكنه كتابته عند الدخول)</label>
-            <input type="text" v-model.trim="resetModal.new_name" maxlength="60" placeholder="اتركه فارغاً للإعداد عند أول دخول" />
+            <input type="text" v-model.trim="resetModal.new_name" minlength="2" maxlength="60" placeholder="اتركه فارغاً للإعداد عند أول دخول" />
           </div>
           <div class="field" v-if="resetModal.worker.user_id">
             <label>رمز PIN جديد للعامل الجديد (إلزامي، 6-8 أرقام) *</label>
@@ -499,7 +484,11 @@
               تأكيد التصفير الإجباري مع إبقاء الرصيد المرحّل موثّقاً في سجل التسويات
             </label>
           </div>
-          <button type="submit" class="btn btn-warn btn-block" :disabled="busy || (resetModal.warning && !resetModal.canForce)">
+          <button
+            type="submit"
+            class="btn btn-warn btn-block"
+            :disabled="busy || (Boolean(resetModal.warning) && (!resetModal.canForce || !resetModal.force))"
+          >
             {{ busy ? "جارٍ التصفير..." : "تنفيذ التصفير" }}
           </button>
         </form>
@@ -507,7 +496,7 @@
     </div>
 
     <!-- نافذة تأكيد حذف مقهى -->
-    <div v-if="deleteModal.cafe" class="modal-backdrop" @click.self="deleteModal.cafe = null">
+    <div v-if="member && deleteModal.cafe" class="modal-backdrop" style="z-index:60;" @click.self="deleteModal.cafe = null">
       <div class="modal">
         <div class="row" style="margin-bottom:10px;">
           <h3 style="margin:0; color:var(--danger);">حذف نهائي: {{ deleteModal.cafe.name }}</h3>
@@ -539,6 +528,35 @@
       </div>
     </div>
 
+    <!-- نافذة بطاقة مشاركة بيانات الدخول للواتساب (تظهر فوق جميع النوافذ) -->
+    <div v-if="member && shareCard" class="modal-backdrop" style="z-index:70;" @click.self="shareCard = null">
+      <div class="modal">
+        <div class="row" style="margin-bottom:10px;">
+          <h3 style="margin:0;">{{ shareCard.title }}</h3>
+          <button class="btn btn-sm btn-outline" @click="shareCard = null">إغلاق</button>
+        </div>
+        <p class="muted" style="margin-top:0;">انسخ الرسالة أو أرسلها مباشرةً إلى صاحب المقهى عبر واتساب:</p>
+        <textarea
+          readonly
+          :value="shareCard.text"
+          rows="10"
+          style="width:100%; font-family:inherit; font-size:0.9rem; line-height:1.6; padding:10px; border:1px solid var(--border); border-radius:8px; background:#f9fafb; margin-bottom:12px;"
+        ></textarea>
+        <div class="row">
+          <button class="btn btn-primary" style="flex:1;" @click="copyShareCard">نسخ الرسالة</button>
+          <a
+            class="btn btn-outline"
+            style="flex:1; text-align:center; background:#dcfce7; color:#166534; border-color:#86efac;"
+            :href="whatsappShareUrl"
+            target="_blank"
+            rel="noopener"
+          >
+            إرسال عبر WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+
     <!-- إشعار Toast -->
     <div v-if="toast.text" class="toast" :class="toast.type">{{ toast.text }}</div>
   </div>
@@ -560,7 +578,7 @@
       generateRandomPin,
       WORK_PATTERNS,
       FEATURE_LABELS,
-    } from "./core/supabase.js";
+    } from "./core/supabase.js?v=1.2.7";
 
     createApp({
       setup() {
@@ -586,19 +604,16 @@
           toast.text = text;
           toast.type = type;
           clearTimeout(toastTimer);
-          toastTimer = setTimeout(() => { toast.text = ""; }, 4000);
+          toastTimer = setTimeout(() => { toast.text = ""; }, 4500);
         };
 
-        const appBaseUrl = () => {
-          const url = new URL("./", window.location.href);
-          return url.href;
-        };
+        const appBaseUrl = () => new URL("./", window.location.href).href;
 
         const openShareCard = ({ title, phone = "", lines = [] }) => {
           shareCard.value = {
             title,
             phone: formatWaPhone(phone),
-            text: lines.filter(Boolean).join("\n"),
+            text: lines.filter((l) => l !== null && l !== undefined && l !== false).join("\n"),
           };
         };
 
@@ -657,7 +672,16 @@
           phone: "",
           work_pattern: "owner_only",
           features: {},
+          patternWarning: "",
+          patternCanForce: false,
+          patternForce: false,
         });
+
+        const clearPatternWarning = () => {
+          editForm.patternWarning = "";
+          editForm.patternCanForce = false;
+          editForm.patternForce = false;
+        };
 
         const pinModal = reactive({ worker: null, pin: "" });
         const resetModal = reactive({
@@ -715,13 +739,31 @@
           return `متبقي ${d} يوم`;
         };
 
-        const checkSession = async () => {
-          booting.value = true;
+        const clearAllState = () => {
+          member.value = null;
+          cafes.value = [];
+          members.value = [];
+          feedback.value = [];
+          errors.value = [];
+          selectedCafe.value = null;
+          clearPatternWarning();
+          shareCard.value = null;
+          showCreate.value = false;
+          pinModal.worker = null;
+          resetModal.worker = null;
+          deleteModal.cafe = null;
+          ownerNewPass.value = "";
+          search.value = "";
+          loginForm.password = "";
+        };
+
+        const checkSession = async (silentBoot = false) => {
+          if (!silentBoot) booting.value = true;
           try {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session?.user) {
-              member.value = null;
-              return;
+              clearAllState();
+              return false;
             }
             const { data, error } = await supabase
               .from("cafe_members")
@@ -729,20 +771,24 @@
               .eq("user_id", session.user.id)
               .eq("role", "super_admin")
               .eq("active", true)
+              .limit(1)
               .maybeSingle();
 
             if (error || !data) {
               await supabase.auth.signOut();
-              member.value = null;
+              clearAllState();
               notify("هذا الحساب لا يملك صلاحية المشرف العام.", "err");
-              return;
+              return false;
             }
             member.value = data;
+            loginForm.password = "";
             await refreshAll();
+            return true;
           } catch (e) {
             notify(translateError(e), "err");
+            return false;
           } finally {
-            booting.value = false;
+            if (!silentBoot) booting.value = false;
           }
         };
 
@@ -761,10 +807,15 @@
               if (t.epoch_ms) serverEpochMs.value = Number(t.epoch_ms);
             }
             if (cRes.error) throw cRes.error;
+            if (mRes.error) throw mRes.error;
+
             cafes.value = cRes.data || [];
             members.value = mRes.data || [];
-            feedback.value = fRes.data || [];
-            errors.value = eRes.data || [];
+            if (!fRes.error) feedback.value = fRes.data || [];
+            if (!eRes.error) errors.value = eRes.data || [];
+            if (fRes.error || eRes.error) {
+              notify("تم تحديث المقاهي، لكن تعذّر تحميل بعض السجلات الجانبية.", "err");
+            }
 
             if (selectedCafe.value) {
               const fresh = cafes.value.find((c) => c.id === selectedCafe.value.id);
@@ -786,7 +837,7 @@
               password: loginForm.password,
             });
             if (error) throw error;
-            await checkSession();
+            await checkSession(true);
           } catch (e) {
             notify(translateError(e), "err");
           } finally {
@@ -795,9 +846,11 @@
         };
 
         const logout = async () => {
-          await supabase.auth.signOut();
-          member.value = null;
-          cafes.value = [];
+          try {
+            await supabase.auth.signOut();
+          } finally {
+            clearAllState();
+          }
         };
 
         const openCreateModal = () => {
@@ -806,6 +859,10 @@
         };
 
         const createCafe = async () => {
+          const email = createForm.owner_email.toLowerCase();
+          if (!email.includes("@") || email.endsWith("@worker.cassacafe.app") || createForm.owner_password.trim().length < 6) {
+            return notify(translateError("INVALID_OWNER_CREDENTIALS"), "err");
+          }
           if (patternNeedsW1Pin(createForm.work_pattern) && !isStrongPin(createForm.w1_pin)) {
             return notify(translateError("INVALID_PIN"), "err");
           }
@@ -818,10 +875,10 @@
               name: createForm.name,
               code: createForm.code.toLowerCase(),
               phone: createForm.phone,
-              owner_email: createForm.owner_email,
+              owner_email: email,
               owner_password: createForm.owner_password,
             };
-            const res = await callManageAccounts({
+            const payload = {
               action: "create_cafe",
               code: snapshot.code,
               name: snapshot.name,
@@ -832,13 +889,21 @@
               work_pattern: createForm.work_pattern,
               days: Number(createForm.days || 30),
               features: { ...createForm.features },
-              w1_name: createForm.w1_name,
-              w1_wage_mi: tndToMi(createForm.w1_wage_tnd),
-              w1_pin: createForm.w1_pin,
-              w2_name: createForm.w2_name,
-              w2_wage_mi: tndToMi(createForm.w2_wage_tnd),
-              w2_pin: createForm.w2_pin,
-            });
+            };
+            if (createForm.work_pattern !== "owner_only") {
+              payload.w1_name = createForm.w1_name;
+              payload.w1_wage_mi = tndToMi(createForm.w1_wage_tnd);
+              if (patternNeedsW1Pin(createForm.work_pattern)) {
+                payload.w1_pin = createForm.w1_pin;
+              }
+            }
+            if (createForm.work_pattern === "two_workers") {
+              payload.w2_name = createForm.w2_name;
+              payload.w2_wage_mi = tndToMi(createForm.w2_wage_tnd);
+              payload.w2_pin = createForm.w2_pin;
+            }
+
+            const res = await callManageAccounts(payload);
             showCreate.value = false;
             notify("تم إنشاء المقهى وحساباته بنجاح.");
 
@@ -887,10 +952,12 @@
             trial_feedback: false,
             ...(cafe.features || {}),
           };
+          clearPatternWarning();
         };
 
         const saveCafeChanges = async () => {
           if (!selectedCafe.value) return;
+          if (editForm.name.length < 2) return notify(translateError("INVALID_CAFE_NAME"), "err");
           busy.value = true;
           try {
             const cafeRef = selectedCafe.value;
@@ -902,7 +969,9 @@
               phone: editForm.phone,
               work_pattern: editForm.work_pattern,
               features: { ...editForm.features },
+              force: editForm.patternForce,
             });
+            clearPatternWarning();
             notify("تم حفظ التعديلات.");
             const pins = res.worker_pins || {};
             if (Object.keys(pins).length) {
@@ -920,6 +989,18 @@
             }
             await refreshAll();
           } catch (e) {
+            const slotLabel = e.details?.slot ? ` (${e.details.slot})` : "";
+            if (e?.message === "WORKER_HAS_UNSETTLED_ITEMS") {
+              const s = e.details?.pending_shifts || 0;
+              const inv = e.details?.pending_invoices || 0;
+              editForm.patternCanForce = false;
+              editForm.patternForce = false;
+              editForm.patternWarning = `لا يمكن تغيير النمط: يوجد ${s} يومية و ${inv} فاتورة غير مُسوّاة للمقعد${slotLabel}. سوِّ الحساب أولاً من لوحة المقهى.`;
+            } else if (e?.message === "WORKER_HAS_CARRY_OVER") {
+              const c = miToTnd(e.details?.carry_over_mi || 0);
+              editForm.patternCanForce = true;
+              editForm.patternWarning = `يوجد رصيد مرحّل بقيمة ${c} د.ت بذمّة المقعد${slotLabel} الذي سيُعطّل عند تغيير النمط.`;
+            }
             notify(translateError(e), "err");
           } finally {
             busy.value = false;
@@ -927,6 +1008,7 @@
         };
 
         const quickExtend = async (cafe, days) => {
+          if (!confirm(`تأكيد تمديد اشتراك «${cafe.name}» بمقدار +${days} يوم؟`)) return;
           busy.value = true;
           try {
             await callManageAccounts({
@@ -944,6 +1026,10 @@
         };
 
         const toggleActive = async (cafe) => {
+          const msg = cafe.active
+            ? `تأكيد إيقاف مقهى «${cafe.name}»؟ سيُمنع المالك والعمال من الكتابة فوراً.`
+            : `تأكيد إعادة تفعيل مقهى «${cafe.name}»؟`;
+          if (!confirm(msg)) return;
           busy.value = true;
           try {
             await callManageAccounts({
@@ -962,6 +1048,7 @@
 
         const changeOwnerPassword = async () => {
           if (!selectedCafe.value) return;
+          if (ownerNewPass.value.trim().length < 6) return notify(translateError("WEAK_PASSWORD"), "err");
           busy.value = true;
           try {
             const newPass = ownerNewPass.value;
@@ -1015,7 +1102,7 @@
               phone: cafeRef?.phone || "",
               lines: [
                 `تم تحديث رمز دخول العامل (${w.display_name} — ${w.slot}):`,
-                cafeRef ? `رمز المقهى: ${cafeRef.code}` : "",
+                cafeRef ? `رمز المقهى: ${cafeRef.code}` : false,
                 `رمز PIN الجديد: ${pin}`,
               ],
             });
@@ -1062,7 +1149,7 @@
                 phone: cafeRef?.phone || "",
                 lines: [
                   `بيانات دخول العامل الجديد في CassaCafe (${cafeRef?.name || ""}):`,
-                  cafeRef ? `رمز المقهى: ${cafeRef.code}` : "",
+                  cafeRef ? `رمز المقهى: ${cafeRef.code}` : false,
                   `المقعد: ${w.slot}`,
                   `رمز PIN الجديد: ${newPin}`,
                 ],
@@ -1074,6 +1161,7 @@
               const s = e.details?.pending_shifts || 0;
               const inv = e.details?.pending_invoices || 0;
               resetModal.canForce = false;
+              resetModal.force = false;
               resetModal.warning = `يوجد ${s} يومية و ${inv} فاتورة غير مُسوّاة لهذا العامل. يجب تسويتها أولاً من لوحة المقهى قبل التصفير.`;
             } else if (e?.message === "WORKER_HAS_CARRY_OVER") {
               const c = miToTnd(e.details?.carry_over_mi || 0);
@@ -1095,10 +1183,14 @@
           if (!deleteModal.cafe || deleteModal.typed !== deleteModal.cafe.code) return;
           busy.value = true;
           try {
-            await callManageAccounts({ action: "delete_cafe", cafe_id: deleteModal.cafe.id });
+            const res = await callManageAccounts({ action: "delete_cafe", cafe_id: deleteModal.cafe.id });
             deleteModal.cafe = null;
             selectedCafe.value = null;
-            notify("تم حذف المقهى نهائياً.");
+            if (res?.failed_users?.length) {
+              notify(`تم حذف المقهى، لكن تعذّر حذف ${res.failed_users.length} حساب من Auth تلقائياً.`, "err");
+            } else {
+              notify("تم حذف المقهى وحساباته نهائياً.");
+            }
             await refreshAll();
           } catch (e) {
             notify(translateError(e), "err");
@@ -1108,16 +1200,23 @@
         };
 
         const setFeedbackStatus = async (fb, status) => {
-          const { error } = await supabase
-            .from("trial_feedback")
-            .update({ status })
-            .eq("id", fb.id);
-          if (error) return notify(translateError(error), "err");
-          fb.status = status;
-          notify("تم تحديث حالة الملاحظة.");
+          busy.value = true;
+          try {
+            const { error } = await supabase
+              .from("trial_feedback")
+              .update({ status })
+              .eq("id", fb.id);
+            if (error) throw error;
+            fb.status = status;
+            notify("تم تحديث حالة الملاحظة.");
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
         };
 
-        onMounted(checkSession);
+        onMounted(() => checkSession(false));
 
         return {
           booting, busy, member, serverToday, tab, search, shareCard, whatsappShareUrl,
@@ -1127,6 +1226,7 @@
           pinModal, resetModal, deleteModal,
           WORK_PATTERNS, FEATURE_LABELS,
           miToTnd, formatDate, statusBadge, daysLabel, cafeNameById, patternNeedsW1Pin, generateRandomPin,
+          clearPatternWarning,
           login, logout, refreshAll, copyShareCard, openCreateModal, createCafe,
           openManageModal, saveCafeChanges, quickExtend, toggleActive,
           changeOwnerPassword, openPinModal, submitWorkerPin,
