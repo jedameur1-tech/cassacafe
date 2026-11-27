@@ -1,6 +1,6 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/+esm";
 
-export const APP_VERSION = "1.2.1-mvp";
+export const APP_VERSION = "1.2.7";
 export const SUPABASE_URL = "https://xdbnwvbxgrfquetysrmc.supabase.co";
 export const SUPABASE_KEY = "sb_publishable_FDMJB3p2nOFQcRrZTeznyQ_J3744hCd";
 
@@ -57,9 +57,24 @@ const ERROR_MAP = {
   FORBIDDEN: "ليست لديك صلاحية لتنفيذ هذه العملية.",
   NOT_AUTHORIZED: "ليست لديك صلاحية لتنفيذ هذه العملية.",
   SUPER_ADMIN_ONLY: "هذه العملية حصرية للمشرف العام.",
+  METHOD_NOT_ALLOWED: "طريقة الطلب غير مدعومة.",
+  UNKNOWN_ACTION: "العملية المطلوبة غير معروفة.",
+  SERVER_ERROR: "حدث خطأ في الخادم، أعد المحاولة بعد لحظة.",
+  NETWORK_TIMEOUT: "تأخر الاتصال بالخادم، تحقق من الإنترنت وأعد المحاولة.",
+  CREATE_FAILED: "تعذّر إنشاء المقهى، تحقق من البيانات وأعد المحاولة.",
+  CREATE_CAFE_FAILED: "تعذّر إنشاء سجل المقهى.",
+  UPDATE_FAILED: "تعذّر حفظ التعديلات، أعد المحاولة.",
+  OWNER_AUTH_FAILED: "تعذّر إنشاء حساب المالك، تحقق من البريد الإلكتروني.",
+  WORKER_AUTH_FAILED: "تعذّر إنشاء حساب العامل.",
+  CHECK_SLOT_FAILED: "تعذّر فحص حالة مقعد العامل.",
+  RESET_FAILED: "تعذّر تصفير مقعد العامل، أعد المحاولة.",
+  RETIRE_FAILED: "تعذّر إنهاء حساب العامل السابق.",
+  PIN_UPDATE_FAILED: "تعذّر تحديث رمز PIN، أعد المحاولة.",
+  ORPHAN_CLEANUP_FAILED: "تعذّر تنظيف حساب سابق مرتبط بالمقعد، أعد المحاولة.",
   INVALID_JSON: "بيانات الطلب غير صالحة.",
   INVALID_PAYLOAD: "بيانات العملية غير صالحة.",
   PAYLOAD_TOO_LARGE: "حجم البيانات المرسلة أكبر من الحد المسموح.",
+  INVALID_TX_ID: "معرّف العملية غير صالح، حدّث الصفحة وأعد المحاولة.",
   INVALID_CODE: "رمز المقهى يجب أن يكون من 3 إلى 12 حرفاً أو رقماً إنجليزياً صغيراً دون فراغات.",
   INVALID_LOGIN_TARGET: "رمز المقهى غير صحيح أو حساب العامل غير مفعّل.",
   INVALID_CAFE_NAME: "اسم المقهى يجب أن يكون بين حرفين و80 حرفاً.",
@@ -77,11 +92,13 @@ const ERROR_MAP = {
   INVALID_WAGE: "قيمة الأجر غير صالحة.",
   INVALID_QTY: "الكمية غير صالحة.",
   INVALID_AMOUNT: "المبلغ غير صالح.",
+  INVALID_MOVE_TYPE: "نوع حركة المخزن غير صالح.",
   INVALID_PRODUCT: "السلعة غير موجودة أو غير مفعّلة في هذا المقهى.",
   INVALID_STOCK_ITEM: "مادة المخزن غير موجودة أو غير مفعّلة.",
   INVALID_PAYMENT_SOURCE: "مصدر الدفع غير صالح.",
   INVALID_SHIFT_TYPE: "نوع الحصة غير صالح لهذا النمط.",
   INVALID_MONTH_KEY: "صيغة الشهر غير صالحة.",
+  IMMUTABLE_COLUMN: "لا يمكن تعديل البيانات الأساسية لهذا السجل.",
   EMPTY_SHIFT: "لا يمكن إرسال يومية فارغة دون مبيعات أو مصاريف.",
   EMPTY_INVOICE: "لا يمكن إرسال فاتورة فارغة دون مواد.",
   SHIFT_SLOT_ALREADY_EXISTS: "توجد يومية مسجّلة مسبقاً لنفس الحصة في هذا اليوم.",
@@ -89,9 +106,9 @@ const ERROR_MAP = {
   WORKER_NO_LOGIN: "هذا العامل ليس لديه حساب دخول في النمط الحالي.",
   WORKER_NOT_FOUND: "العامل غير موجود.",
   WORKER_REQUIRED: "يجب تحديد العامل عند اختيار الدفع من كاسة العامل.",
-  WORKER_HAS_UNSETTLED_ITEMS: "لا يمكن تصفير المقعد قبل تسوية يوميات وفواتير العامل المعلّقة.",
+  WORKER_HAS_UNSETTLED_ITEMS: "لا يمكن تعطيل أو تصفير المقعد قبل تسوية يوميات وفواتير العامل المعلّقة.",
   WORKER_HAS_CARRY_OVER: "يوجد رصيد مرحّل متبقٍ بذمّة هذا العامل.",
-  CONCURRENT_RESET: "توجد عملية تصفير أخرى جارية، أعد المحاولة بعد لحظة.",
+  CONCURRENT_RESET: "توجد عملية أخرى جارية على حساب هذا العامل، أعد المحاولة بعد لحظة.",
   STALE_SETTLEMENT_SELECTION: "تغيّرت حالة إحدى اليوميات أو الفواتير، حدّث الصفحة وأعد المحاولة.",
   SHIFT_NOT_FOUND: "اليومية غير موجودة.",
   SHIFT_NOT_PENDING: "اليومية ليست في حالة انتظار للاعتماد.",
@@ -106,20 +123,36 @@ const ERROR_MAP = {
   NOTHING_TO_SETTLE: "لا توجد يوميات أو فواتير معتمدة ولا باقٍ مرحّل للتسوية.",
   SETUP_ALREADY_DONE: "تم إكمال إعداد اسم العامل مسبقاً.",
   SUBSCRIPTION_INACTIVE: "اشتراك المقهى متوقّف أو منتهٍ.",
-  SESSION_RESET: "تم تصفير جلسة العامل، أعد تسجيل الدخول.",
+  SESSION_RESET: "تم تصفير جلسة العامل أو تغيير رمزه، أعد تسجيل الدخول.",
 };
 
 export function translateError(err) {
-  const raw = typeof err === "string" ? err : err?.message || "حدث خطأ غير متوقع";
+  const raw = String(typeof err === "string" ? err : err?.message || "حدث خطأ غير متوقع").trim();
   if (ERROR_MAP[raw]) return ERROR_MAP[raw];
-  if (raw.includes("duplicate key") || raw.includes("cafes_code_key")) {
+  const low = raw.toLowerCase();
+  if (low.includes("failed to fetch") || low.includes("load failed") || low.includes("networkerror")) {
+    return "تعذّر الاتصال بالخادم، تحقق من اتصال الإنترنت.";
+  }
+  if (low.includes("cafes_code_key")) {
     return "رمز المقهى مستعمل مسبقاً، اختر رمزاً آخر.";
   }
-  if (raw.includes("already been registered") || raw.includes("already exists")) {
+  if (low.includes("duplicate key")) {
+    return "هذا السجل موجود مسبقاً.";
+  }
+  if (low.includes("already been registered") || low.includes("already registered") || low.includes("already exists")) {
     return "البريد الإلكتروني مستعمل مسبقاً في حساب آخر.";
   }
-  if (raw.includes("Invalid login credentials")) {
-    return "البريد الإلكتروني أو كلمة السر غير صحيحة.";
+  if (low.includes("invalid login credentials")) {
+    return "بيانات الدخول غير صحيحة.";
+  }
+  if (low.includes("banned")) {
+    return "هذا الحساب موقوف، راجع المشرف أو المالك.";
+  }
+  if (low.includes("rate limit")) {
+    return "محاولات كثيرة متتالية، انتظر قليلاً ثم أعد المحاولة.";
+  }
+  if (low.includes("row-level security")) {
+    return "ليست لديك صلاحية لتعديل هذه البيانات أو أن الاشتراك غير نشط.";
   }
   return raw;
 }
@@ -144,20 +177,30 @@ async function getValidAccessToken(forceRefresh = false) {
   return session.access_token;
 }
 
-export async function callManageAccounts(payload) {
+export async function callManageAccounts(payload, { timeoutMs = 20_000 } = {}) {
   const send = async (token) => {
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/manage-accounts`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
-    let data = {};
-    try { data = await res.json(); } catch { data = {}; }
-    return { res, data };
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/manage-accounts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+      let data = {};
+      try { data = await res.json(); } catch { data = {}; }
+      return { res, data };
+    } catch (e) {
+      if (e?.name === "AbortError") throw new Error("NETWORK_TIMEOUT");
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
   };
 
   let token = await getValidAccessToken(false);
@@ -189,8 +232,12 @@ export function miToTnd(mi) {
 }
 
 export function tndToMi(val, { allowNegative = false } = {}) {
-  const cleaned = String(val ?? "0").replace(",", ".").trim();
-  const num = Number(cleaned);
+  const normalized = String(val ?? "0")
+    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[,٫]/g, ".")
+    .replace(/\s+/g, "")
+    .trim();
+  const num = Number(normalized);
   if (!Number.isFinite(num)) return 0;
   if (!allowNegative && num < 0) return 0;
   return Math.round(num * 1000);
@@ -198,8 +245,9 @@ export function tndToMi(val, { allowNegative = false } = {}) {
 
 export function daysRemaining(isoDate, nowMs = Date.now()) {
   if (!isoDate) return 0;
-  const diff = new Date(isoDate).getTime() - Number(nowMs || Date.now());
-  return Math.ceil(diff / 86400000);
+  const ts = new Date(isoDate).getTime();
+  if (!Number.isFinite(ts)) return 0;
+  return Math.ceil((ts - Number(nowMs || Date.now())) / 86400000);
 }
 
 export function formatDate(iso) {
@@ -217,10 +265,12 @@ export function formatDate(iso) {
 }
 
 export function formatWaPhone(phone) {
-  const digits = String(phone || "").replace(/\D/g, "");
-  if (!digits) return "";
-  if (digits.length === 8) return `216${digits}`;
-  if (digits.startsWith("00")) return digits.slice(2);
+  let digits = String(phone || "")
+    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/\D/g, "");
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  if (digits.length === 8) digits = `216${digits}`;
+  if (digits.length < 8 || digits.length > 15) return "";
   return digits;
 }
 
