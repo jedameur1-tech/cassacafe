@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f0c1b" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>CassaCafe — فضاء العامل</title>
+  <style>
+    [v-cloak] { display: none !important; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0;
+      font-family: Tahoma, Arial, sans-serif;
+      background: #0f0c1b; color: #ffffff;
+      min-height: 100vh; width: 100%; overflow-x: hidden;
+      -webkit-text-size-adjust: 100%; touch-action: manipulation;
+      user-select: none; -webkit-user-select: none;
+    }
+    input, select, textarea, button {
+      font-family: inherit; touch-action: manipulation; min-width: 0;
+    }
+    input, select, textarea {
+      font-size: 16px; user-select: text; -webkit-user-select: text;
+      background: #141022; color: #ffffff;
+      border: 1.5px solid #483873; border-radius: 12px;
+      padding: 10px 12px; width: 100%; outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: #ffb703; }
+    button { cursor: pointer; border: none; background: transparent; color: inherit; }
+    button:active { opacity: 0.86; }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .wrap { max-width: 520px; margin: 0 auto; padding: 10px 10px 56px; }
+    .topbar {
+      position: sticky; top: 0; z-index: 30;
+      background: #1c152e; border-bottom: 1.5px solid #f77f00;
+      padding: 10px 12px;
+    }
+    .topbar-inner { max-width: 520px; margin: 0 auto; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .row-nowrap { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: nowrap; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .card {
+      background: #1d1630; border: 1.5px solid #3b2d5e;
+      border-radius: 16px; padding: 12px; margin-bottom: 10px;
+    }
+    .card-gold { border-color: #ffb703; }
+    .card-warn { background: #3b2308; border-color: #ffb703; color: #ffea9f; }
+    .card-danger { background: #470d1b; border-color: #ef233c; color: #ffc2cd; }
+    .card-ok { background: #05382b; border-color: #06d6a0; color: #9ef8d8; }
+    .muted { color: #c7bce6; font-size: 13px; }
+    .num-ltr { direction: ltr !important; unicode-bidi: isolate !important; display: inline-block; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .input-ltr { direction: ltr !important; text-align: center; font-weight: 800; }
+    .input-big { font-size: 22px !important; padding: 11px 10px; border: 2px solid #ffb703; color: #ffea9f; }
+
+    .btn {
+      min-height: 44px; padding: 10px 14px; border-radius: 12px;
+      font-weight: 800; font-size: 14px; display: inline-flex;
+      align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-sm { min-height: 36px; padding: 6px 10px; font-size: 12.5px; border-radius: 10px; }
+    .btn-block { width: 100%; }
+    .btn-gold { background: #ffb703; color: #0f0c1b; }
+    .btn-teal { background: #0096c7; color: #ffffff; }
+    .btn-ok { background: #059669; color: #ffffff; }
+    .btn-dark { background: #2b2342; border: 1.5px solid #52437a; color: #f3f0ff; }
+    .btn-danger { background: #470d1b; border: 1.5px solid #ef233c; color: #ffc2cd; }
+
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 800; white-space: nowrap;
+    }
+    .badge-ok { background: #063b27; border: 1px solid #10b981; color: #38f2af; }
+    .badge-warn { background: #3b2308; border: 1px solid #ffb703; color: #ffea9f; }
+    .badge-danger { background: #470d1b; border: 1px solid #ef233c; color: #ff8fa3; }
+    .badge-teal { background: #083344; border: 1px solid #00b4d8; color: #90e0ef; }
+
+    .main-tab {
+      min-height: 42px; padding: 8px; border-radius: 13px;
+      border: 2px solid #3f3263; background: #141022; color: #dcd4f5;
+      font-weight: 800; font-size: 14.5px; text-align: center;
+    }
+    .main-tab.active-daily { background: #ffb703; border-color: #ffe169; color: #0f0c1b; }
+    .main-tab.active-inv { background: #0096c7; border-color: #90e0ef; color: #ffffff; }
+
+    .mode-pill {
+      min-height: 40px; padding: 7px 8px; border-radius: 12px;
+      border: 1.5px solid #483873; background: #141022; color: #d3c9f0;
+      font-size: 13px; font-weight: 800; text-align: center;
+    }
+    .mode-pill.active { background: #063b27; border-color: #06d6a0; color: #9ef8d8; }
+
+    .summary-box {
+      background: #1d1630; border-radius: 14px; border: 2px solid #3b2d5e;
+      padding: 8px 5px; text-align: center;
+    }
+    .summary-lbl { font-size: 12px; font-weight: 800; }
+    .summary-val { font-size: 14px; font-weight: 800; margin-top: 3px; }
+
+    .prod-card {
+      display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+      text-align: center; min-height: 102px; padding: 9px 8px;
+      border-radius: 15px; border: 2px solid #483873; width: 100%;
+    }
+    .prod-title { font-size: 15px; font-weight: 800; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .prod-price { font-size: 13px; font-weight: 800; color: #ffd166; margin: 3px 0; }
+    .prod-sold {
+      width: 100%; padding: 3px 6px; border-radius: 8px;
+      background: #042f24; border: 1px solid #06d6a0; color: #9ef8d8;
+      font-size: 12px; font-weight: 800;
+    }
+    .prod-foot {
+      width: 100%; padding: 4px 6px; border-radius: 9px; background: #0d0a1a;
+      font-size: 12px; font-weight: 800; color: #e2daf7;
+    }
+    .cat-hot { background: #380e1a; border-color: #ff4d6d; }
+    .cat-cold { background: #092c47; border-color: #00b4d8; }
+    .cat-food { background: #3d1d05; border-color: #fb8500; }
+    .cat-fun { background: #2e0d42; border-color: #c77dff; }
+    .prod-registered { border-color: #06d6a0 !important; border-width: 2.5px !important; background: #053b2c !important; }
+
+    .handover-row {
+      background: #141022; border: 1.5px solid #3b2d5e; border-radius: 14px;
+      padding: 10px; margin-bottom: 8px;
+    }
+    .handover-row.has-consumed { border-color: #06d6a0; background: #072920; }
+    .handover-row.has-error { border-color: #ef233c; background: #380b16; }
+
+    .tag-btn {
+      min-height: 40px; padding: 8px 6px; border-radius: 11px;
+      border: 1.5px solid #483873; background: #141022; color: #ffea9f;
+      font-size: 13px; font-weight: 800; text-align: center;
+    }
+    .tag-btn.active { background: #ffb703; border-color: #ffe169; color: #0f0c1b; }
+
+    .list-item {
+      background: #141022; border: 1px solid #3b2d5e; border-radius: 12px;
+      padding: 9px 10px; margin-top: 6px;
+    }
+
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(9, 7, 18, 0.92);
+      z-index: 900; display: flex; align-items: flex-start; justify-content: center;
+      padding: 14px; overflow-y: auto;
+    }
+    .modal-box {
+      width: 100%; max-width: 400px; margin: 12px auto 24px;
+      background: #1c152e; border: 2px solid #ffb703;
+      border-radius: 20px; padding: 16px;
+    }
+    .field { margin-bottom: 10px; }
+    .field label { display: block; font-size: 13px; font-weight: 800; color: #ffea9f; margin-bottom: 5px; }
+
+    .toast {
+      position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+      z-index: 1200; max-width: 92vw; padding: 11px 16px;
+      border-radius: 14px; font-size: 13.5px; font-weight: 800; text-align: center;
+      border: 2px solid #ffb703; background: #1c152e; color: #ffffff;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.55);
+    }
+    .toast.ok { border-color: #06d6a0; background: #05382b; color: #9ef8d8; }
+    .toast.err { border-color: #ef233c; background: #470d1b; color: #ffc2cd; }
+    .toast.info { border-color: #00b4d8; background: #083344; color: #90e0ef; }
+  </style>
+</head>
+<body>
+  <div id="app" v-cloak>
+    <!-- 1. شاشة التحميل -->
+    <div v-if="booting" class="wrap" style="text-align:center; padding-top:80px;">
+      <div style="font-size:34px; margin-bottom:10px;">☕</div>
+      <div style="font-weight:800; color:#ffd166;">جارٍ التحقق من جلسة العامل...</div>
+    </div>
+
+    <!-- 2. شاشة تسجيل دخول العامل -->
+    <div v-else-if="!member" class="wrap" style="padding-top:26px;">
+      <div class="card card-gold" style="padding:18px;">
+        <div style="text-align:center; margin-bottom:14px;">
+          <div style="font-size:32px;">☕</div>
+          <h2 style="margin:6px 0 4px; color:#ffd166; font-size:19px;">CassaCafe — دخول العامل</h2>
+          <div class="muted">أدخل رمز المقهى والمقعد ورمز PIN الخاص بك</div>
+        </div>
+
+        <form @submit.prevent="loginWorker">
+          <div class="field">
+            <label>رمز المقهى</label>
+            <input
+              type="text"
+              v-model.trim="loginForm.code"
+              required
+              autocapitalize="none"
+              autocomplete="off"
+              class="input-ltr"
+              placeholder="مثال: karawan"
+            />
+          </div>
+
+          <div class="field">
+            <label>المقعد</label>
+            <div class="grid-2">
+              <button type="button" class="mode-pill" :class="{ active: loginForm.slot === 'w1' }" @click="loginForm.slot = 'w1'">
+                العامل 1 (<span class="num-ltr">w1</span>)
+              </button>
+              <button type="button" class="mode-pill" :class="{ active: loginForm.slot === 'w2' }" @click="loginForm.slot = 'w2'">
+                العامل 2 (<span class="num-ltr">w2</span>)
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>رمز PIN (6 إلى 8 أرقام)</label>
+            <input
+              type="password"
+              inputmode="numeric"
+              v-model.trim="loginForm.pin"
+              required
+              pattern="\d{6,8}"
+              autocomplete="current-password"
+              class="input-ltr input-big"
+              placeholder="••••••"
+            />
+          </div>
+
+          <button type="submit" class="btn btn-gold btn-block" :disabled="busy" style="margin-top:6px;">
+            {{ busy ? "جارٍ الدخول..." : "🔓 تسجيل الدخول" }}
+          </button>
+        </form>
+
+        <div style="text-align:center; margin-top:14px;">
+          <a href="./index.html" class="muted" style="text-decoration:none;">← العودة لبوابة الدخول</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. شاشة إكمال اسم العامل عند أول دخول -->
+    <div v-else-if="member.setup_done === false" class="wrap" style="padding-top:32px;">
+      <div class="card card-gold" style="padding:18px;">
+        <div style="text-align:center; margin-bottom:14px;">
+          <div style="font-size:32px;">👋</div>
+          <h2 style="margin:6px 0 4px; color:#ffd166; font-size:18px;">مرحباً بك في {{ cafe.name }}</h2>
+          <div class="muted">اكتب اسمك كما سيظهر في اليوميات والتسوية</div>
+        </div>
+        <form @submit.prevent="completeSetup">
+          <div class="field">
+            <label>اسمك الكامل أو اسم الشهرة</label>
+            <input type="text" v-model.trim="setupName" required minlength="2" maxlength="60" placeholder="مثال: بولبابة" />
+          </div>
+          <button type="submit" class="btn btn-gold btn-block" :disabled="busy">
+            {{ busy ? "جارٍ الحفظ..." : "✓ حفظ وبدء العمل" }}
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 4. واجهة العمل الرئيسية -->
+    <template v-else>
+      <header class="topbar">
+        <div class="topbar-inner">
+          <div class="row-nowrap">
+            <div style="min-width:0; flex:1;">
+              <div style="font-size:15.5px; font-weight:800; color:#ffd166; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                ☕ {{ cafe.name }} — {{ member.display_name }}
+              </div>
+              <div style="font-size:12px; color:#d3c9f0; margin-top:2px;">
+                التاريخ: <strong class="num-ltr" style="color:#ffea9f;">{{ workDate }}</strong>
+                • <span class="badge" :class="isOnline ? 'badge-ok' : 'badge-warn'">{{ isOnline ? "● متصل" : "○ محلي" }}</span>
+              </div>
+            </div>
+            <div class="row-nowrap" style="gap:6px; flex-shrink:0;">
+              <button class="btn btn-sm btn-dark" @click="refreshAll" :disabled="busy" title="تحديث">🔄</button>
+              <button class="btn btn-sm btn-dark" style="border-color:#ffb703; color:#ffd166;" @click="openBalanceModal">💰 التسوية</button>
+              <button class="btn btn-sm btn-danger" @click="logout" title="خروج">خروج</button>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top:10px;">
+            <button class="main-tab" :class="{ 'active-daily': activeTab === 'daily' }" @click="activeTab = 'daily'">
+              ☕ اليومية
+            </button>
+            <button
+              v-if="hasFeature('stock')"
+              class="main-tab"
+              :class="{ 'active-inv': activeTab === 'invoices' }"
+              @click="activeTab = 'invoices'"
+            >
+              📦 الفواتير <span v-if="todayInvoices.length" class="num-ltr">({{ todayInvoices.length }})</span>
+            </button>
+            <button
+              v-else
+              class="main-tab"
+              :class="{ 'active-inv': activeTab === 'history' }"
+              @click="activeTab = 'history'"
+            >
+              📋 آخر اليوميات
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="wrap">
+        <!-- تنبيه إيقاف أو انتهاء الاشتراك -->
+        <div v-if="!canWrite" class="card card-danger">
+          <strong>⚠️ وضع القراءة فقط:</strong>
+          اشتراك المقهى متوقّف أو منتهٍ حالياً. راجع المالك قبل إرسال عمليات جديدة.
+        </div>
+
+        <!-- تنبيه اليومية المُعاد فتحها للتعديل -->
+        <div v-if="reopenedShifts.length && !reopenShiftId" class="card card-warn">
+          <div style="font-weight:800; font-size:14px; margin-bottom:4px;">🔄 يومية مُعاد فتحها للتعديل من الإدارة</div>
+          <div v-for="rs in reopenedShifts" :key="rs.id" style="margin-top:6px; padding-top:6px; border-top:1px solid rgba(255,183,3,0.35);">
+            <div style="font-size:13px;">
+              تاريخ <strong class="num-ltr">{{ rs.work_date }}</strong> ({{ shiftTypeLabel(rs.shift_type) }})
+              <span v-if="rs.reopen_reason" style="display:block; margin-top:2px; color:#ffc2cd;">السبب: {{ rs.reopen_reason }}</span>
+            </div>
+            <button class="btn btn-sm btn-gold btn-block" style="margin-top:6px;" @click="loadReopenedShift(rs)" :disabled="busy">
+              ✏️ فتح اليومية لتعديلها وإعادة الإرسال
+            </button>
+          </div>
+        </div>
+
+        <!-- شريط تعديل يومية مُعاد فتحها -->
+        <div v-if="reopenShiftId" class="card card-warn">
+          <div class="row">
+            <div>
+              <strong>✏️ تعديل يومية مُعاد فتحها (<span class="num-ltr">{{ workDate }}</span>)</strong>
+            </div>
+            <button class="btn btn-sm btn-dark" @click="cancelReopenEdit">إلغاء التعديل</button>
+          </div>
+        </div>
+
+        <!-- ==================== تبويب 1: اليومية ==================== -->
+        <section v-if="activeTab === 'daily'">
+          <!-- الملخص الثلاثي العلوي -->
+          <div class="grid-3" style="margin-bottom:10px;">
+            <div class="summary-box" style="border-color:#06d6a0;">
+              <div class="summary-lbl" style="color:#7bf1a8;">المبيعات</div>
+              <div class="summary-val num-ltr" style="color:#38f2af;">{{ formatMi(salesTotalMi) }} مي</div>
+            </div>
+            <div class="summary-box" style="border-color:#ef233c;">
+              <div class="summary-lbl" style="color:#ff8fa3;">المصاريف+الأجر</div>
+              <div class="summary-val num-ltr" style="color:#ff4d6d;">{{ formatMi(expensesTotalMi + workerWageMi) }} مي</div>
+            </div>
+            <div class="summary-box" style="border-color:#ffb703;">
+              <div class="summary-lbl" style="color:#ffd166;">الصافي</div>
+              <div class="summary-val num-ltr" :style="{ color: shiftNetMi >= 0 ? '#ffb703' : '#ff4d6d' }">
+                {{ formatMi(shiftNetMi) }} مي
+              </div>
+            </div>
+          </div>
+
+          <!-- اختيار التاريخ والحصة (حسب نمط المقهى) -->
+          <div class="card" style="padding:10px;">
+            <div class="grid-2">
+              <div>
+                <label style="display:block; font-size:12px; color:#c7bce6; margin-bottom:4px; font-weight:800;">تاريخ العمل</label>
+                <input type="date" v-model="workDate" :disabled="Boolean(reopenShiftId)" @change="onWorkDateChange" class="input-ltr" style="padding:8px;" />
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; color:#c7bce6; margin-bottom:4px; font-weight:800;">الحصة</label>
+                <select v-model="shiftType" :disabled="Boolean(reopenShiftId) || allowedShiftTypes.length <= 1" @change="resetShiftTxId" style="padding:8px;">
+                  <option v-for="opt in allowedShiftTypes" :key="opt.val" :value="opt.val">
+                    {{ opt.label }}{{ takenSlots.includes(opt.val) ? " (مسجّلة)" : "" }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div v-if="takenSlots.includes(shiftType) && !reopenShiftId" style="margin-top:6px; font-size:12px; color:#ff8fa3; font-weight:800;">
+              ⚠️ تنبيه: توجد يومية مسجّلة مسبقاً لهذه الحصة في هذا التاريخ.
+            </div>
+          </div>
+
+          <!-- تبديل طريقة حساب المبيعات: جرد الوردية (استلام <- تسليم) مقابل الإدخال المباشر -->
+          <div v-if="hasFeature('stock') && shiftCountSplit.countable.length" class="grid-2" style="margin-bottom:10px;">
+            <button
+              class="mode-pill"
+              :class="{ active: salesEntryMode === 'shift_count' }"
+              @click="setSalesEntryMode('shift_count')"
+            >
+              📦 جرد الوردية (استلام ← تسليم)
+            </button>
+            <button
+              class="mode-pill"
+              :class="{ active: salesEntryMode === 'direct' }"
+              @click="setSalesEntryMode('direct')"
+            >
+              ☕ إدخال المبيعات مباشرة
+            </button>
+          </div>
+
+          <!-- ======= أ) وضع جرد الوردية: استلام ← تسليم وحساب المستهلك تلقائياً ======= -->
+          <div v-if="salesEntryMode === 'shift_count' && hasFeature('stock') && shiftCountSplit.countable.length" class="card card-gold">
+            <div class="row" style="margin-bottom:8px;">
+              <div>
+                <strong style="color:#ffd166; font-size:14.5px;">📦 جرد الوردية (الاستلام والتسليم)</strong>
+                <div class="muted" style="font-size:12px;">
+                  سجّل رصيد الاستلام عند البدء، ثم رصيد التسليم عند الانتهاء ليحسب التطبيق المستهلك تلقائياً.
+                </div>
+              </div>
+              <span v-if="handoverState.lockedOpening" class="badge badge-ok">✓ تم الاستلام</span>
+            </div>
+
+            <div class="grid-2" style="margin-bottom:10px;">
+              <button
+                type="button"
+                class="btn btn-sm btn-dark"
+                @click="fillOpeningFromSystemStock"
+                :disabled="handoverState.lockedOpening"
+              >
+                ⚡ تعبئة برصيد النظام
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm"
+                :class="handoverState.lockedOpening ? 'btn-dark' : 'btn-ok'"
+                @click="toggleOpeningLock"
+              >
+                {{ handoverState.lockedOpening ? "✏️ تعديل الاستلام" : "✓ تثبيت رصيد الاستلام" }}
+              </button>
+            </div>
+
+            <div
+              v-for="row in handoverRows"
+              :key="row.product.id"
+              class="handover-row"
+              :class="{ 'has-consumed': row.consumed > 0, 'has-error': row.isInvalid }"
+            >
+              <div class="row" style="margin-bottom:6px;">
+                <strong style="font-size:14px;">{{ row.product.name }}</strong>
+                <span class="muted num-ltr" style="font-size:12px; color:#ffd166;">
+                  {{ formatMi(productPriceMi(row.product)) }} مي / {{ row.stockItem.unit }}
+                </span>
+              </div>
+
+              <div class="grid-2">
+                <div>
+                  <label style="display:block; font-size:11.5px; color:#90e0ef; margin-bottom:3px; font-weight:800;">
+                    رصيد الاستلام ({{ row.stockItem.unit }})
+                  </label>
+                  <input
+                    type="tel"
+                    inputmode="numeric"
+                    class="input-ltr"
+                    :disabled="handoverState.lockedOpening"
+                    :value="handoverState.opening[row.product.id] ?? ''"
+                    @input="onHandoverInput('opening', row.product.id, $event.target.value)"
+                    :placeholder="String(row.stockItem.current_qty)"
+                    style="padding:8px;"
+                  />
+                </div>
+                <div>
+                  <label style="display:block; font-size:11.5px; color:#9ef8d8; margin-bottom:3px; font-weight:800;">
+                    رصيد التسليم (النهاية)
+                  </label>
+                  <input
+                    type="tel"
+                    inputmode="numeric"
+                    class="input-ltr"
+                    :value="handoverState.closing[row.product.id] ?? ''"
+                    @input="onHandoverInput('closing', row.product.id, $event.target.value)"
+                    placeholder="0"
+                    style="padding:8px;"
+                  />
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:6px; font-size:12px;">
+                <span v-if="row.added > 0" class="badge badge-teal">
+                  + وارد فواتير: <span class="num-ltr">{{ row.added }}</span>
+                </span>
+                <span v-else class="muted" style="font-size:11.5px;">
+                  رصيد النظام: <strong class="num-ltr">{{ row.stockItem.current_qty }}</strong>
+                </span>
+
+                <strong v-if="row.isInvalid" style="color:#ff8fa3;">
+                  ⚠️ التسليم أكبر من الاستلام (<span class="num-ltr">+{{ Math.abs(row.consumed) }}</span>)
+                </strong>
+                <strong v-else-if="row.hasBoth && row.consumed > 0" style="color:#38f2af;">
+                  المستهلك: <span class="num-ltr">{{ row.consumed }}</span> ← <span class="num-ltr">{{ formatMi(row.totalMi) }}</span> مي
+                </strong>
+                <span v-else-if="row.hasBoth && row.consumed === 0" class="muted">
+                  المستهلك: 0
+                </span>
+                <span v-else class="muted">
+                  أدخل الاستلام والتسليم
+                </span>
+              </div>
+            </div>
+
+            <!-- أصناف التحضير المباشر أسفل جرد الوردية -->
+            <div v-if="shiftCountSplit.direct.length" style="margin-top:12px; padding-top:10px; border-top:1px solid #3b2d5e;">
+              <div style="font-size:13.5px; font-weight:800; color:#ffd166; margin-bottom:8px;">
+                ☕ أصناف التحضير المباشر (اضغط لإدخال العدد)
+              </div>
+              <div class="grid-2">
+                <button
+                  v-for="item in shiftCountSplit.direct"
+                  :key="item.product.id"
+                  type="button"
+                  class="prod-card"
+                  :class="[productCategoryClass(item.product.category), qtyByProduct[item.product.id] > 0 ? 'prod-registered' : '']"
+                  @click="openSaleModal(item.product)"
+                >
+                  <div class="prod-title">{{ item.product.name }}</div>
+                  <div v-if="qtyByProduct[item.product.id] > 0" class="prod-sold">
+                    ✓ مسجّل: <span class="num-ltr">{{ qtyByProduct[item.product.id] }}</span> {{ item.product.sale_unit }}
+                  </div>
+                  <div v-else class="prod-price">
+                    <span class="num-ltr">{{ formatMi(productPriceMi(item.product)) }}</span> مي / {{ item.product.sale_unit }}
+                  </div>
+                  <div class="prod-foot">تحضير مباشر</div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ======= ب) وضع إدخال المبيعات المباشر (بطاقات ملونة مثل مقهى كروان) ======= -->
+          <div v-else class="card">
+            <div style="font-size:14px; font-weight:800; color:#ffd166; margin-bottom:8px;">
+              ☕ اضغط على السلعة لتسجيل البيع
+            </div>
+            <div v-if="!activeProducts.length" class="muted" style="text-align:center; padding:14px 0;">
+              لا توجد سلع في المنيو بعد. اطلب من المالك إضافة السلع.
+            </div>
+            <div v-else class="grid-2">
+              <button
+                v-for="p in activeProducts"
+                :key="p.id"
+                type="button"
+                class="prod-card"
+                :class="[productCategoryClass(p.category), qtyByProduct[p.id] > 0 ? 'prod-registered' : '']"
+                @click="openSaleModal(p)"
+              >
+                <div class="prod-title">{{ p.name }}</div>
+                <div v-if="qtyByProduct[p.id] > 0" class="prod-sold">
+                  ✓ مسجّل: <span class="num-ltr">{{ qtyByProduct[p.id] }}</span> {{ p.sale_unit }}
+                </div>
+                <div v-else class="prod-price">
+                  <span class="num-ltr">{{ formatMi(productPriceMi(p)) }}</span> مي / {{ p.sale_unit }}
+                </div>
+                <div class="prod-foot" :style="productStockFooter(p).style">
+                  {{ productStockFooter(p).text }}
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- ======= المصاريف اليومية ======= -->
+          <div class="card">
+            <button type="button" class="btn btn-dark btn-block" style="border-color:#ffb703; color:#ffea9f; margin-bottom:10px;" @click="openDailyExpenseModal">
+              🧾 المواد اليومية (ماء إمصفي، سكر، حليب...)
+            </button>
+
+            <form @submit.prevent="addUnclassifiedExpense" class="row-nowrap" style="margin-bottom:8px;">
+              <input
+                type="tel"
+                inputmode="numeric"
+                :value="unclassifiedExpText"
+                @input="unclassifiedExpText = formatSpacedIntInput($event.target.value)"
+                class="input-ltr"
+                placeholder="مصروف غير مصنف (مي)..."
+                style="flex:1;"
+              />
+              <button type="submit" class="btn btn-gold" style="flex-shrink:0;">إضافة</button>
+            </form>
+
+            <div v-if="!expenses.length" class="muted" style="text-align:center; padding:4px 0;">
+              لا توجد مصاريف يومية مسجّلة اليوم.
+            </div>
+            <div v-for="(ex, idx) in expenses" :key="idx" class="list-item row-nowrap">
+              <div style="min-width:0; flex:1;">
+                <strong style="color:#ffea9f; font-size:13.5px;">{{ ex.label }}</strong>
+                <span v-if="ex.time" class="muted num-ltr" style="margin-right:6px; font-size:11.5px;">{{ ex.time }}</span>
+              </div>
+              <div class="row-nowrap" style="gap:6px; flex-shrink:0;">
+                <strong class="num-ltr" style="color:#ff4d6d;">{{ formatMi(ex.amount_mi) }} مي</strong>
+                <button type="button" class="btn btn-sm btn-danger" @click="removeExpense(idx)">حذف</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ======= ملخص مبيعات اليوم المسجّلة ======= -->
+          <div class="card">
+            <div class="row" style="margin-bottom:6px;">
+              <strong style="color:#ffd166; font-size:14px;">
+                📋 مبيعات اليوم المسجّلة (<span class="num-ltr">{{ recordedSalesList.length }}</span>)
+              </strong>
+              <span class="badge badge-teal">✓ جاهزة للإرسال</span>
+            </div>
+
+            <div v-if="!recordedSalesList.length" class="muted" style="text-align:center; padding:6px 0;">
+              لم يتم تسجيل مبيعات بعد.
+            </div>
+            <div v-for="ln in recordedSalesList" :key="ln.product.id" class="list-item row-nowrap">
+              <div style="min-width:0; flex:1;">
+                <strong style="color:#ffea9f; font-size:13.5px;">{{ ln.product.name }}</strong>
+                <span class="muted num-ltr" style="margin-right:5px;">({{ ln.qty }} {{ ln.product.sale_unit }})</span>
+              </div>
+              <div class="row-nowrap" style="gap:6px; flex-shrink:0;">
+                <strong class="num-ltr" style="color:#38f2af;">{{ formatMi(ln.amountMi) }} مي</strong>
+                <button v-if="salesEntryMode === 'direct' || !isCountableProduct(ln.product.id)" type="button" class="btn btn-sm btn-danger" @click="clearProductSale(ln.product.id)">حذف</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ملاحظة اختيارية -->
+          <div class="card" style="padding:10px;">
+            <input type="text" v-model.trim="shiftNote" maxlength="500" @input="resetShiftTxId" placeholder="ملاحظة اختيارية للإدارة..." />
+          </div>
+
+          <!-- زر إرسال اليومية -->
+          <button
+            type="button"
+            class="btn btn-gold btn-block"
+            style="min-height:50px; font-size:15.5px;"
+            :disabled="busy || !canWrite"
+            @click="openCloseShiftModal"
+          >
+            📤 {{ reopenShiftId ? "إرسال التعديل إلى الإدارة" : `إرسال يومية (${workDate}) إلى الإدارة` }}
+          </button>
+        </section>
+
+        <!-- ==================== تبويب 2: فواتير المخزن (مرحلتان) ==================== -->
+        <section v-if="activeTab === 'invoices' && hasFeature('stock')">
+          <div class="card card-gold">
+            <div class="row" style="margin-bottom:10px;">
+              <div>
+                <strong style="color:#ffd166; font-size:15px;">📦 تسجيل فاتورة مخزن</strong>
+                <div style="font-size:12px; color:#90e0ef; font-weight:800; margin-top:2px;">
+                  {{ invStep === 1 ? "المرحلة 1: اختر المواد وأدخل الكمية" : "المرحلة 2: المزوّد، الدفع، والمبلغ بالمليم" }}
+                </div>
+              </div>
+              <button v-if="invDraftItems.length" type="button" class="btn btn-sm btn-danger" @click="requestClearInvoiceDraft">مسح</button>
+            </div>
+
+            <!-- المرحلة 1 -->
+            <template v-if="invStep === 1">
+              <div v-if="!activeStockItems.length" class="muted" style="text-align:center; padding:14px 0;">
+                لا توجد مواد مخزن معرّفة بعد.
+              </div>
+              <template v-else>
+                <div class="grid-2" style="margin-bottom:10px;">
+                  <button
+                    v-for="st in activeStockItems"
+                    :key="st.id"
+                    type="button"
+                    class="tag-btn"
+                    :class="{ active: invSelectedStockId === st.id }"
+                    @click="selectInvoiceStockItem(st.id)"
+                  >
+                    {{ st.name }}
+                    <div v-if="draftItemByStockId(st.id)" style="font-size:11px; margin-top:2px;" :style="{ color: invSelectedStockId === st.id ? '#0f0c1b' : '#38f2af' }">
+                      ✓ <span class="num-ltr">{{ draftItemByStockId(st.id).enteredQty }}</span>
+                    </div>
+                  </button>
+                </div>
+
+                <!-- المواد المضافة للمسوّدة -->
+                <div v-if="invDraftItems.length" style="margin-bottom:10px;">
+                  <div style="font-size:12px; color:#90e0ef; font-weight:800; margin-bottom:4px;">
+                    البضاعة المضافة للفاتورة (<span class="num-ltr">{{ invDraftItems.length }}</span>):
+                  </div>
+                  <div v-for="(it, idx) in invDraftItems" :key="it.stock_item_id" class="list-item row-nowrap" style="border-color:#00b4d8;">
+                    <div style="min-width:0; flex:1; font-size:13px;">
+                      <strong style="color:#ffea9f;">{{ it.name }}:</strong>
+                      <span class="num-ltr" style="color:#90e0ef; margin-right:4px;">
+                        {{ it.enteredQty }} {{ it.unitLabel }} (+{{ it.convertedUnits }} {{ it.baseUnit }})
+                      </span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger" @click="removeInvoiceDraftItem(idx)">حذف</button>
+                  </div>
+                </div>
+
+                <form v-if="currentInvStockItem" @submit.prevent="addInvoiceDraftItem">
+                  <div class="field">
+                    <label>
+                      الكمية ({{ currentInvStockItem.name }} — {{ currentInvStockItem.pack_label || currentInvStockItem.unit }} = <span class="num-ltr">{{ currentInvStockItem.pack_size }}</span> {{ currentInvStockItem.unit }})
+                    </label>
+                    <input
+                      type="tel"
+                      inputmode="numeric"
+                      :value="invQtyInputText"
+                      @input="invQtyInputText = formatSpacedIntInput($event.target.value)"
+                      class="input-ltr input-big"
+                      placeholder="0"
+                    />
+                    <div v-if="invQtyPreview.units > 0" style="text-align:center; margin-top:6px; font-size:12.5px; color:#38f2af; font-weight:800;">
+                      📦 سيُضاف للمخزون: <span class="num-ltr">{{ formatMi(invQtyPreview.units) }}</span> {{ currentInvStockItem.unit }}
+                      <span v-if="invQtyPreview.isDirectGrams" style="color:#ffd166;"> (إدخال مباشر بالغرام)</span>
+                    </div>
+                  </div>
+
+                  <div class="grid-2">
+                    <button type="submit" class="btn btn-gold">➕ إضافة للفاتورة</button>
+                    <button
+                      type="button"
+                      class="btn"
+                      :class="invDraftItems.length || inputToMi(invQtyInputText) > 0 ? 'btn-teal' : 'btn-dark'"
+                      @click="goToInvoiceStep2"
+                    >
+                      {{ invDraftItems.length || inputToMi(invQtyInputText) > 0 ? "✓ المتابعة للمبلغ" : "إلغاء" }}
+                    </button>
+                  </div>
+                </form>
+              </template>
+            </template>
+
+            <!-- المرحلة 2 -->
+            <template v-else>
+              <form @submit.prevent="submitWorkerInvoice">
+                <div class="grid-2">
+                  <div class="field">
+                    <label>اسم المزوّد</label>
+                    <input type="text" v-model.trim="invSupplierName" maxlength="120" placeholder="مثال: مزوّد المياه" @input="resetInvoiceTxId" />
+                  </div>
+                  <div class="field">
+                    <label>مصدر الدفع</label>
+                    <select v-model="invPaymentSource" @change="resetInvoiceTxId">
+                      <option value="worker_cash">من كاسة العامل (يُخصم بالتسوية)</option>
+                      <option value="supplier_credit">كريدي على المزوّد</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- إدخال تكلفة سطر واحد أو عدة سطور -->
+                <div v-for="it in invDraftItems" :key="it.stock_item_id" class="list-item" style="margin-bottom:8px;">
+                  <div class="row" style="margin-bottom:6px;">
+                    <strong style="color:#ffea9f;">{{ it.name }}</strong>
+                    <span class="muted num-ltr">+{{ formatMi(it.convertedUnits) }} {{ it.baseUnit }}</span>
+                  </div>
+                  <input
+                    type="tel"
+                    inputmode="numeric"
+                    :value="it.costText"
+                    @input="it.costText = formatSpacedIntInput($event.target.value); resetInvoiceTxId(); saveDraftLocal();"
+                    class="input-ltr"
+                    :class="{ 'input-big': invDraftItems.length === 1 }"
+                    placeholder="المبلغ بالمليم (مثال: 25 000)"
+                  />
+                </div>
+
+                <div class="field">
+                  <label>ملاحظة (اختياري)</label>
+                  <input type="text" v-model.trim="invNote" maxlength="300" placeholder="رقم وصل أو توضيح" @input="resetInvoiceTxId" />
+                </div>
+
+                <div class="card card-ok" style="padding:10px; margin-bottom:10px;">
+                  <div class="row">
+                    <strong>إجمالي الفاتورة:</strong>
+                    <strong class="num-ltr" style="font-size:16px;">{{ formatMi(invTotalCostMi) }} مي</strong>
+                  </div>
+                  <div style="font-size:11.5px; margin-top:4px;">
+                    ملاحظة: الفواتير محفوظة منفصلة عن مصاريف اليومية ولا تُخصم مرتين.
+                  </div>
+                </div>
+
+                <div class="grid-2">
+                  <button type="submit" class="btn btn-gold" :disabled="busy || !canWrite">
+                    {{ busy ? "جارٍ الإرسال..." : "📤 إرسال للإدارة" }}
+                  </button>
+                  <button type="button" class="btn btn-dark" @click="invStep = 1">رجوع للمواد</button>
+                </div>
+              </form>
+            </template>
+          </div>
+
+          <!-- الفواتير المرسلة اليوم -->
+          <div v-if="todayInvoices.length" class="card" style="border-color:#00b4d8;">
+            <div style="font-size:13.5px; font-weight:800; color:#90e0ef; margin-bottom:6px;">
+              🧾 فواتير أُرسلت بتاريخ <span class="num-ltr">{{ workDate }}</span> ({{ todayInvoices.length }})
+            </div>
+            <div v-for="inv in todayInvoices" :key="inv.id" class="list-item row-nowrap">
+              <div>
+                <strong style="color:#ffea9f;">فاتورة #<span class="num-ltr">{{ inv.invoice_number }}</span></strong>
+                <span class="muted" style="margin-right:6px;">{{ inv.supplier_name }}</span>
+                <span class="badge" :class="inv.status === 'approved' ? 'badge-ok' : (inv.status === 'pending' ? 'badge-warn' : 'badge-danger')" style="margin-right:4px;">
+                  {{ invoiceStatusLabel(inv.status) }}
+                </span>
+              </div>
+              <strong class="num-ltr" style="color:#90e0ef;">{{ formatMi(inv.total_amount_mi) }} مي</strong>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== تبويب بديل إذا كانت ميزة المخزن غير مفعلة ==================== -->
+        <section v-if="activeTab === 'history' && !hasFeature('stock')">
+          <div class="card">
+            <strong style="color:#ffd166; display:block; margin-bottom:8px;">📋 آخر يومياتك المرسلة</strong>
+            <div v-if="!recentShifts.length" class="muted" style="text-align:center; padding:12px 0;">
+              لا توجد يوميات مسجّلة في هذه الجلسة بعد.
+            </div>
+            <div v-for="s in recentShifts" :key="s.id" class="list-item row-nowrap">
+              <div>
+                <strong class="num-ltr" style="color:#ffea9f;">{{ s.work_date }}</strong>
+                <span class="muted" style="margin-right:6px;">{{ shiftTypeLabel(s.shift_type) }}</span>
+              </div>
+              <div class="row-nowrap" style="gap:6px;">
+                <strong class="num-ltr" style="color:#38f2af;">{{ formatMi(Number(s.sales_total_mi) - Number(s.expenses_total_mi) - Number(s.wage_mi)) }} مي</strong>
+                <span class="badge" :class="s.status === 'approved' ? 'badge-ok' : (s.status === 'reopened' ? 'badge-danger' : 'badge-warn')">
+                  {{ shiftStatusLabel(s.status) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </template>
+
+    <!-- ==================== النوافذ المنبثقة ==================== -->
+
+    <!-- 1. نافذة تسجيل مبيعات سلعة -->
+    <div v-if="saleModal.product" class="modal-bg" @click.self="saleModal.product = null">
+      <div class="modal-box">
+        <div style="text-align:center; margin-bottom:10px;">
+          <h3 style="margin:0; color:#ffd166; font-size:17px;">☕ {{ saleModal.product.name }}</h3>
+          <div class="muted" style="margin-top:4px;">
+            السعر: <strong class="num-ltr" style="color:#ffd166;">{{ formatMi(productPriceMi(saleModal.product)) }} مي</strong> / {{ saleModal.product.sale_unit }}
+          </div>
+        </div>
+
+        <div v-if="qtyByProduct[saleModal.product.id] > 0" class="card card-warn" style="padding:8px; text-align:center; font-size:12.5px;">
+          المسجّل حالياً: <strong class="num-ltr">{{ qtyByProduct[saleModal.product.id] }}</strong> {{ saleModal.product.sale_unit }} — اكتب الكمية الجديدة لتعويضها
+        </div>
+
+        <form @submit.prevent="confirmSaleModal">
+          <div class="field">
+            <label>الكمية المباعة ({{ saleModal.product.sale_unit }})</label>
+            <input
+              ref="saleInputRef"
+              type="tel"
+              inputmode="numeric"
+              :value="saleModal.qtyText"
+              @input="saleModal.qtyText = formatSpacedIntInput($event.target.value)"
+              class="input-ltr input-big"
+              placeholder="0"
+            />
+          </div>
+
+          <div class="list-item row" style="margin-bottom:12px;">
+            <span class="muted">المجموع:</span>
+            <strong class="num-ltr" style="color:#38f2af; font-size:15px;">
+              {{ formatMi(inputToMi(saleModal.qtyText) * productPriceMi(saleModal.product)) }} مي
+            </strong>
+          </div>
+
+          <div class="grid-2">
+            <button type="submit" class="btn btn-gold">✓ حفظ الكمية</button>
+            <button type="button" class="btn btn-dark" @click="saleModal.product = null">إلغاء</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 2. نافذة المواد اليومية (الوسوم السريعة) -->
+    <div v-if="dailyExpModal.open" class="modal-bg" @click.self="closeDailyExpenseModal">
+      <div class="modal-box">
+        <div class="row" style="margin-bottom:10px;">
+          <h3 style="margin:0; color:#ffd166; font-size:16px;">🧾 المواد اليومية</h3>
+          <button type="button" class="btn btn-sm btn-danger" @click="closeDailyExpenseModal">✕</button>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:10px; max-height:220px; overflow-y:auto;">
+          <button
+            v-for="tag in CONSUMABLE_QUICK_TAGS"
+            :key="tag"
+            type="button"
+            class="tag-btn"
+            :class="{ active: dailyExpModal.selectedTag === tag }"
+            @click="selectDailyExpenseTag(tag)"
+          >
+            {{ tag }}
+          </button>
+        </div>
+
+        <form @submit.prevent="addDailyTaggedExpense">
+          <div class="field">
+            <label>المبلغ بالمليم ({{ dailyExpModal.selectedTag }})</label>
+            <input
+              type="tel"
+              inputmode="numeric"
+              :value="dailyExpModal.amountText"
+              @input="dailyExpModal.amountText = formatSpacedIntInput($event.target.value)"
+              class="input-ltr input-big"
+              placeholder="0"
+            />
+          </div>
+
+          <div class="grid-2">
+            <button type="submit" class="btn btn-gold">➕ إضافة</button>
+            <button type="button" class="btn btn-teal" @click="finishDailyExpenseModal">✓ متابعة</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 3. نافذة تأكيد إرسال اليومية -->
+    <div v-if="closeModalOpen" class="modal-bg" @click.self="!busy && (closeModalOpen = false)">
+      <div class="modal-box">
+        <div style="text-align:center; margin-bottom:10px;">
+          <div style="font-size:28px;">📤</div>
+          <h3 style="margin:4px 0; color:#ffd166;">مراجعة يومية <span class="num-ltr">{{ workDate }}</span></h3>
+          <div class="muted">{{ shiftTypeLabel(shiftType) }}</div>
+        </div>
+
+        <div v-if="!recordedSalesList.length" class="card card-danger" style="padding:8px; font-size:12.5px;">
+          ⚠️ لم تسجّل أي مبيعات بعد (المداخيل 0 مي). تأكّد قبل الإرسال.
+        </div>
+        <div v-if="invDraftItems.length" class="card card-warn" style="padding:8px; font-size:12.5px;">
+          ⚠️ لديك فاتورة مخزن غير مرسلة بعد في تبويب «الفواتير» ({{ invDraftItems.length }} مواد).
+        </div>
+
+        <div class="list-item" style="margin-bottom:12px; line-height:1.9; font-size:13.5px;">
+          <div class="row"><span>إجمالي المبيعات:</span><strong class="num-ltr" style="color:#38f2af;">{{ formatMi(salesTotalMi) }} مي</strong></div>
+          <div class="row"><span>المصاريف اليومية:</span><strong class="num-ltr" style="color:#ff4d6d;">-{{ formatMi(expensesTotalMi) }} مي</strong></div>
+          <div class="row"><span>أجر اليوم:</span><strong class="num-ltr" style="color:#ff4d6d;">-{{ formatMi(workerWageMi) }} مي</strong></div>
+          <div class="row" style="border-top:1px solid #3b2d5e; margin-top:4px; padding-top:4px; font-size:15px;">
+            <strong>الصافي المودع:</strong>
+            <strong class="num-ltr" :style="{ color: shiftNetMi >= 0 ? '#ffd166' : '#ff4d6d' }">{{ formatMi(shiftNetMi) }} مي</strong>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <button type="button" class="btn btn-gold" :disabled="busy" @click="executeSubmitShift">
+            {{ busy ? "⏳ جارٍ الإرسال..." : "✓ تأكيد الإرسال" }}
+          </button>
+          <button type="button" class="btn btn-dark" :disabled="busy" @click="closeModalOpen = false">إلغاء</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. نافذة التسوية الحالية (الذمّة) -->
+    <div v-if="balanceModal.open" class="modal-bg" @click.self="balanceModal.open = false">
+      <div class="modal-box">
+        <div class="row" style="margin-bottom:10px;">
+          <h3 style="margin:0; color:#ffd166;">💰 التسوية الحالية</h3>
+          <button type="button" class="btn btn-sm btn-dark" @click="balanceModal.open = false">إغلاق</button>
+        </div>
+
+        <div v-if="balanceModal.loading" class="muted" style="text-align:center; padding:18px 0;">
+          ⏳ جارٍ الحساب من السحابة...
+        </div>
+        <div v-else-if="balanceModal.error" class="card card-danger" style="font-size:13px;">
+          {{ balanceModal.error }}
+        </div>
+        <div v-else class="list-item" style="line-height:1.9; font-size:13.5px;">
+          <div class="row"><span>يوميات معتمدة غير مسوّاة:</span><strong class="num-ltr">{{ balanceModal.data.shifts_count }}</strong></div>
+          <div class="row"><span>صافي اليوميات المعتمدة:</span><strong class="num-ltr" style="color:#38f2af;">{{ formatMi(balanceModal.data.shifts_net_mi) }} مي</strong></div>
+          <div v-if="balanceModal.data.worker_invoices_mi > 0" class="row">
+            <span>فواتير دفعتها من الكاسة:</span>
+            <strong class="num-ltr" style="color:#ff8fa3;">-{{ formatMi(balanceModal.data.worker_invoices_mi) }} مي</strong>
+          </div>
+          <div class="row"><span>الباقي المرحّل سابقاً:</span><strong class="num-ltr">{{ formatMi(balanceModal.data.prev_carry_mi) }} مي</strong></div>
+          <div class="row" style="border-top:1px solid #3b2d5e; margin-top:6px; padding-top:6px; font-size:15.5px;">
+            <strong>{{ balanceModal.data.gross_due_mi >= 0 ? "صافي الذمّة للمالك:" : "مستحق لك عند المالك:" }}</strong>
+            <strong class="num-ltr" :style="{ color: balanceModal.data.gross_due_mi >= 0 ? '#ffd166' : '#38f2af' }">
+              {{ formatMi(Math.abs(balanceModal.data.gross_due_mi)) }} مي
+            </strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. نافذة الشكر بعد الإرسال -->
+    <div v-if="thankYouInfo" class="modal-bg" @click.self="thankYouInfo = null">
+      <div class="modal-box" style="text-align:center;">
+        <div style="font-size:36px; margin-bottom:6px;">🌟</div>
+        <h3 style="margin:0 0 8px; color:#ffd166;">يعطيك الصحة يا {{ member.display_name }}!</h3>
+        <div class="card card-ok" style="font-size:13.5px; line-height:1.7;">
+          تم إرسال يومية <strong class="num-ltr">{{ thankYouInfo.date }}</strong> بنجاح إلى الإدارة.<br />
+          الصافي المودع: <strong class="num-ltr">{{ formatMi(thankYouInfo.netMi) }} مي</strong>
+        </div>
+        <button type="button" class="btn btn-gold btn-block" @click="thankYouInfo = null">متابعة</button>
+      </div>
+    </div>
+
+    <!-- إشعار Toast -->
+    <div v-if="toast.text" class="toast" :class="toast.type">{{ toast.text }}</div>
+  </div>
+
+  <script type="module">
+    import { createApp, ref, reactive, computed, nextTick, onMounted, onUnmounted } from "https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.esm-browser.prod.js";
+    import {
+      supabase,
+      callRpc,
+      getServerTime,
+      getServerNowMs,
+      formatMi,
+      inputToMi,
+      formatSpacedIntInput,
+      bidiIsolatePlain,
+      formatNotifMiPlain,
+      formatNotifDatePlain,
+      daysRemaining,
+      translateError,
+      logAppError,
+    } from "./core/supabase.js?v=1.3.1";
+    import {
+      CONSUMABLE_QUICK_TAGS,
+      convertPurchaseQuantity,
+      classifyShiftCountProducts,
+    } from "./core/finance.js?v=1.3.1";
+
+    createApp({
+      setup() {
+        const booting = ref(true);
+        const busy = ref(false);
+        const isOnline = ref(navigator.onLine);
+        const member = ref(null);
+        const cafe = ref(null);
+        const serverDateStr = ref(new Date().toISOString().slice(0, 10));
+        const serverEpochMs = ref(Date.now());
+
+        const loginForm = reactive({ code: "", slot: "w1", pin: "" });
+        const setupName = ref("");
+
+        const activeTab = ref("daily");
+        const salesEntryMode = ref("direct"); // 'shift_count' | 'direct'
+        const workDate = ref(serverDateStr.value);
+        const shiftType = ref("full");
+        const takenSlots = ref([]);
+        const reopenShiftId = ref(null);
+        const shiftClientTxId = ref("");
+        const shiftNote = ref("");
+
+        const products = ref([]);
+        const stockItems = ref([]);
+        const reopenedShifts = ref([]);
+        const recentShifts = ref([]);
+        const todayInvoices = ref([]);
+        const todayInvoiceItems = ref([]);
+
+        const qtyByProduct = reactive({});
+        const oldPriceByProduct = reactive({});
+        const expenses = ref([]);
+        const unclassifiedExpText = ref("");
+
+        // حالة جرد الوردية (استلام <- تسليم)
+        const handoverState = reactive({
+          lockedOpening: false,
+          startedAt: "",
+          opening: {},
+          closing: {},
+        });
+
+        // مسوّدة الفاتورة
+        const invStep = ref(1);
+        const invSelectedStockId = ref("");
+        const invQtyInputText = ref("");
+        const invDraftItems = ref([]);
+        const invSupplierName = ref("");
+        const invPaymentSource = ref("worker_cash");
+        const invNote = ref("");
+        const invClientTxId = ref("");
+
+        // النوافذ المنبثقة
+        const saleInputRef = ref(null);
+        const saleModal = reactive({ product: null, qtyText: "" });
+        const dailyExpModal = reactive({ open: false, selectedTag: CONSUMABLE_QUICK_TAGS[0], amountText: "" });
+        const closeModalOpen = ref(false);
+        const balanceModal = reactive({ open: false, loading: false, error: "", data: {} });
+        const thankYouInfo = ref(null);
+
+        const toast = reactive({ text: "", type: "ok" });
+        let toastTimer = null;
+        let wakeLockRef = null;
+        let audioCtx = null;
+
+        const notify = (text, type = "ok") => {
+          toast.text = text;
+          toast.type = type;
+          clearTimeout(toastTimer);
+          toastTimer = setTimeout(() => { toast.text = ""; }, 4500);
+        };
+
+        const playTone = (success = true) => {
+          try {
+            const Ctx = window.AudioContext || window.webkitAudioContext;
+            if (!Ctx) return;
+            if (!audioCtx || audioCtx.state === "closed") audioCtx = new Ctx();
+            if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(success ? 880 : 520, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.16);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.17);
+            if (navigator.vibrate) navigator.vibrate(success ? [45, 30, 60] : [50]);
+          } catch { /* ignore */ }
+        };
+
+        const requestWakeLock = async () => {
+          try {
+            if ("wakeLock" in navigator && !wakeLockRef && !document.hidden) {
+              wakeLockRef = await navigator.wakeLock.request("screen");
+              wakeLockRef.addEventListener("release", () => { wakeLockRef = null; });
+            }
+          } catch { /* ignore */ }
+        };
+
+        const generateTxId = (prefix) => {
+          const rnd = (typeof crypto !== "undefined" && crypto.randomUUID)
+            ? crypto.randomUUID()
+            : `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+          return `${prefix}_${rnd}`;
+        };
+
+        const currentTimeHHMM = () => {
+          try {
+            return new Intl.DateTimeFormat("en-GB", {
+              timeZone: "Africa/Tunis",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            }).format(new Date(getServerNowMs()));
+          } catch {
+            return new Date().toTimeString().slice(0, 5);
+          }
+        };
+
+        const hasFeature = (key) => Boolean(cafe.value?.features?.[key]);
+        const subDaysLeft = computed(() => daysRemaining(cafe.value?.subscription_until, serverEpochMs.value));
+        const canWrite = computed(() => Boolean(cafe.value?.active && subDaysLeft.value > 0));
+        const workerWageMi = computed(() => Number(member.value?.default_wage_mi || 0));
+
+        const allowedShiftTypes = computed(() => {
+          const pat = cafe.value?.work_pattern;
+          if (pat === "worker_owner" || pat === "two_workers") {
+            return [
+              { val: "morning", label: "صباحي" },
+              { val: "evening", label: "مسائي" },
+            ];
+          }
+          return [{ val: "full", label: "يوم كامل" }];
+        });
+
+        const activeProducts = computed(() => products.value.filter((p) => p.active));
+        const activeStockItems = computed(() => stockItems.value.filter((st) => st.active));
+
+        const shiftCountSplit = computed(() =>
+          classifyShiftCountProducts(products.value, stockItems.value)
+        );
+
+        const countableProductIdSet = computed(() =>
+          new Set(shiftCountSplit.value.countable.map((x) => x.product.id))
+        );
+        const isCountableProduct = (prodId) => countableProductIdSet.value.has(prodId);
+
+        const addedInShiftByStockId = computed(() => {
+          const map = {};
+          const validInvIds = new Set(
+            todayInvoices.value
+              .filter((inv) => inv.status !== "rejected" && inv.status !== "reversed")
+              .map((inv) => inv.id)
+          );
+          for (const it of todayInvoiceItems.value) {
+            if (!validInvIds.has(it.invoice_id) || !it.stock_item_id) continue;
+            map[it.stock_item_id] = (map[it.stock_item_id] || 0) + Number(it.converted_qty || 0);
+          }
+          return map;
+        });
+
+        const productPriceMi = (p) => {
+          if (reopenShiftId.value && oldPriceByProduct[p.id] !== undefined) {
+            return Number(oldPriceByProduct[p.id]);
+          }
+          return Number(p.price_mi || 0);
+        };
+
+        const handoverRows = computed(() =>
+          shiftCountSplit.value.countable.map(({ product, stockItem }) => {
+            const rawOpen = String(handoverState.opening[product.id] ?? "").trim();
+            const rawClose = String(handoverState.closing[product.id] ?? "").trim();
+            const hasBoth = rawOpen !== "" && rawClose !== "";
+            const openVal = rawOpen !== "" ? inputToMi(rawOpen) : 0;
+            const closeVal = rawClose !== "" ? inputToMi(rawClose) : 0;
+            const added = Number(addedInShiftByStockId.value[stockItem.id] || 0);
+            const consumed = hasBoth ? (openVal + added - closeVal) : 0;
+            const isInvalid = hasBoth && consumed < 0;
+            const totalMi = (!isInvalid && consumed > 0) ? consumed * productPriceMi(product) : 0;
+            return {
+              product,
+              stockItem,
+              hasBoth,
+              openVal,
+              closeVal,
+              added,
+              consumed,
+              isInvalid,
+              totalMi,
+            };
+          })
+        );
+
+        const hasInvalidHandover = computed(() =>
+          salesEntryMode.value === "shift_count" && handoverRows.value.some((r) => r.isInvalid)
+        );
+
+        const effectiveQtyByProduct = computed(() => {
+          const out = {};
+          for (const p of activeProducts.value) {
+            const q = Number(qtyByProduct[p.id] || 0);
+            if (q > 0) out[p.id] = q;
+          }
+          if (salesEntryMode.value === "shift_count" && hasFeature("stock") && shiftCountSplit.value.countable.length) {
+            for (const row of handoverRows.value) {
+              delete out[row.product.id];
+              if (row.hasBoth && row.consumed > 0) {
+                out[row.product.id] = row.consumed;
+              }
+            }
+          }
+          return out;
+        });
+
+        const recordedSalesList = computed(() => {
+          const map = effectiveQtyByProduct.value;
+          const list = [];
+          for (const p of products.value) {
+            const qty = Number(map[p.id] || 0);
+            if (qty > 0) {
+              list.push({ product: p, qty, amountMi: qty * productPriceMi(p) });
+            }
+          }
+          return list;
+        });
+
+        const salesTotalMi = computed(() =>
+          recordedSalesList.value.reduce((a, ln) => a + ln.amountMi, 0)
+        );
+        const expensesTotalMi = computed(() =>
+          expenses.value.reduce((a, ex) => a + Number(ex.amount_mi || 0), 0)
+        );
+        const shiftNetMi = computed(() =>
+          salesTotalMi.value - expensesTotalMi.value - workerWageMi.value
+        );
+
+        const shiftTypeLabel = (t) => ({ full: "يوم كامل", morning: "صباحي", evening: "مسائي" }[t] || t);
+        const shiftStatusLabel = (st) => ({ pending: "بانتظار الاعتماد", reopened: "مفتوحة للتعديل", approved: "معتمدة" }[st] || st);
+        const invoiceStatusLabel = (st) => ({ pending: "معلّقة", approved: "معتمدة", rejected: "مرفوضة", reversed: "معكوسة" }[st] || st);
+
+        const productCategoryClass = (cat) => {
+          const c = String(cat || "").toLowerCase();
+          if (c.includes("ساخن") || c === "hot") return "cat-hot";
+          if (c.includes("بارد") || c === "cold") return "cat-cold";
+          if (c.includes("مأكول") || c === "food") return "cat-food";
+          if (c.includes("ترفي") || c === "fun") return "cat-fun";
+          return "cat-cold";
+        };
+
+        const productStockFooter = (p) => {
+          if (!hasFeature("stock") || !p.stock_item_id || Number(p.stock_deduct_qty || 0) <= 0) {
+            return { text: "تحضير مباشر", style: "" };
+          }
+          const st = stockItems.value.find((x) => x.id === p.stock_item_id);
+          if (!st) return { text: "تحضير مباشر", style: "" };
+          const soldQty = Number(qtyByProduct[p.id] || 0) * Number(p.stock_deduct_qty || 1);
+          const avail = Math.max(0, Number(st.current_qty || 0) - soldQty);
+          if (avail <= 0) return { text: `⚠️ نفد (0 ${st.unit})`, style: "background:#470d1b; color:#ffc2cd;" };
+          if (st.low_threshold > 0 && avail <= st.low_threshold) {
+            return { text: `⚠️ منخفض: ${avail} ${st.unit}`, style: "background:#3b2308; color:#ffea9f;" };
+          }
+          return { text: `المخزون: ${avail} ${st.unit}`, style: "" };
+        };
+
+        // ===== حفظ المسوّدة محلياً (معزولة بـ cafe_id + member_id + session_version) =====
+        const draftStorageKey = () => {
+          if (!cafe.value?.id || !member.value?.id) return "";
+          return `cc_worker_draft_${cafe.value.id}_${member.value.id}_v${member.value.session_version || 1}`;
+        };
+
+        const saveDraftLocal = () => {
+          const k = draftStorageKey();
+          if (!k) return;
+          try {
+            localStorage.setItem(k, JSON.stringify({
+              workDate: workDate.value,
+              shiftType: shiftType.value,
+              salesEntryMode: salesEntryMode.value,
+              shiftClientTxId: shiftClientTxId.value,
+              shiftNote: shiftNote.value,
+              qtyByProduct: { ...qtyByProduct },
+              expenses: expenses.value,
+              handoverState: {
+                lockedOpening: handoverState.lockedOpening,
+                startedAt: handoverState.startedAt,
+                opening: { ...handoverState.opening },
+                closing: { ...handoverState.closing },
+              },
+              invStep: invStep.value,
+              invDraftItems: invDraftItems.value,
+              invSupplierName: invSupplierName.value,
+              invPaymentSource: invPaymentSource.value,
+              invNote: invNote.value,
+              invClientTxId: invClientTxId.value,
+            }));
+          } catch { /* ignore */ }
+        };
+
+        const loadDraftLocal = () => {
+          const k = draftStorageKey();
+          if (!k) return;
+          try {
+            const raw = localStorage.getItem(k);
+            if (!raw) return;
+            const d = JSON.parse(raw);
+            if (!d || typeof d !== "object") return;
+            if (d.workDate) workDate.value = d.workDate;
+            if (d.shiftType && allowedShiftTypes.value.some((x) => x.val === d.shiftType)) {
+              shiftType.value = d.shiftType;
+            }
+            if (d.salesEntryMode === "shift_count" || d.salesEntryMode === "direct") {
+              salesEntryMode.value = d.salesEntryMode;
+            }
+            if (d.shiftClientTxId) shiftClientTxId.value = d.shiftClientTxId;
+            if (typeof d.shiftNote === "string") shiftNote.value = d.shiftNote;
+            if (d.qtyByProduct && typeof d.qtyByProduct === "object") {
+              Object.keys(qtyByProduct).forEach((key) => delete qtyByProduct[key]);
+              Object.assign(qtyByProduct, d.qtyByProduct);
+            }
+            if (Array.isArray(d.expenses)) expenses.value = d.expenses;
+            if (d.handoverState && typeof d.handoverState === "object") {
+              handoverState.lockedOpening = Boolean(d.handoverState.lockedOpening);
+              handoverState.startedAt = d.handoverState.startedAt || "";
+              handoverState.opening = { ...(d.handoverState.opening || {}) };
+              handoverState.closing = { ...(d.handoverState.closing || {}) };
+            }
+            if (Array.isArray(d.invDraftItems) && d.invDraftItems.length) {
+              invStep.value = d.invStep === 2 ? 2 : 1;
+              invDraftItems.value = d.invDraftItems;
+              invSupplierName.value = d.invSupplierName || "";
+              invPaymentSource.value = d.invPaymentSource || "worker_cash";
+              invNote.value = d.invNote || "";
+              invClientTxId.value = d.invClientTxId || generateTxId("inv");
+            }
+          } catch { /* ignore */ }
+        };
+
+        const clearShiftDraft = () => {
+          Object.keys(qtyByProduct).forEach((k) => delete qtyByProduct[k]);
+          Object.keys(oldPriceByProduct).forEach((k) => delete oldPriceByProduct[k]);
+          expenses.value = [];
+          unclassifiedExpText.value = "";
+          shiftNote.value = "";
+          reopenShiftId.value = null;
+          shiftClientTxId.value = generateTxId("sh");
+          handoverState.lockedOpening = false;
+          handoverState.startedAt = "";
+          handoverState.opening = {};
+          handoverState.closing = {};
+          saveDraftLocal();
+        };
+
+        const resetShiftTxId = () => {
+          shiftClientTxId.value = generateTxId("sh");
+          saveDraftLocal();
+        };
+
+        const resetInvoiceTxId = () => {
+          invClientTxId.value = generateTxId("inv");
+          saveDraftLocal();
+        };
+
+        // ===== إشعار ntfy.sh اختياري للمالك (في الخلفية دون تعطيل) =====
+        const sendOptionalNtfy = async (title, bodyLines, tags = ["coffee"]) => {
+          const topic = String(cafe.value?.settings?.ntfy_topic || "").trim();
+          if (!topic || !navigator.onLine) return;
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 4000);
+          try {
+            await fetch("https://ntfy.sh", {
+              method: "POST",
+              body: JSON.stringify({
+                topic,
+                title,
+                message: bodyLines.join("\n"),
+                priority: 4,
+                tags,
+              }),
+              signal: ctrl.signal,
+            });
+          } catch { /* ignore */ } finally {
+            clearTimeout(timer);
+          }
+        };
+
+        // ===== الجلسة والدخول =====
+        const clearAllState = () => {
+          member.value = null;
+          cafe.value = null;
+          products.value = [];
+          stockItems.value = [];
+          reopenedShifts.value = [];
+          recentShifts.value = [];
+          todayInvoices.value = [];
+          todayInvoiceItems.value = [];
+          reopenShiftId.value = null;
+          loginForm.pin = "";
+        };
+
+        const loadTakenSlots = async () => {
+          if (!workDate.value || !cafe.value) return;
+          try {
+            const res = await callRpc("get_day_taken_slots", { p_work_date: workDate.value });
+            takenSlots.value = Array.isArray(res) ? res : [];
+            if (!reopenShiftId.value && allowedShiftTypes.value.length > 1) {
+              const free = allowedShiftTypes.value.find((o) => !takenSlots.value.includes(o.val));
+              if (free && takenSlots.value.includes(shiftType.value)) {
+                shiftType.value = free.val;
+              }
+            }
+          } catch {
+            takenSlots.value = [];
+          }
+        };
+
+        const loadTodayInvoices = async () => {
+          if (!cafe.value || !hasFeature("stock")) {
+            todayInvoices.value = [];
+            todayInvoiceItems.value = [];
+            return;
+          }
+          try {
+            const { data: invs, error: invErr } = await supabase
+              .from("stock_invoices")
+              .select("*")
+              .eq("cafe_id", cafe.value.id)
+              .eq("work_date", workDate.value)
+              .order("invoice_number", { ascending: false });
+            if (invErr) throw invErr;
+            todayInvoices.value = invs || [];
+            const ids = todayInvoices.value.map((x) => x.id);
+            if (ids.length) {
+              const { data: items } = await supabase
+                .from("stock_invoice_items")
+                .select("*")
+                .in("invoice_id", ids);
+              todayInvoiceItems.value = items || [];
+            } else {
+              todayInvoiceItems.value = [];
+            }
+          } catch {
+            // لا نوقف الشاشة لو تعذّر جلب فواتير اليوم
+          }
+        };
+
+        const refreshAll = async () => {
+          if (!member.value || !cafe.value) return;
+          busy.value = true;
+          try {
+            const [t, mRes, cRes] = await Promise.all([
+              getServerTime().catch(() => null),
+              supabase.from("cafe_members").select("*").eq("id", member.value.id).single(),
+              supabase.from("cafes").select("*").eq("id", cafe.value.id).single(),
+            ]);
+
+            if (t?.today) {
+              serverDateStr.value = t.today;
+              if (t.epoch_ms) serverEpochMs.value = Number(t.epoch_ms);
+            }
+            if (mRes.error) throw mRes.error;
+            if (!mRes.data?.active) {
+              await supabase.auth.signOut();
+              clearAllState();
+              notify("تم إيقاف حسابك أو تصفير المقعد، أعد تسجيل الدخول.", "err");
+              return;
+            }
+            if (member.value.session_version && mRes.data.session_version !== member.value.session_version) {
+              await supabase.auth.signOut();
+              clearAllState();
+              notify(translateError("SESSION_RESET"), "err");
+              return;
+            }
+            member.value = mRes.data;
+            if (cRes.error) throw cRes.error;
+            cafe.value = cRes.data;
+
+            const cid = cafe.value.id;
+            const stockEnabled = Boolean(cafe.value?.features?.stock);
+            const startIso = member.value.session_started_at || member.value.created_at;
+
+            const [pRes, stRes, roRes, recRes] = await Promise.all([
+              supabase.from("products").select("*").eq("cafe_id", cid).order("sort_order", { ascending: true }).order("name", { ascending: true }),
+              stockEnabled
+                ? supabase.from("stock_items").select("*").eq("cafe_id", cid).order("sort_order", { ascending: true }).order("name", { ascending: true })
+                : Promise.resolve({ data: [], error: null }),
+              supabase.from("daily_shifts").select("*").eq("cafe_id", cid).eq("worker_member_id", member.value.id).eq("status", "reopened").gte("created_at", startIso).order("work_date", { ascending: false }),
+              supabase.from("daily_shifts").select("*").eq("cafe_id", cid).eq("worker_member_id", member.value.id).gte("created_at", startIso).order("work_date", { ascending: false }).limit(10),
+            ]);
+
+            if (pRes.error) throw pRes.error;
+            if (stRes.error) throw stRes.error;
+            products.value = pRes.data || [];
+            stockItems.value = stRes.data || [];
+            reopenedShifts.value = roRes.data || [];
+            recentShifts.value = recRes.data || [];
+
+            if (!invSelectedStockId.value && activeStockItems.value.length) {
+              invSelectedStockId.value = activeStockItems.value[0].id;
+            }
+
+            await Promise.all([loadTakenSlots(), loadTodayInvoices()]);
+          } catch (e) {
+            notify(translateError(e), "err");
+            logAppError({ cafeId: cafe.value?.id, role: "worker", screen: "refreshAll", message: e?.message || e });
+          } finally {
+            busy.value = false;
+          }
+        };
+
+        const checkSession = async (silent = false) => {
+          if (!silent) booting.value = true;
+          try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.user) {
+              clearAllState();
+              return;
+            }
+            const { data: mRow, error: mErr } = await supabase
+              .from("cafe_members")
+              .select("*")
+              .eq("user_id", session.user.id)
+              .eq("role", "worker")
+              .eq("active", true)
+              .maybeSingle();
+            if (mErr) throw mErr;
+
+            if (!mRow) {
+              await supabase.auth.signOut();
+              clearAllState();
+              notify("هذا الحساب ليس حساب عامل نشط.", "err");
+              return;
+            }
+
+            const { data: cRow, error: cErr } = await supabase
+              .from("cafes")
+              .select("*")
+              .eq("id", mRow.cafe_id)
+              .single();
+            if (cErr) throw cErr;
+
+            member.value = mRow;
+            cafe.value = cRow;
+
+            const t = await getServerTime().catch(() => null);
+            if (t?.today) {
+              serverDateStr.value = t.today;
+              workDate.value = t.today;
+              if (t.epoch_ms) serverEpochMs.value = Number(t.epoch_ms);
+            }
+
+            shiftType.value = allowedShiftTypes.value[0].val;
+            salesEntryMode.value = cRow.settings?.sales_entry_mode === "shift_count" ? "shift_count" : "direct";
+            shiftClientTxId.value = generateTxId("sh");
+            invClientTxId.value = generateTxId("inv");
+
+            loadDraftLocal();
+            await refreshAll();
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            if (!silent) booting.value = false;
+          }
+        };
+
+        const loginWorker = async () => {
+          const code = loginForm.code.toLowerCase().trim();
+          const pin = loginForm.pin.trim();
+          if (!/^[a-z0-9_-]{3,12}$/.test(code)) return notify(translateError("INVALID_CODE"), "err");
+          if (!/^\d{6,8}$/.test(pin)) return notify(translateError("INVALID_PIN"), "err");
+
+          busy.value = true;
+          try {
+            const email = `${loginForm.slot}.${code}@worker.cassacafe.app`;
+            const password = `ccpin_${pin}`;
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            loginForm.pin = "";
+            await checkSession(true);
+            if (member.value) playTone(true);
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
+
+        const completeSetup = async () => {
+          if (setupName.value.length < 2) return notify(translateError("INVALID_NAME"), "err");
+          busy.value = true;
+          try {
+            await callRpc("complete_worker_setup", { p_display_name: setupName.value });
+            playTone(true);
+            notify("تم حفظ اسمك بنجاح.");
+            await refreshAll();
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
+
+        const logout = async () => {
+          try { await supabase.auth.signOut(); } finally { clearAllState(); }
+        };
+
+        const onWorkDateChange = async () => {
+          resetShiftTxId();
+          await Promise.all([loadTakenSlots(), loadTodayInvoices()]);
+        };
+
+        // ===== وضع جرد الوردية (استلام <- تسليم) =====
+        const setSalesEntryMode = (mode) => {
+          salesEntryMode.value = mode;
+          saveDraftLocal();
+        };
+
+        const onHandoverInput = (side, prodId, rawVal) => {
+          const formatted = formatSpacedIntInput(rawVal);
+          handoverState[side][prodId] = formatted;
+          if (side === "opening" && !handoverState.startedAt) {
+            handoverState.startedAt = new Date(getServerNowMs()).toISOString();
+          }
+          resetShiftTxId();
+        };
+
+        const fillOpeningFromSystemStock = () => {
+          for (const { product, stockItem } of shiftCountSplit.value.countable) {
+            handoverState.opening[product.id] = formatMi(Math.max(0, Number(stockItem.current_qty || 0)));
+          }
+          handoverState.startedAt = new Date(getServerNowMs()).toISOString();
+          resetShiftTxId();
+          notify("تمت التعبئة برصيد النظام — راجع الأعداد فعلياً ثم ثبّت الاستلام.", "info");
+        };
+
+        const toggleOpeningLock = () => {
+          if (!handoverState.lockedOpening) {
+            const hasAny = shiftCountSplit.value.countable.some(
+              ({ product }) => String(handoverState.opening[product.id] ?? "").trim() !== ""
+            );
+            if (!hasAny) return notify("أدخل رصيد الاستلام لسلعة واحدة على الأقل أولاً.", "err");
+            if (!handoverState.startedAt) handoverState.startedAt = new Date(getServerNowMs()).toISOString();
+            handoverState.lockedOpening = true;
+            playTone(true);
+            notify("✓ تم تثبيت رصيد استلام الوردية.");
+          } else {
+            handoverState.lockedOpening = false;
+          }
+          saveDraftLocal();
+        };
+
+        // ===== نافذة المبيعات المباشرة =====
+        const openSaleModal = async (p) => {
+          saleModal.product = p;
+          saleModal.qtyText = qtyByProduct[p.id] > 0 ? formatMi(qtyByProduct[p.id]) : "";
+          await nextTick();
+          saleInputRef.value?.focus();
+        };
+
+        const confirmSaleModal = () => {
+          if (!saleModal.product) return;
+          const q = inputToMi(saleModal.qtyText);
+          if (q <= 0) return notify("أدخل كمية أكبر من صفر.", "err");
+          qtyByProduct[saleModal.product.id] = q;
+          saleModal.product = null;
+          playTone(true);
+          resetShiftTxId();
+        };
+
+        const clearProductSale = (prodId) => {
+          delete qtyByProduct[prodId];
+          resetShiftTxId();
+        };
+
+        // ===== المصاريف اليومية =====
+        const openDailyExpenseModal = () => {
+          dailyExpModal.open = true;
+          dailyExpModal.selectedTag = CONSUMABLE_QUICK_TAGS[0];
+          dailyExpModal.amountText = "";
+        };
+
+        const pushTaggedExpenseIfTyped = () => {
+          const amt = inputToMi(dailyExpModal.amountText);
+          if (amt <= 0) return false;
+          const lbl = dailyExpModal.selectedTag;
+          const existing = expenses.value.find((e) => e.label === lbl);
+          if (existing) {
+            existing.amount_mi = amt;
+            existing.time = currentTimeHHMM();
+          } else {
+            expenses.value.push({ label: lbl, amount_mi: amt, time: currentTimeHHMM() });
+          }
+          dailyExpModal.amountText = "";
+          resetShiftTxId();
+          return true;
+        };
+
+        const selectDailyExpenseTag = (tag) => {
+          pushTaggedExpenseIfTyped();
+          dailyExpModal.selectedTag = tag;
+        };
+
+        const addDailyTaggedExpense = () => {
+          if (!pushTaggedExpenseIfTyped()) return notify("أدخل المبلغ بالمليم أولاً.", "err");
+          playTone(true);
+          notify(`✓ تمت إضافة ${dailyExpModal.selectedTag}.`);
+        };
+
+        const finishDailyExpenseModal = () => {
+          pushTaggedExpenseIfTyped();
+          dailyExpModal.open = false;
+        };
+
+        const closeDailyExpenseModal = () => {
+          dailyExpModal.open = false;
+          dailyExpModal.amountText = "";
+        };
+
+        const addUnclassifiedExpense = () => {
+          const amt = inputToMi(unclassifiedExpText.value);
+          if (amt <= 0) return notify("أدخل المبلغ بالمليم أولاً.", "err");
+          expenses.value.push({ label: "مصروف غير مصنف", amount_mi: amt, time: currentTimeHHMM() });
+          unclassifiedExpText.value = "";
+          playTone(true);
+          resetShiftTxId();
+        };
+
+        const removeExpense = (idx) => {
+          expenses.value.splice(idx, 1);
+          resetShiftTxId();
+        };
+
+        // ===== تحميل وإلغاء تعديل يومية مُعاد فتحها =====
+        const loadReopenedShift = async (rs) => {
+          busy.value = true;
+          try {
+            const [sRes, eRes] = await Promise.all([
+              supabase.from("shift_sales").select("*").eq("shift_id", rs.id),
+              supabase.from("shift_expenses").select("*").eq("shift_id", rs.id),
+            ]);
+            if (sRes.error) throw sRes.error;
+            if (eRes.error) throw eRes.error;
+
+            reopenShiftId.value = rs.id;
+            workDate.value = rs.work_date;
+            shiftType.value = rs.shift_type;
+            shiftNote.value = rs.note || "";
+            shiftClientTxId.value = generateTxId("sh");
+
+            Object.keys(qtyByProduct).forEach((k) => delete qtyByProduct[k]);
+            Object.keys(oldPriceByProduct).forEach((k) => delete oldPriceByProduct[k]);
+            for (const ln of sRes.data || []) {
+              if (ln.product_id) {
+                qtyByProduct[ln.product_id] = Number(ln.qty || 0);
+                oldPriceByProduct[ln.product_id] = Number(ln.unit_price_mi || 0);
+              }
+            }
+            expenses.value = (eRes.data || []).map((ex) => ({
+              label: ex.label || "مصروف يومي",
+              amount_mi: Number(ex.amount_mi || 0),
+              time: ex.expense_time || "",
+            }));
+
+            if (rs.handover_data?.mode === "shift_count" && Array.isArray(rs.handover_data.items)) {
+              salesEntryMode.value = "shift_count";
+              handoverState.lockedOpening = false;
+              handoverState.startedAt = rs.handover_data.started_at || "";
+              handoverState.opening = {};
+              handoverState.closing = {};
+              for (const item of rs.handover_data.items) {
+                if (item.product_id) {
+                  handoverState.opening[item.product_id] = formatMi(item.opening_qty);
+                  handoverState.closing[item.product_id] = formatMi(item.closing_qty);
+                }
+              }
+            } else {
+              salesEntryMode.value = "direct";
+            }
+
+            activeTab.value = "daily";
+            notify("تم تحميل اليومية المُعاد فتحها للتعديل.", "info");
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
+
+        const cancelReopenEdit = () => {
+          clearShiftDraft();
+          workDate.value = serverDateStr.value;
+          shiftType.value = allowedShiftTypes.value[0].val;
+        };
+
+        // ===== إرسال اليومية =====
+        const openCloseShiftModal = () => {
+          if (inputToMi(unclassifiedExpText.value) > 0) {
+            return notify("كتبت مبلغاً في «مصروف غير مصنف» ولم تضغط على «إضافة»!", "err");
+          }
+          if (hasInvalidHandover.value) {
+            return notify("يوجد صنف رصيد تسليمه أكبر من رصيد الاستلام — راجع جرد الوردية أولاً.", "err");
+          }
+          if (!recordedSalesList.value.length && !expenses.value.length) {
+            return notify(translateError("EMPTY_SHIFT"), "err");
+          }
+          closeModalOpen.value = true;
+        };
+
+        const executeSubmitShift = async () => {
+          if (!navigator.onLine) return notify("الهاتف غير متصل بالإنترنت — مسوّدتك محفوظة محلياً.", "err");
+          const salesPayload = recordedSalesList.value.map((ln) => ({
+            product_id: ln.product.id,
+            qty: Math.round(ln.qty),
+          }));
+          const expensesPayload = expenses.value
+            .filter((ex) => Number(ex.amount_mi) > 0)
+            .map((ex) => ({
+              label: ex.label || "مصروف يومي",
+              amount_mi: Math.round(Number(ex.amount_mi)),
+              time: ex.time || "",
+            }));
+
+          let handoverPayload = null;
+          if (salesEntryMode.value === "shift_count" && hasFeature("stock") && shiftCountSplit.value.countable.length) {
+            const items = handoverRows.value
+              .filter((r) => r.hasBoth)
+              .map((r) => ({
+                product_id: r.product.id,
+                stock_item_id: r.stockItem.id,
+                name: r.product.name,
+                unit: r.stockItem.unit,
+                opening_qty: r.openVal,
+                added_qty: r.added,
+                closing_qty: r.closeVal,
+                consumed_qty: r.consumed,
+                price_mi: productPriceMi(r.product),
+                total_mi: r.totalMi,
+              }));
+            if (items.length) {
+              handoverPayload = {
+                mode: "shift_count",
+                started_at: handoverState.startedAt || new Date(getServerNowMs()).toISOString(),
+                ended_at: new Date(getServerNowMs()).toISOString(),
+                items,
+              };
+            }
+          }
+
+          if (!shiftClientTxId.value) shiftClientTxId.value = generateTxId("sh");
+          saveDraftLocal();
+
+          const submittedDate = workDate.value;
+          const submittedNet = shiftNetMi.value;
+          const submittedSales = salesTotalMi.value;
+          const submittedExp = expensesTotalMi.value;
+
+          busy.value = true;
+          try {
+            await callRpc("submit_shift_with_handover", {
+              p_client_tx_id: shiftClientTxId.value,
+              p_work_date: workDate.value,
+              p_shift_type: shiftType.value,
+              p_sales: salesPayload,
+              p_expenses: expensesPayload,
+              p_note: shiftNote.value,
+              p_session_version: member.value.session_version ?? null,
+              p_reopen_shift_id: reopenShiftId.value || null,
+              p_cafe_id: cafe.value.id,
+              p_worker_member_id: null,
+              p_auto_approve: false,
+              p_handover: handoverPayload,
+            });
+
+            closeModalOpen.value = false;
+            playTone(true);
+            clearShiftDraft();
+            thankYouInfo.value = { date: submittedDate, netMi: submittedNet };
+
+            sendOptionalNtfy(
+              `☕ ${cafe.value.name} — يومية ${formatNotifDatePlain(submittedDate)}`,
+              [
+                `العامل: ${member.value.display_name}`,
+                `المبيعات: ${formatNotifMiPlain(submittedSales)}`,
+                `المصاريف: ${formatNotifMiPlain(submittedExp)}`,
+                `الصافي: ${formatNotifMiPlain(submittedNet)}`,
+              ],
+              ["coffee", "bell"]
+            );
+
+            await refreshAll();
+          } catch (e) {
+            if (String(e?.message || "").includes("SESSION_RESET")) {
+              await supabase.auth.signOut();
+              clearAllState();
+            }
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
+
+        // ===== فواتير المخزن (مرحلتان) =====
+        const currentInvStockItem = computed(() =>
+          activeStockItems.value.find((st) => st.id === invSelectedStockId.value) || activeStockItems.value[0] || null
+        );
+        const draftItemByStockId = (id) => invDraftItems.value.find((it) => it.stock_item_id === id);
+
+        const invQtyPreview = computed(() => {
+          const st = currentInvStockItem.value;
+          const entered = inputToMi(invQtyInputText.value);
+          if (!st || entered <= 0) return { units: 0, isDirectGrams: false };
+          return convertPurchaseQuantity(st, entered, false);
+        });
+
+        const invTotalCostMi = computed(() =>
+          invDraftItems.value.reduce((a, it) => a + inputToMi(it.costText), 0)
+        );
+
+        const pushInvoiceQtyIfTyped = () => {
+          const st = currentInvStockItem.value;
+          const entered = inputToMi(invQtyInputText.value);
+          if (!st || entered <= 0) return false;
+          const conv = convertPurchaseQuantity(st, entered, false);
+          if (conv.units <= 0) return false;
+          const estCost = Number(st.unit_cost_mi || 0) > 0 ? formatMi(conv.units * Number(st.unit_cost_mi)) : "";
+          const obj = {
+            stock_item_id: st.id,
+            name: st.name,
+            baseUnit: st.unit,
+            enteredQty: entered,
+            by_unit: conv.isDirectGrams,
+            pack_qty: conv.isDirectGrams ? conv.units : entered,
+            unitLabel: conv.isDirectGrams ? st.unit : (st.pack_label || st.unit),
+            convertedUnits: conv.units,
+            costText: estCost,
+          };
+          const idx = invDraftItems.value.findIndex((x) => x.stock_item_id === st.id);
+          if (idx !== -1) invDraftItems.value[idx] = obj;
+          else invDraftItems.value.push(obj);
+          invQtyInputText.value = "";
+          resetInvoiceTxId();
+          return true;
+        };
+
+        const selectInvoiceStockItem = (id) => {
+          pushInvoiceQtyIfTyped();
+          invSelectedStockId.value = id;
+        };
+
+        const addInvoiceDraftItem = () => {
+          if (!pushInvoiceQtyIfTyped()) return notify("أدخل الكمية أولاً.", "err");
+          playTone(true);
+          notify("✓ تمت إضافة المادة للفاتورة.");
+        };
+
+        const removeInvoiceDraftItem = (idx) => {
+          invDraftItems.value.splice(idx, 1);
+          resetInvoiceTxId();
+          if (!invDraftItems.value.length) invStep.value = 1;
+        };
+
+        const goToInvoiceStep2 = () => {
+          pushInvoiceQtyIfTyped();
+          if (!invDraftItems.value.length) return notify("أضف مادة واحدة على الأقل أولاً.", "err");
+          invStep.value = 2;
+          saveDraftLocal();
+        };
+
+        const requestClearInvoiceDraft = () => {
+          if (!confirm("مسح مسوّدة الفاتورة الحالية؟")) return;
+          invDraftItems.value = [];
+          invStep.value = 1;
+          invSupplierName.value = "";
+          invNote.value = "";
+          invQtyInputText.value = "";
+          resetInvoiceTxId();
+        };
+
+        const submitWorkerInvoice = async () => {
+          if (!navigator.onLine) return notify("الهاتف غير متصل بالإنترنت — مسوّدة الفاتورة محفوظة.", "err");
+          if (!invDraftItems.value.length) return notify(translateError("EMPTY_INVOICE"), "err");
+          for (const it of invDraftItems.value) {
+            if (inputToMi(it.costText) <= 0) {
+              return notify(`أدخل مبلغ مادة «${it.name}» بالمليم.`, "err");
+            }
+          }
+
+          if (!invClientTxId.value) invClientTxId.value = generateTxId("inv");
+          saveDraftLocal();
+
+          const itemsPayload = invDraftItems.value.map((it) => ({
+            stock_item_id: it.stock_item_id,
+            pack_qty: Math.round(Number(it.pack_qty)),
+            by_unit: Boolean(it.by_unit),
+            line_cost_mi: inputToMi(it.costText),
+          }));
+          const supplier = invSupplierName.value.trim() || "مزوّد";
+          const totalAmt = invTotalCostMi.value;
+
+          busy.value = true;
+          try {
+            await callRpc("submit_stock_invoice", {
+              p_client_tx_id: invClientTxId.value,
+              p_work_date: workDate.value,
+              p_supplier_name: supplier,
+              p_payment_source: invPaymentSource.value,
+              p_items: itemsPayload,
+              p_note: invNote.value,
+              p_session_version: member.value.session_version ?? null,
+              p_cafe_id: cafe.value.id,
+              p_worker_member_id: null,
+              p_auto_approve: false,
+            });
+
+            playTone(true);
+            invDraftItems.value = [];
+            invStep.value = 1;
+            invSupplierName.value = "";
+            invNote.value = "";
+            invQtyInputText.value = "";
+            resetInvoiceTxId();
+            notify("✓ تم إرسال فاتورة المخزن للإدارة بنجاح.");
+
+            sendOptionalNtfy(
+              `🧾 ${cafe.value.name} — فاتورة مخزن (${formatNotifDatePlain(workDate.value)})`,
+              [
+                `العامل: ${member.value.display_name}`,
+                `المزوّد: ${supplier}`,
+                `المبلغ: ${formatNotifMiPlain(totalAmt)}`,
+                `المواد: ${bidiIsolatePlain(itemsPayload.length)}`,
+              ],
+              ["receipt", "bell"]
+            );
+
+            await refreshAll();
+          } catch (e) {
+            if (String(e?.message || "").includes("SESSION_RESET")) {
+              await supabase.auth.signOut();
+              clearAllState();
+            }
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
+
+        // ===== رصيد التسوية (الذمّة الحالية) =====
+        const openBalanceModal = async () => {
+          balanceModal.open = true;
+          balanceModal.loading = true;
+          balanceModal.error = "";
+          try {
+            const res = await callRpc("get_worker_balance", { p_worker_member_id: member.value.id });
+            balanceModal.data = res || {};
+          } catch (e) {
+            balanceModal.error = translateError(e);
+          } finally {
+            balanceModal.loading = false;
+          }
+        };
+
+        const onOnline = () => { isOnline.value = true; };
+        const onOffline = () => { isOnline.value = false; };
+        const onVisChange = () => { if (!document.hidden) requestWakeLock(); };
+
+        onMounted(() => {
+          window.addEventListener("online", onOnline);
+          window.addEventListener("offline", onOffline);
+          document.addEventListener("visibilitychange", onVisChange);
+          document.addEventListener("click", requestWakeLock, { passive: true });
+          checkSession(false);
+        });
+
+        onUnmounted(() => {
+          window.removeEventListener("online", onOnline);
+          window.removeEventListener("offline", onOffline);
+          document.removeEventListener("visibilitychange", onVisChange);
+          document.removeEventListener("click", requestWakeLock);
+        });
+
+        return {
+          booting, busy, isOnline, member, cafe, loginForm, setupName,
+          activeTab, salesEntryMode, workDate, shiftType, allowedShiftTypes, takenSlots,
+          reopenShiftId, shiftNote, products, activeProducts, activeStockItems,
+          reopenedShifts, recentShifts, todayInvoices,
+          qtyByProduct, expenses, unclassifiedExpText,
+          handoverState, shiftCountSplit, handoverRows, isCountableProduct,
+          recordedSalesList, salesTotalMi, expensesTotalMi, workerWageMi, shiftNetMi,
+          invStep, invSelectedStockId, currentInvStockItem, invQtyInputText, invQtyPreview,
+          invDraftItems, invSupplierName, invPaymentSource, invNote, invTotalCostMi,
+          saleInputRef, saleModal, dailyExpModal, closeModalOpen, balanceModal, thankYouInfo, toast,
+          CONSUMABLE_QUICK_TAGS, canWrite, hasFeature,
+          formatMi, inputToMi, formatSpacedIntInput,
+          shiftTypeLabel, shiftStatusLabel, invoiceStatusLabel,
+          productCategoryClass, productPriceMi, productStockFooter, draftItemByStockId,
+          loginWorker, completeSetup, logout, refreshAll, onWorkDateChange,
+          setSalesEntryMode, onHandoverInput, fillOpeningFromSystemStock, toggleOpeningLock,
+          openSaleModal, confirmSaleModal, clearProductSale,
+          openDailyExpenseModal, selectDailyExpenseTag, addDailyTaggedExpense,
+          finishDailyExpenseModal, closeDailyExpenseModal, addUnclassifiedExpense, removeExpense,
+          loadReopenedShift, cancelReopenEdit, openCloseShiftModal, executeSubmitShift,
+          selectInvoiceStockItem, addInvoiceDraftItem, removeInvoiceDraftItem,
+          goToInvoiceStep2, requestClearInvoiceDraft, submitWorkerInvoice,
+          openBalanceModal, resetShiftTxId, resetInvoiceTxId, saveDraftLocal,
+        };
+      },
+    }).mount("#app");
+  </script>
+</body>
+</html>
