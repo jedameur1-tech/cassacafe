@@ -41,7 +41,6 @@
       border-width: 1.5px;
     }
 
-    /* دوران أيقونة التحديث */
     @keyframes cc-spin {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
@@ -51,7 +50,6 @@
       animation: cc-spin 0.85s linear infinite;
     }
 
-    /* شبكة بطاقات السلع في الإدخال المباشر */
     .cc-prod-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -119,7 +117,6 @@
       background: #f0fdf4;
     }
 
-    /* صف جرد الوردية (استلام <- تسليم) */
     .cc-handover-row {
       background: #f9fafb;
       border: 1.5px solid var(--border);
@@ -136,7 +133,6 @@
       background: var(--danger-soft);
     }
 
-    /* صفوف القوائم المختصرة */
     .cc-list-row {
       background: #f9fafb;
       border: 1px solid var(--border);
@@ -149,7 +145,6 @@
       gap: 8px;
     }
 
-    /* بطاقة الملخص المالي لليومية */
     .cc-worker-hero {
       background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       color: #fff;
@@ -162,7 +157,7 @@
       text-align: center;
       margin-bottom: 10px;
     }
-    .cc-worker-hero-top span {
+    .cc-worker-hero-top span.lbl {
       display: block;
       font-size: 0.78rem;
       opacity: 0.9;
@@ -182,7 +177,7 @@
     .cc-worker-hero-split > div:first-child {
       border-left: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .cc-worker-hero-split span {
+    .cc-worker-hero-split span.lbl {
       display: block;
       font-size: 0.72rem;
       opacity: 0.88;
@@ -192,12 +187,21 @@
       font-weight: 700;
     }
 
-    /* شبكة التاريخ والحصة المضغوطة */
-    .cc-date-row {
-      display: grid;
-      grid-template-columns: 1fr 1.15fr;
+    .cc-today-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       gap: 8px;
-      align-items: end;
+      flex-wrap: wrap;
+    }
+    .cc-today-pill {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: var(--primary-dark);
     }
   </style>
 </head>
@@ -284,7 +288,6 @@
 
     <!-- 4. واجهة العمل الرئيسية -->
     <div v-else class="cc-shell">
-      <!-- الشريط العلوي الخفيف والمتكيف -->
       <header class="cc-topbar">
         <div class="cc-brand" style="min-width:0;">
           <h1>{{ headerInfo.title }}</h1>
@@ -303,13 +306,12 @@
       </header>
 
       <main class="cc-main">
-        <!-- تنبيه إيقاف أو انتهاء الاشتراك -->
         <div v-if="!canWrite" class="cc-alert danger">
           <strong>وضع القراءة فقط:</strong>
           اشتراك المقهى متوقّف أو منتهٍ حالياً. راجع المالك قبل إرسال عمليات جديدة.
         </div>
 
-        <!-- ==================== تبويب 1: اليومية ==================== -->
+        <!-- ==================== تبويب 1: اليومية الحالية ==================== -->
         <section v-if="activeTab === 'daily'">
           <!-- تنبيه اليومية المُعاد فتحها للتعديل -->
           <div v-if="reopenedShifts.length && !reopenShiftId" class="cc-alert">
@@ -333,42 +335,34 @@
             </div>
           </div>
 
-          <!-- بطاقة ملخص اليومية (تظهر في تبويب اليومية فقط) -->
+          <!-- بطاقة ملخص اليومية الحالية -->
           <div class="cc-worker-hero">
             <div class="cc-worker-hero-top">
-              <span>الصافي المودع لليومية</span>
-              <strong class="num-ltr" :style="{ color: shiftNetMi < 0 ? '#fecaca' : '#ffffff' }">
-                {{ formatMi(shiftNetMi) }} <small style="font-size:0.85rem; opacity:0.9;">مي</small>
+              <span class="lbl">الصافي المودع لليومية</span>
+              <strong :style="{ color: shiftNetMi < 0 ? '#fecaca' : '#ffffff' }">
+                <span class="num-ltr">{{ formatMi(shiftNetMi) }}</span>
+                <small style="font-size:0.85rem; opacity:0.9; margin-right:3px;">مي</small>
               </strong>
             </div>
             <div class="cc-worker-hero-split">
               <div>
-                <span>المبيعات ▲</span>
-                <strong class="num-ltr">{{ formatMi(salesTotalMi) }} مي</strong>
+                <span class="lbl">المبيعات ▲</span>
+                <strong><span class="num-ltr">{{ formatMi(salesTotalMi) }}</span> مي</strong>
               </div>
               <div>
-                <span>المصاريف + الأجر ▼</span>
-                <strong class="num-ltr">{{ formatMi(expensesTotalMi + workerWageMi) }} مي</strong>
+                <span class="lbl">المصاريف + الأجر ▼</span>
+                <strong><span class="num-ltr">{{ formatMi(expensesTotalMi + workerWageMi) }}</span> مي</strong>
               </div>
             </div>
           </div>
 
-          <!-- التاريخ والحصة (تاكتيل بدون قائمة منسدلة) -->
+          <!-- التاريخ الحالي (ثابت) + اختيار الحصة بالضغط -->
           <div class="card" style="padding:10px 12px;">
-            <div class="cc-date-row">
-              <div>
-                <label style="display:block; font-size:0.78rem; color:var(--muted); font-weight:700; margin-bottom:4px;">التاريخ</label>
-                <input
-                  type="date"
-                  v-model="workDate"
-                  :disabled="Boolean(reopenShiftId)"
-                  @change="onWorkDateChange"
-                  class="input-ltr"
-                  style="padding:7px 8px; font-size:0.9rem;"
-                />
+            <div class="cc-today-bar">
+              <div class="cc-today-pill">
+                📅 <span class="num-ltr">{{ workDate }}</span>
               </div>
-              <div>
-                <label style="display:block; font-size:0.78rem; color:var(--muted); font-weight:700; margin-bottom:4px;">الحصة</label>
+              <div style="flex:1; min-width:155px;">
                 <div v-if="allowedShiftTypes.length > 1" class="cc-segment" style="margin-bottom:0;">
                   <button
                     type="button"
@@ -383,13 +377,13 @@
                     {{ opt.label }}<span v-if="takenSlots.includes(opt.val)" style="color:var(--warn);">•</span>
                   </button>
                 </div>
-                <div v-else class="badge badge-info" style="width:100%; text-align:center; padding:9px 8px; font-size:0.84rem;">
+                <div v-else class="badge badge-info" style="width:100%; text-align:center; padding:8px; font-size:0.84rem;">
                   {{ allowedShiftTypes[0]?.label || "يوم كامل" }}
                 </div>
               </div>
             </div>
             <div v-if="takenSlots.includes(shiftType) && !reopenShiftId" style="margin-top:6px; font-size:0.78rem; color:var(--danger); font-weight:700;">
-              ⚠️ توجد يومية مسجّلة مسبقاً لهذه الحصة في هذا التاريخ.
+              ⚠️ توجد يومية مسجّلة مسبقاً لهذه الحصة اليوم.
             </div>
           </div>
 
@@ -450,8 +444,8 @@
             >
               <div class="row" style="margin-bottom:6px;">
                 <strong style="font-size:0.92rem;">{{ row.product.name }}</strong>
-                <span class="muted num-ltr" style="font-size:0.78rem;">
-                  {{ formatMi(productPriceMi(row.product)) }} مي / {{ row.stockItem.unit }}
+                <span class="muted" style="font-size:0.78rem;">
+                  <span class="num-ltr">{{ formatMi(productPriceMi(row.product)) }}</span> مي / {{ row.stockItem.unit }}
                 </span>
               </div>
 
@@ -623,7 +617,7 @@
                 <span v-if="ex.time" class="muted num-ltr" style="margin-right:6px; font-size:0.75rem;">{{ ex.time }}</span>
               </div>
               <div class="row" style="flex-wrap:nowrap; gap:6px;">
-                <strong class="num-ltr" style="color:var(--danger); font-size:0.88rem;">{{ formatMi(ex.amount_mi) }} مي</strong>
+                <strong style="color:var(--danger); font-size:0.88rem;"><span class="num-ltr">{{ formatMi(ex.amount_mi) }}</span> مي</strong>
                 <button type="button" class="btn btn-sm btn-danger-soft" @click="removeExpense(idx)">×</button>
               </div>
             </div>
@@ -638,10 +632,10 @@
             <div v-for="ln in recordedSalesList" :key="ln.product.id" class="cc-list-row">
               <div style="min-width:0; flex:1;">
                 <strong style="font-size:0.88rem;">{{ ln.product.name }}</strong>
-                <span class="muted num-ltr" style="margin-right:4px; font-size:0.8rem;">({{ ln.qty }} {{ ln.product.sale_unit }})</span>
+                <span class="muted" style="margin-right:4px; font-size:0.8rem;">(<span class="num-ltr">{{ ln.qty }}</span> {{ ln.product.sale_unit }})</span>
               </div>
               <div class="row" style="flex-wrap:nowrap; gap:6px;">
-                <strong class="num-ltr" style="color:var(--ok); font-size:0.88rem;">{{ formatMi(ln.amountMi) }} مي</strong>
+                <strong style="color:var(--ok); font-size:0.88rem;"><span class="num-ltr">{{ formatMi(ln.amountMi) }}</span> مي</strong>
                 <button
                   v-if="salesEntryMode === 'direct' || !isCountableProduct(ln.product.id)"
                   type="button"
@@ -669,8 +663,8 @@
           </button>
         </section>
 
-        <!-- ==================== تبويب 2: فواتير المخزن ==================== -->
-        <section v-if="activeTab === 'invoices' && hasFeature('stock')">
+        <!-- ==================== تبويب 2: فواتير المخزن (اختياري للمشرف) ==================== -->
+        <section v-if="activeTab === 'invoices' && canUseWorkerInvoices">
           <div class="card">
             <div class="row" style="margin-bottom:10px;">
               <div>
@@ -682,7 +676,7 @@
               <button v-if="invDraftItems.length" type="button" class="btn btn-sm btn-danger-soft" @click="requestClearInvoiceDraft">مسح</button>
             </div>
 
-            <!-- الخطوة 1: اختيار المواد والكمية -->
+            <!-- الخطوة 1 -->
             <template v-if="invStep === 1">
               <div v-if="!activeStockItems.length" class="muted" style="text-align:center; padding:14px 0;">
                 لا توجد مواد مخزن معرّفة بعد. اطلب من المالك إضافة مواد المخزن.
@@ -699,12 +693,11 @@
                   >
                     {{ st.name }}
                     <span v-if="draftItemByStockId(st.id)" style="color:var(--ok); margin-right:4px;">
-                      ✓ {{ draftItemByStockId(st.id).enteredQty }}
+                      ✓ <span class="num-ltr">{{ draftItemByStockId(st.id).enteredQty }}</span>
                     </span>
                   </button>
                 </div>
 
-                <!-- المواد المضافة للمسوّدة -->
                 <div v-if="invDraftItems.length" style="margin-bottom:10px;">
                   <div class="muted" style="font-size:0.78rem; font-weight:700; margin-bottom:4px;">
                     المواد المضافة للفاتورة ({{ invDraftItems.length }}):
@@ -712,8 +705,8 @@
                   <div v-for="(it, idx) in invDraftItems" :key="it.stock_item_id" class="cc-list-row">
                     <div style="min-width:0; flex:1; font-size:0.84rem;">
                       <strong>{{ it.name }}</strong>
-                      <span class="muted num-ltr" style="margin-right:4px;">
-                        {{ it.enteredQty }} {{ it.unitLabel }} (+{{ it.convertedUnits }} {{ it.baseUnit }})
+                      <span class="muted" style="margin-right:4px;">
+                        <span class="num-ltr">{{ it.enteredQty }}</span> {{ it.unitLabel }} (+<span class="num-ltr">{{ it.convertedUnits }}</span> {{ it.baseUnit }})
                       </span>
                     </div>
                     <button type="button" class="btn btn-sm btn-danger-soft" @click="removeInvoiceDraftItem(idx)">×</button>
@@ -760,7 +753,7 @@
               </template>
             </template>
 
-            <!-- الخطوة 2: المزوّد، مصدر الدفع، والتكلفة بالمليم -->
+            <!-- الخطوة 2 -->
             <template v-else>
               <form @submit.prevent="submitWorkerInvoice">
                 <div class="field">
@@ -793,7 +786,7 @@
                 <div v-for="it in invDraftItems" :key="it.stock_item_id" class="card" style="background:#f9fafb; padding:10px; margin-bottom:8px;">
                   <div class="row" style="margin-bottom:6px;">
                     <strong>{{ it.name }}</strong>
-                    <span class="badge badge-info num-ltr">+{{ formatMi(it.convertedUnits) }} {{ it.baseUnit }}</span>
+                    <span class="badge badge-info">+<span class="num-ltr">{{ formatMi(it.convertedUnits) }}</span> {{ it.baseUnit }}</span>
                   </div>
                   <input
                     type="tel"
@@ -814,7 +807,9 @@
                 <div class="card" style="background:var(--primary-soft); border-color:#99f6e4; padding:10px;">
                   <div class="row">
                     <strong>إجمالي الفاتورة:</strong>
-                    <strong class="num-ltr" style="color:var(--primary-dark); font-size:1.05rem;">{{ formatMi(invTotalCostMi) }} مي</strong>
+                    <strong style="color:var(--primary-dark); font-size:1.05rem;">
+                      <span class="num-ltr">{{ formatMi(invTotalCostMi) }}</span> مي
+                    </strong>
                   </div>
                   <div class="muted" style="font-size:0.74rem; margin-top:3px; color:var(--primary-dark);">
                     الفواتير منفصلة عن مصاريف اليومية وتُخصم تلقائياً عند التسوية إذا دُفعت من الكاسة.
@@ -834,7 +829,7 @@
           <!-- فواتير اليوم المرسلة -->
           <div v-if="todayInvoices.length" class="card">
             <strong style="display:block; font-size:0.9rem; margin-bottom:6px;">
-              فواتير بتاريخ <span class="num-ltr">{{ workDate }}</span> ({{ todayInvoices.length }})
+              فواتير اليوم (<span class="num-ltr">{{ workDate }}</span>)
             </strong>
             <div v-for="inv in todayInvoices" :key="inv.id" class="cc-list-row">
               <div>
@@ -847,14 +842,14 @@
                   {{ invoiceStatusLabel(inv.status) }}
                 </span>
               </div>
-              <strong class="num-ltr" style="color:var(--primary);">{{ formatMi(inv.total_amount_mi) }} مي</strong>
+              <strong style="color:var(--primary);"><span class="num-ltr">{{ formatMi(inv.total_amount_mi) }}</span> مي</strong>
             </div>
           </div>
         </section>
 
-        <!-- ==================== تبويب 3: حسابي والتسوية وسجل اليوميات ==================== -->
+        <!-- ==================== تبويب 3: حسابي والتسوية (بدون سجل اليوميات السابقة) ==================== -->
         <section v-if="activeTab === 'account'">
-          <!-- بطاقة رصيد التسوية (الذمّة الحالية) -->
+          <!-- بطاقة رصيد التسوية الحالية (الذمّة) -->
           <div class="card">
             <div class="row" style="margin-bottom:10px;">
               <h3 style="margin:0; font-size:1rem;">التسوية الحالية (الذمّة)</h3>
@@ -867,61 +862,39 @@
             <div v-else-if="balanceState.error" class="cc-alert danger" style="margin:0;">
               {{ balanceState.error }}
             </div>
-            <div v-else style="line-height:1.9; font-size:0.9rem;">
+            <div v-else style="line-height:1.95; font-size:0.92rem;">
               <div class="row">
                 <span class="muted">يوميات معتمدة غير مسوّاة</span>
                 <strong class="num-ltr">{{ balanceState.data.shifts_count || 0 }}</strong>
               </div>
               <div class="row">
                 <span class="muted">صافي اليوميات المعتمدة</span>
-                <strong class="num-ltr" style="color:var(--ok);">{{ formatMi(balanceState.data.shifts_net_mi || 0) }} مي</strong>
+                <strong style="color:var(--ok);"><span class="num-ltr">{{ formatMi(balanceState.data.shifts_net_mi || 0) }}</span> مي</strong>
               </div>
               <div v-if="balanceState.data.worker_invoices_mi > 0" class="row">
                 <span class="muted">فواتير دفعتها من الكاسة</span>
-                <strong class="num-ltr" style="color:var(--danger);">-{{ formatMi(balanceState.data.worker_invoices_mi) }} مي</strong>
+                <strong style="color:var(--danger);"><span class="num-ltr">-{{ formatMi(balanceState.data.worker_invoices_mi) }}</span> مي</strong>
               </div>
               <div class="row">
                 <span class="muted">الباقي المرحّل سابقاً</span>
-                <strong class="num-ltr">{{ formatMi(balanceState.data.prev_carry_mi || 0) }} مي</strong>
+                <strong><span class="num-ltr">{{ formatMi(balanceState.data.prev_carry_mi || 0) }}</span> مي</strong>
               </div>
               <hr class="divider" />
-              <div class="row" style="font-size:1.02rem;">
+              <div class="row" style="font-size:1.04rem;">
                 <strong>{{ (balanceState.data.gross_due_mi || 0) >= 0 ? "صافي الذمّة للمالك" : "مستحق لك عند المالك" }}</strong>
-                <strong class="num-ltr" :style="{ color: (balanceState.data.gross_due_mi || 0) >= 0 ? 'var(--primary)' : 'var(--ok)' }">
-                  {{ formatMi(Math.abs(balanceState.data.gross_due_mi || 0)) }} مي
+                <strong :style="{ color: (balanceState.data.gross_due_mi || 0) >= 0 ? 'var(--primary)' : 'var(--ok)' }">
+                  <span class="num-ltr">{{ formatMi(Math.abs(balanceState.data.gross_due_mi || 0)) }}</span> مي
                 </strong>
-              </div>
-            </div>
-          </div>
-
-          <!-- آخر يوميات العامل -->
-          <div class="card">
-            <strong style="display:block; margin-bottom:8px;">آخر يومياتك المرسلة ({{ recentShifts.length }})</strong>
-            <div v-if="!recentShifts.length" class="muted" style="text-align:center; padding:10px 0;">
-              لا توجد يوميات مسجّلة في هذه الجلسة بعد.
-            </div>
-            <div v-for="s in recentShifts" :key="s.id" class="cc-list-row">
-              <div>
-                <strong class="num-ltr">{{ s.work_date }}</strong>
-                <span class="muted" style="margin-right:6px; font-size:0.8rem;">{{ shiftTypeLabel(s.shift_type) }}</span>
-              </div>
-              <div class="row" style="flex-wrap:nowrap; gap:6px;">
-                <strong class="num-ltr" style="color:var(--primary); font-size:0.86rem;">
-                  {{ formatMi(Number(s.sales_total_mi) - Number(s.expenses_total_mi) - Number(s.wage_mi)) }} مي
-                </strong>
-                <span class="badge" :class="s.status === 'approved' ? 'badge-ok' : (s.status === 'reopened' ? 'badge-danger' : 'badge-warn')">
-                  {{ shiftStatusLabel(s.status) }}
-                </span>
               </div>
             </div>
           </div>
 
           <!-- معلومات العامل والخروج -->
           <div class="card">
-            <div class="muted" style="line-height:1.9; margin-bottom:10px;">
+            <div class="muted" style="line-height:1.95; margin-bottom:12px;">
               العامل: <strong>{{ member.display_name }}</strong> (<span class="num-ltr">{{ member.slot }}</span>)<br />
               المقهى: <strong>{{ cafeDisplayTitle }}</strong><br />
-              الأجر اليومي: <strong class="num-ltr">{{ formatMi(workerWageMi) }} مي</strong>
+              الأجر اليومي: <strong><span class="num-ltr">{{ formatMi(workerWageMi) }}</span> مي</strong>
             </div>
             <button type="button" class="btn btn-danger-soft btn-block" @click="logout">🚪 تسجيل الخروج</button>
           </div>
@@ -929,14 +902,14 @@
       </main>
 
       <!-- الشريط السفلي الثابت -->
-      <nav class="cc-bottom-nav" :class="hasFeature('stock') ? 'cols-3' : 'cols-2'">
+      <nav class="cc-bottom-nav" :class="canUseWorkerInvoices ? 'cols-3' : 'cols-2'">
         <button class="cc-nav-btn cc-tap" :class="{ active: activeTab === 'daily' }" @click="activeTab = 'daily'">
           <span v-if="reopenedShifts.length" class="cc-nav-dot">{{ reopenedShifts.length }}</span>
           <span class="ico">☕</span>
           <span>اليومية</span>
         </button>
         <button
-          v-if="hasFeature('stock')"
+          v-if="canUseWorkerInvoices"
           class="cc-nav-btn cc-tap"
           :class="{ active: activeTab === 'invoices' }"
           @click="activeTab = 'invoices'"
@@ -954,15 +927,15 @@
 
     <!-- ==================== النوافذ السفلية المنبثقة (Bottom Sheets) ==================== -->
 
-    <!-- 1. نافذة تسجيل مبيعات سلعة (تاكتيل) -->
+    <!-- 1. نافذة تسجيل مبيعات سلعة -->
     <div v-if="saleModal.product" class="modal-backdrop" @click.self="saleModal.product = null">
       <div class="modal">
         <div class="cc-sheet-handle"></div>
         <div class="row" style="margin-bottom:8px;">
           <div>
             <h3 style="margin:0;">{{ saleModal.product.name }}</h3>
-            <div class="muted num-ltr" style="font-size:0.82rem;">
-              {{ formatMi(productPriceMi(saleModal.product)) }} مي / {{ saleModal.product.sale_unit }}
+            <div class="muted" style="font-size:0.82rem;">
+              <span class="num-ltr">{{ formatMi(productPriceMi(saleModal.product)) }}</span> مي / {{ saleModal.product.sale_unit }}
             </div>
           </div>
           <button type="button" class="btn btn-sm btn-outline" @click="saleModal.product = null">إغلاق</button>
@@ -996,8 +969,8 @@
           <div class="card" style="background:#f9fafb; padding:10px; margin-bottom:12px;">
             <div class="row">
               <span class="muted">المجموع:</span>
-              <strong class="num-ltr" style="color:var(--primary); font-size:1.05rem;">
-                {{ formatMi(inputToMi(saleModal.qtyText) * productPriceMi(saleModal.product)) }} مي
+              <strong style="color:var(--primary); font-size:1.05rem;">
+                <span class="num-ltr">{{ formatMi(inputToMi(saleModal.qtyText) * productPriceMi(saleModal.product)) }}</span> مي
               </strong>
             </div>
           </div>
@@ -1018,7 +991,7 @@
       </div>
     </div>
 
-    <!-- 2. نافذة المواد اليومية (الوسوم السريعة + أزرار مبالغ بالمليم) -->
+    <!-- 2. نافذة المواد اليومية -->
     <div v-if="dailyExpModal.open" class="modal-backdrop" @click.self="closeDailyExpenseModal">
       <div class="modal">
         <div class="cc-sheet-handle"></div>
@@ -1086,20 +1059,22 @@
         </div>
 
         <div v-if="!recordedSalesList.length" class="cc-alert danger" style="font-size:0.84rem;">
-          ⚠️ لم تسجّل أي مبيعات بعد (المداخيل 0 مي). تأكّد قبل الإرسال.
+          ⚠️ لم تسجّل أي مبيعات بعد (المداخيل <span class="num-ltr">0</span> مي). تأكّد قبل الإرسال.
         </div>
-        <div v-if="invDraftItems.length" class="cc-alert" style="font-size:0.84rem;">
+        <div v-if="canUseWorkerInvoices && invDraftItems.length" class="cc-alert" style="font-size:0.84rem;">
           ⚠️ لديك فاتورة مخزن غير مرسلة بعد في باب «الفواتير» ({{ invDraftItems.length }} مواد).
         </div>
 
-        <div class="card" style="background:#f9fafb; line-height:1.9; font-size:0.9rem;">
-          <div class="row"><span>إجمالي المبيعات</span><strong class="num-ltr" style="color:var(--ok);">{{ formatMi(salesTotalMi) }} مي</strong></div>
-          <div class="row"><span>المصاريف اليومية</span><strong class="num-ltr" style="color:var(--danger);">-{{ formatMi(expensesTotalMi) }} مي</strong></div>
-          <div class="row"><span>أجر اليوم</span><strong class="num-ltr" style="color:var(--danger);">-{{ formatMi(workerWageMi) }} مي</strong></div>
+        <div class="card" style="background:#f9fafb; line-height:1.95; font-size:0.9rem;">
+          <div class="row"><span>إجمالي المبيعات</span><strong style="color:var(--ok);"><span class="num-ltr">{{ formatMi(salesTotalMi) }}</span> مي</strong></div>
+          <div class="row"><span>المصاريف اليومية</span><strong style="color:var(--danger);"><span class="num-ltr">-{{ formatMi(expensesTotalMi) }}</span> مي</strong></div>
+          <div class="row"><span>أجر اليوم</span><strong style="color:var(--danger);"><span class="num-ltr">-{{ formatMi(workerWageMi) }}</span> مي</strong></div>
           <hr class="divider" />
           <div class="row" style="font-size:1.05rem;">
             <strong>الصافي المودع</strong>
-            <strong class="num-ltr" :style="{ color: shiftNetMi >= 0 ? 'var(--primary)' : 'var(--danger)' }">{{ formatMi(shiftNetMi) }} مي</strong>
+            <strong :style="{ color: shiftNetMi >= 0 ? 'var(--primary)' : 'var(--danger)' }">
+              <span class="num-ltr">{{ formatMi(shiftNetMi) }}</span> مي
+            </strong>
           </div>
         </div>
 
@@ -1117,7 +1092,7 @@
         <h3 style="margin:0 0 8px; color:var(--primary-dark);">يعطيك الصحة يا {{ member.display_name }}</h3>
         <div class="card" style="background:var(--ok-soft); border-color:#86efac; color:var(--ok); line-height:1.8;">
           تم إرسال يومية <strong class="num-ltr">{{ thankYouInfo.date }}</strong> بنجاح إلى الإدارة.<br />
-          الصافي المودع: <strong class="num-ltr">{{ formatMi(thankYouInfo.netMi) }} مي</strong>
+          الصافي المودع: <strong><span class="num-ltr">{{ formatMi(thankYouInfo.netMi) }}</span> مي</strong>
         </div>
         <button type="button" class="btn btn-primary btn-block" @click="thankYouInfo = null">متابعة</button>
       </div>
@@ -1178,7 +1153,6 @@
         const products = ref([]);
         const stockItems = ref([]);
         const reopenedShifts = ref([]);
-        const recentShifts = ref([]);
         const todayInvoices = ref([]);
         const todayInvoiceItems = ref([]);
 
@@ -1187,7 +1161,6 @@
         const expenses = ref([]);
         const unclassifiedExpText = ref("");
 
-        // حالة جرد الوردية (استلام <- تسليم)
         const handoverState = reactive({
           lockedOpening: false,
           startedAt: "",
@@ -1195,7 +1168,6 @@
           closing: {},
         });
 
-        // مسوّدة الفاتورة
         const invStep = ref(1);
         const invSelectedStockId = ref("");
         const invQtyInputText = ref("");
@@ -1205,7 +1177,6 @@
         const invNote = ref("");
         const invClientTxId = ref("");
 
-        // النوافذ وحالة التسوية
         const saleInputRef = ref(null);
         const saleModal = reactive({ product: null, qtyText: "" });
         const dailyExpModal = reactive({ open: false, selectedTag: CONSUMABLE_QUICK_TAGS[0], amountText: "" });
@@ -1295,6 +1266,10 @@
         };
 
         const hasFeature = (key) => Boolean(cafe.value?.features?.[key]);
+        // الفواتير للعامل اختيارية ومحصورة بتفعيل المشرف العام (وموقوفة افتراضياً)
+        const canUseWorkerInvoices = computed(() =>
+          hasFeature("stock") && Boolean(cafe.value?.settings?.worker_invoices_enabled)
+        );
         const subDaysLeft = computed(() => daysRemaining(cafe.value?.subscription_until, serverEpochMs.value));
         const canWrite = computed(() => Boolean(cafe.value?.active && subDaysLeft.value > 0));
         const workerWageMi = computed(() => Number(member.value?.default_wage_mi || 0));
@@ -1412,7 +1387,6 @@
         );
 
         const shiftTypeLabel = (t) => ({ full: "يوم كامل", morning: "صباحي", evening: "مسائي" }[t] || t);
-        const shiftStatusLabel = (st) => ({ pending: "للمراجعة", reopened: "مفتوحة للتعديل", approved: "معتمدة" }[st] || st);
         const invoiceStatusLabel = (st) => ({ pending: "معلّقة", approved: "معتمدة", rejected: "مرفوضة", reversed: "معكوسة" }[st] || st);
 
         const productCategoryClass = (cat) => {
@@ -1439,7 +1413,7 @@
           return { text: `المخزون: ${avail} ${st.unit}`, cls: "" };
         };
 
-        // ===== حفظ المسوّدة محلياً =====
+        // ===== حفظ المسوّدة محلياً (مرتبطة باليوم الحالي فقط) =====
         const draftStorageKey = () => {
           if (!cafe.value?.id || !member.value?.id) return "";
           return `cc_worker_draft_${cafe.value.id}_${member.value.id}_v${member.value.session_version || 1}`;
@@ -1481,25 +1455,27 @@
             if (!raw) return;
             const d = JSON.parse(raw);
             if (!d || typeof d !== "object") return;
-            if (d.workDate) workDate.value = d.workDate;
-            if (d.shiftType && allowedShiftTypes.value.some((x) => x.val === d.shiftType)) {
-              shiftType.value = d.shiftType;
-            }
-            if (d.salesEntryMode === "shift_count" || d.salesEntryMode === "direct") {
-              salesEntryMode.value = d.salesEntryMode;
-            }
-            if (d.shiftClientTxId) shiftClientTxId.value = d.shiftClientTxId;
-            if (typeof d.shiftNote === "string") shiftNote.value = d.shiftNote;
-            if (d.qtyByProduct && typeof d.qtyByProduct === "object") {
-              Object.keys(qtyByProduct).forEach((key) => delete qtyByProduct[key]);
-              Object.assign(qtyByProduct, d.qtyByProduct);
-            }
-            if (Array.isArray(d.expenses)) expenses.value = d.expenses;
-            if (d.handoverState && typeof d.handoverState === "object") {
-              handoverState.lockedOpening = Boolean(d.handoverState.lockedOpening);
-              handoverState.startedAt = d.handoverState.startedAt || "";
-              handoverState.opening = { ...(d.handoverState.opening || {}) };
-              handoverState.closing = { ...(d.handoverState.closing || {}) };
+            // استعادة مسوّدة اليومية فقط إذا كانت تعود لنفس اليوم الحالي
+            if (d.workDate === serverDateStr.value) {
+              if (d.shiftType && allowedShiftTypes.value.some((x) => x.val === d.shiftType)) {
+                shiftType.value = d.shiftType;
+              }
+              if (d.salesEntryMode === "shift_count" || d.salesEntryMode === "direct") {
+                salesEntryMode.value = d.salesEntryMode;
+              }
+              if (d.shiftClientTxId) shiftClientTxId.value = d.shiftClientTxId;
+              if (typeof d.shiftNote === "string") shiftNote.value = d.shiftNote;
+              if (d.qtyByProduct && typeof d.qtyByProduct === "object") {
+                Object.keys(qtyByProduct).forEach((key) => delete qtyByProduct[key]);
+                Object.assign(qtyByProduct, d.qtyByProduct);
+              }
+              if (Array.isArray(d.expenses)) expenses.value = d.expenses;
+              if (d.handoverState && typeof d.handoverState === "object") {
+                handoverState.lockedOpening = Boolean(d.handoverState.lockedOpening);
+                handoverState.startedAt = d.handoverState.startedAt || "";
+                handoverState.opening = { ...(d.handoverState.opening || {}) };
+                handoverState.closing = { ...(d.handoverState.closing || {}) };
+              }
             }
             if (Array.isArray(d.invDraftItems) && d.invDraftItems.length) {
               invStep.value = d.invStep === 2 ? 2 : 1;
@@ -1519,6 +1495,7 @@
           unclassifiedExpText.value = "";
           shiftNote.value = "";
           reopenShiftId.value = null;
+          workDate.value = serverDateStr.value;
           shiftClientTxId.value = generateTxId("sh");
           handoverState.lockedOpening = false;
           handoverState.startedAt = "";
@@ -1573,7 +1550,6 @@
           products.value = [];
           stockItems.value = [];
           reopenedShifts.value = [];
-          recentShifts.value = [];
           todayInvoices.value = [];
           todayInvoiceItems.value = [];
           reopenShiftId.value = null;
@@ -1621,9 +1597,7 @@
             } else {
               todayInvoiceItems.value = [];
             }
-          } catch {
-            // لا نعطّل الشاشة عند تعذر جلب فواتير اليوم
-          }
+          } catch { /* ignore */ }
         };
 
         const loadBalance = async () => {
@@ -1659,6 +1633,7 @@
 
             if (t?.today) {
               serverDateStr.value = t.today;
+              if (!reopenShiftId.value) workDate.value = t.today;
               if (t.epoch_ms) serverEpochMs.value = Number(t.epoch_ms);
             }
             if (mRes.error) throw mRes.error;
@@ -1678,17 +1653,20 @@
             if (cRes.error) throw cRes.error;
             cafe.value = cRes.data;
 
+            if (activeTab.value === "invoices" && !canUseWorkerInvoices.value) {
+              activeTab.value = "daily";
+            }
+
             const cid = cafe.value.id;
             const stockEnabled = Boolean(cafe.value?.features?.stock);
             const startIso = member.value.session_started_at || member.value.created_at;
 
-            const [pRes, stRes, roRes, recRes] = await Promise.all([
+            const [pRes, stRes, roRes] = await Promise.all([
               supabase.from("products").select("*").eq("cafe_id", cid).order("sort_order", { ascending: true }).order("name", { ascending: true }),
               stockEnabled
                 ? supabase.from("stock_items").select("*").eq("cafe_id", cid).order("sort_order", { ascending: true }).order("name", { ascending: true })
                 : Promise.resolve({ data: [], error: null }),
               supabase.from("daily_shifts").select("*").eq("cafe_id", cid).eq("worker_member_id", member.value.id).eq("status", "reopened").gte("created_at", startIso).order("work_date", { ascending: false }),
-              supabase.from("daily_shifts").select("*").eq("cafe_id", cid).eq("worker_member_id", member.value.id).gte("created_at", startIso).order("work_date", { ascending: false }).limit(15),
             ]);
 
             if (pRes.error) throw pRes.error;
@@ -1696,7 +1674,6 @@
             products.value = pRes.data || [];
             stockItems.value = stRes.data || [];
             reopenedShifts.value = roRes.data || [];
-            recentShifts.value = recRes.data || [];
 
             if (!invSelectedStockId.value && activeStockItems.value.length) {
               invSelectedStockId.value = activeStockItems.value[0].id;
@@ -1812,11 +1789,6 @@
 
         const logout = async () => {
           try { await supabase.auth.signOut(); } finally { clearAllState(); }
-        };
-
-        const onWorkDateChange = async () => {
-          resetShiftTxId();
-          await Promise.all([loadTakenSlots(), loadTodayInvoices()]);
         };
 
         // ===== وضع جرد الوردية (استلام <- تسليم) =====
@@ -2209,6 +2181,7 @@
         };
 
         const submitWorkerInvoice = async () => {
+          if (!canUseWorkerInvoices.value) return notify("ميزة الفواتير غير مفعّلة للعمال.", "err");
           if (!navigator.onLine) return notify("الهاتف غير متصل بالإنترنت — مسوّدة الفاتورة محفوظة.", "err");
           if (!invDraftItems.value.length) return notify(translateError("EMPTY_INVOICE"), "err");
           for (const it of invDraftItems.value) {
@@ -2301,18 +2274,18 @@
           loginForm, setupName,
           activeTab, salesEntryMode, workDate, shiftType, allowedShiftTypes, takenSlots,
           reopenShiftId, shiftNote, products, activeProducts, activeStockItems,
-          reopenedShifts, recentShifts, todayInvoices,
+          reopenedShifts, todayInvoices,
           qtyByProduct, expenses, unclassifiedExpText,
           handoverState, shiftCountSplit, handoverRows, isCountableProduct,
           recordedSalesList, salesTotalMi, expensesTotalMi, workerWageMi, shiftNetMi,
           invStep, invSelectedStockId, currentInvStockItem, invQtyInputText, invQtyPreview,
           invDraftItems, invSupplierName, invPaymentSource, invNote, invTotalCostMi,
           saleInputRef, saleModal, dailyExpModal, closeModalOpen, balanceState, thankYouInfo, toast,
-          canWrite, hasFeature,
+          canWrite, hasFeature, canUseWorkerInvoices,
           formatMi, inputToMi, formatSpacedIntInput,
-          shiftTypeLabel, shiftStatusLabel, invoiceStatusLabel,
+          shiftTypeLabel, invoiceStatusLabel,
           productCategoryClass, productPriceMi, productStockFooter, draftItemByStockId,
-          loginWorker, completeSetup, logout, refreshAll, onWorkDateChange, selectShiftType,
+          loginWorker, completeSetup, logout, refreshAll, selectShiftType,
           setSalesEntryMode, onHandoverInput, bumpHandoverVal, fillOpeningFromSystemStock, toggleOpeningLock,
           openSaleModal, bumpSaleQty, confirmSaleModal, clearProductSale,
           openDailyExpenseModal, selectDailyExpenseTag, bumpDailyExpAmount, addDailyTaggedExpense,
