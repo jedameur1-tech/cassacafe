@@ -9,8 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./core/styles.css?v=1.3.0" />
   <style>
-    /* مبدّل الأشهر العربي التاكتيل */
-    .cc-month-switcher {
+    /* شريط تبديل السنة في الأرشيف */
+    .cc-year-switcher {
       display: grid;
       grid-template-columns: auto 1fr auto;
       align-items: center;
@@ -21,52 +21,23 @@
       padding: 6px;
       margin-bottom: 12px;
     }
-    .cc-month-nav {
+    .cc-year-nav {
       border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text);
       border-radius: 10px;
-      padding: 7px 11px;
+      padding: 7px 12px;
       font-size: 0.8rem;
       font-weight: 700;
       font-family: inherit;
       touch-action: manipulation;
     }
-    .cc-month-label {
-      border: none;
-      background: transparent;
-      color: var(--primary-dark);
-      font-size: 0.94rem;
+    .cc-year-label {
+      text-align: center;
+      font-size: 1rem;
       font-weight: 800;
-      font-family: inherit;
-      padding: 6px 4px;
-      text-align: center;
-      touch-action: manipulation;
-    }
-
-    /* شبكة اختيار الشهر */
-    .cc-month-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .cc-month-cell {
-      border: 1.5px solid var(--border);
-      background: var(--bg);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 11px 6px;
-      font-size: 0.86rem;
-      font-weight: 700;
-      font-family: inherit;
-      text-align: center;
-      touch-action: manipulation;
-    }
-    .cc-month-cell.active {
-      border-color: var(--primary);
-      background: var(--primary);
-      color: #fff;
+      color: var(--primary-dark);
+      font-variant-numeric: tabular-nums;
     }
 
     /* بطاقة اليوم المجمّعة في اليوميات */
@@ -127,6 +98,106 @@
       gap: 8px;
       margin-bottom: 10px;
     }
+
+    /* شاشة فاتورة المخزن المدمجة */
+    .cc-inv-top-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .cc-inv-line {
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+    .cc-inv-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 8px 0;
+    }
+    .cc-unit-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #e5e7eb;
+      padding: 3px;
+      border-radius: 9px;
+      min-width: 122px;
+    }
+    .cc-unit-btn {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 700;
+      font-family: inherit;
+      padding: 6px 6px;
+      border-radius: 7px;
+      touch-action: manipulation;
+    }
+    .cc-unit-btn.active {
+      background: var(--surface);
+      color: var(--primary-dark);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+    .cc-sticky-footer {
+      position: sticky;
+      bottom: -18px;
+      margin: 12px -16px -18px;
+      padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+      z-index: 5;
+    }
+    .cc-quick-add-box {
+      background: #f0fdfa;
+      border: 1px solid #99f6e4;
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    /* الرسم البياني في الأرشيف */
+    .cc-chart-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .cc-chart-svg {
+      width: 100%;
+      height: 170px;
+      display: block;
+      user-select: none;
+    }
+    .cc-chart-focus {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 9px 12px;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.84rem;
+    }
+    .cc-archive-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 13px 14px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
   </style>
 </head>
 <body>
@@ -176,7 +247,7 @@
         <div v-for="c in availableCafes" :key="c.id" class="card" style="background:#f9fafb; padding:10px;">
           <div class="row">
             <div>
-              <strong>{{ c.name }}</strong>
+              <strong>{{ formatCafeTitle(c.name) }}</strong>
               <span class="badge badge-info ltr" style="margin-right:6px;">{{ c.code }}</span>
             </div>
             <button class="btn btn-sm btn-primary" @click="selectCafe(c.id)">فتح</button>
@@ -196,7 +267,7 @@
 
         <div class="cc-top-actions">
           <button
-            v-if="['menu', 'finance', 'settings'].includes(tab)"
+            v-if="['menu', 'finance', 'settings', 'archive'].includes(tab)"
             class="cc-back-btn cc-tap"
             @click="tab = 'cafe'"
           >
@@ -210,8 +281,9 @@
               @change="selectCafe($event.target.value)"
               style="width:auto; padding:6px 8px; font-size:0.8rem; border-radius:10px;"
             >
-              <option v-for="c in availableCafes" :key="c.id" :value="c.id">{{ c.name }}</option>
+              <option v-for="c in availableCafes" :key="c.id" :value="c.id">{{ formatCafeTitle(c.name) }}</option>
             </select>
+            <button class="cc-icon-btn cc-tap" @click="openArchive" title="الأرشيف والرسم البياني">📊</button>
             <button class="cc-icon-btn cc-tap" @click="refreshAll(true)" :disabled="busy" title="تحديث البيانات">
               <span :class="{ 'cc-spinning': refreshing }">🔄</span>
             </button>
@@ -226,7 +298,7 @@
       </header>
 
       <main class="cc-main">
-        <!-- ==================== 0. الصفحة الرئيسية (الوحيدة التي تعرض الربح) ==================== -->
+        <!-- ==================== 0. الصفحة الرئيسية (الشهر الحالي فقط + الربح) ==================== -->
         <section v-if="tab === 'home'">
           <div v-if="!canWrite" class="cc-alert danger">
             <strong>وضع القراءة فقط:</strong>
@@ -234,13 +306,6 @@
           </div>
           <div v-else-if="subDaysLeft <= 5" class="cc-alert">
             تنبيه: يتبقّى <strong>{{ subDaysLeft }}</strong> يوم على نهاية الاشتراك ({{ formatDate(cafe.subscription_until) }}).
-          </div>
-
-          <!-- مبدّل الشهر بالعربية -->
-          <div class="cc-month-switcher">
-            <button type="button" class="cc-month-nav cc-tap" @click="shiftMonth(-1)" :disabled="busy">السابق</button>
-            <button type="button" class="cc-month-label cc-tap" @click="openMonthPicker">{{ selectedMonthLabel }} ▾</button>
-            <button type="button" class="cc-month-nav cc-tap" @click="shiftMonth(1)" :disabled="busy">التالي</button>
           </div>
 
           <div
@@ -263,7 +328,7 @@
           </div>
 
           <div class="cc-hero">
-            <div class="cc-hero-lbl">ربح شهر {{ selectedMonthLabel }}</div>
+            <div class="cc-hero-lbl">ربح شهر {{ currentMonthLabel }}</div>
             <div class="cc-hero-val">
               {{ miToTnd(monthStats.netMi) }} <small>د.ت</small>
             </div>
@@ -313,9 +378,9 @@
           </div>
         </section>
 
-        <!-- ==================== 1. اليوميات (جملية حسب اليوم + تفصيل بالفترة عند الضغط) والعمال ==================== -->
+        <!-- ==================== 1. اليوميات (الشهر الحالي) والعمال ==================== -->
         <section v-if="tab === 'shifts' || tab === 'workers'">
-          <div v-if="hasWorkersInPattern" class="cc-segment">
+          <div v-if="!isOwnerOnly" class="cc-segment">
             <button class="cc-seg-btn cc-tap" :class="{ active: tab === 'shifts' }" @click="tab = 'shifts'">
               اليوميات
               <span v-if="pendingShifts.length" class="badge badge-warn">{{ pendingShifts.length }}</span>
@@ -326,7 +391,7 @@
           </div>
 
           <template v-if="tab === 'shifts'">
-            <!-- الورديات التي تتطلب مراجعة واعتماداً فورياً -->
+            <!-- الورديات التي تتطلب مراجعة واعتماداً (من أي شهر حتى لا تضيع) -->
             <div v-if="attentionShifts.length" style="margin-bottom:14px;">
               <strong style="display:block; margin-bottom:8px; color:var(--warn);">
                 يوميات للمراجعة ({{ attentionShifts.length }})
@@ -335,8 +400,8 @@
                 <div class="row" style="margin-bottom:6px;">
                   <div>
                     <strong class="ltr">{{ s.work_date }}</strong>
-                    <span class="badge badge-info" style="margin-right:6px;">{{ shiftTypeLabel(s.shift_type) }}</span>
-                    <span class="muted" style="margin-right:6px;">{{ s.worker_name_snapshot }}</span>
+                    <span v-if="!isOwnerOnly" class="badge badge-info" style="margin-right:6px;">{{ shiftTypeLabel(s.shift_type) }}</span>
+                    <span v-if="!isOwnerOnly" class="muted" style="margin-right:6px;">{{ s.worker_name_snapshot }}</span>
                   </div>
                   <span class="badge" :class="shiftStatusBadge(s.status).cls">{{ shiftStatusBadge(s.status).label }}</span>
                 </div>
@@ -344,7 +409,7 @@
                 <div class="muted num" style="margin-bottom:8px;">
                   المبيعات: <strong>{{ miToTnd(s.sales_total_mi) }}</strong> د.ت
                   • المصاريف: <strong>{{ miToTnd(s.expenses_total_mi) }}</strong> د.ت
-                  <span v-if="!s.is_owner_shift"> • الأجر: <strong>{{ miToTnd(s.wage_mi) }}</strong> د.ت</span>
+                  <span v-if="!isOwnerOnly && !s.is_owner_shift"> • الأجر: <strong>{{ miToTnd(s.wage_mi) }}</strong> د.ت</span>
                   <br />
                   الصافي: <strong style="color:var(--primary);">{{ miToTnd(shiftNetMi(s)) }} د.ت</strong>
                   <span v-if="s.reopen_reason" style="display:block; color:var(--danger);">سبب الفتح: {{ s.reopen_reason }}</span>
@@ -355,7 +420,7 @@
                   <button class="btn btn-sm btn-outline" @click="openShiftDetail(s)">التفاصيل</button>
                   <div class="row" v-if="canWrite">
                     <button v-if="s.status === 'pending'" class="btn btn-sm btn-primary" @click="openApproveShiftModal(s)" :disabled="busy">اعتماد</button>
-                    <button v-if="s.status === 'pending'" class="btn btn-sm btn-warn" @click="reopenShiftAction(s)" :disabled="busy">إرجاع</button>
+                    <button v-if="s.status === 'pending' && !isOwnerOnly" class="btn btn-sm btn-warn" @click="reopenShiftAction(s)" :disabled="busy">إرجاع</button>
                     <button v-if="s.status === 'reopened'" class="btn btn-sm btn-primary" @click="openShiftModal(s)" :disabled="busy">تعديل</button>
                     <button v-if="s.status === 'pending' || s.status === 'reopened'" class="btn btn-sm btn-danger-soft" @click="deleteShiftAction(s)" :disabled="busy">حذف</button>
                   </div>
@@ -363,86 +428,105 @@
               </div>
             </div>
 
-            <!-- مبدّل الشهر بالعربية -->
-            <div class="cc-month-switcher">
-              <button type="button" class="cc-month-nav cc-tap" @click="shiftMonth(-1)" :disabled="busy">السابق</button>
-              <button type="button" class="cc-month-label cc-tap" @click="openMonthPicker">{{ selectedMonthLabel }} ▾</button>
-              <button type="button" class="cc-month-nav cc-tap" @click="shiftMonth(1)" :disabled="busy">التالي</button>
-            </div>
-
             <div class="row" style="margin-bottom:8px;">
-              <strong>سجل أيام {{ selectedMonthLabel }} ({{ groupedMonthShifts.length }} يوم)</strong>
-              <span class="muted" style="font-size:0.78rem;">اضغط على أي يوم لتفصيل الفترات</span>
+              <strong>يوميات {{ currentMonthLabel }} ({{ groupedMonthShifts.length }} يوم)</strong>
+              <button type="button" class="btn btn-sm btn-outline" @click="openArchive">📊 الأرشيف</button>
             </div>
 
             <div v-if="!groupedMonthShifts.length" class="card" style="text-align:center;">
-              <p class="muted">لا توجد يوميات مسجّلة في شهر {{ selectedMonthLabel }} بعد.</p>
+              <p class="muted">لا توجد يوميات مسجّلة في شهر {{ currentMonthLabel }} بعد.</p>
             </div>
 
-            <!-- بطاقة لكل يوم (جملية) وتنفتح بالضغط لعرض الفترات -->
+            <!-- عرض الأيام: مبسّط للمالك الوحيد، ومجمّع قابل للفتح للفترات عند وجود عمال -->
             <div v-for="day in groupedMonthShifts" :key="day.work_date" class="cc-day-card">
-              <div class="cc-day-head cc-tap" @click="toggleDayExpand(day.work_date)">
-                <div style="min-width:0;">
-                  <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+              <!-- وضع المالك فقط (يومية واحدة في اليوم -> بطاقة مباشرة بدون فترات) -->
+              <template v-if="isOwnerOnly && day.shifts.length === 1">
+                <div style="padding:13px 14px;">
+                  <div class="row cc-tap" style="margin-bottom:6px;" @click="openShiftDetail(day.shifts[0])">
                     <strong class="ltr" style="font-size:0.96rem;">{{ day.work_date }}</strong>
-                    <span class="badge badge-info">{{ dayShiftTypesLabel(day.shifts) }}</span>
-                    <span v-if="day.pendingCount > 0" class="badge badge-warn">{{ day.pendingCount }} للمراجعة</span>
-                    <span v-else-if="day.reopenedCount > 0" class="badge badge-danger">مفتوحة</span>
-                    <span v-else-if="day.allSettled" class="badge badge-ok">مُسوّى</span>
+                    <strong class="num" style="color:var(--primary); font-size:1rem;">{{ miToTnd(day.netMi) }} د.ت</strong>
                   </div>
-                  <div class="muted num" style="font-size:0.78rem; margin-top:4px;">
+                  <div class="muted num" style="font-size:0.8rem; margin-bottom:8px;">
                     مبيعات: <strong>{{ miToTnd(day.salesMi) }}</strong>
                     • مصاريف: <strong>{{ miToTnd(day.expensesMi) }}</strong>
-                    <span v-if="day.wagesMi > 0"> • أجور: <strong>{{ miToTnd(day.wagesMi) }}</strong></span>
+                    <span v-if="day.shifts[0].note" style="display:block;">ملاحظة: {{ day.shifts[0].note }}</span>
                   </div>
-                </div>
-                <div style="text-align:left; flex-shrink:0;">
-                  <strong class="num" style="color:var(--primary); font-size:1rem; display:block;">
-                    {{ miToTnd(day.netMi) }} د.ت
-                  </strong>
-                  <span class="muted" style="font-size:0.76rem; font-weight:700;">
-                    {{ expandedDays[day.work_date] ? "إخفاء ▲" : "الفترات ▼" }}
-                  </span>
-                </div>
-              </div>
-
-              <!-- تفصيل الفترات داخل اليوم -->
-              <div v-if="expandedDays[day.work_date]" class="cc-day-body">
-                <div v-for="s in day.shifts" :key="s.id" class="cc-shift-sub">
-                  <div class="row" style="margin-bottom:6px;">
-                    <div>
-                      <span class="badge badge-info">{{ shiftTypeLabel(s.shift_type) }}</span>
-                      <strong style="margin-right:6px; font-size:0.9rem;">{{ s.worker_name_snapshot }}</strong>
-                    </div>
-                    <div class="row" style="gap:4px;">
-                      <span v-if="s.settled" class="badge badge-ok">مُسوّاة</span>
-                      <span class="badge" :class="shiftStatusBadge(s.status).cls">{{ shiftStatusBadge(s.status).label }}</span>
-                    </div>
-                  </div>
-
-                  <div class="muted num" style="font-size:0.82rem; margin-bottom:8px;">
-                    مبيعات: <strong>{{ miToTnd(s.sales_total_mi) }}</strong>
-                    • مصاريف: <strong>{{ miToTnd(s.expenses_total_mi) }}</strong>
-                    <span v-if="!s.is_owner_shift"> • أجر: <strong>{{ miToTnd(s.wage_mi) }}</strong></span>
-                    • صافي: <strong style="color:var(--primary);">{{ miToTnd(shiftNetMi(s)) }} د.ت</strong>
-                  </div>
-
                   <div class="row">
-                    <button class="btn btn-sm btn-outline" @click="openShiftDetail(s)">التفاصيل</button>
-                    <div class="row" v-if="canWrite && !s.settled">
-                      <button v-if="s.status === 'pending'" class="btn btn-sm btn-primary" @click="openApproveShiftModal(s)" :disabled="busy">اعتماد</button>
-                      <button v-if="s.status === 'approved' || s.status === 'pending'" class="btn btn-sm btn-warn" @click="reopenShiftAction(s)" :disabled="busy">إعادة فتح</button>
-                      <button v-if="s.status === 'reopened'" class="btn btn-sm btn-primary" @click="openShiftModal(s)" :disabled="busy">تعديل</button>
-                      <button v-if="s.status === 'pending' || s.status === 'reopened'" class="btn btn-sm btn-danger-soft" @click="deleteShiftAction(s)" :disabled="busy">حذف</button>
+                    <button class="btn btn-sm btn-outline" @click="openShiftDetail(day.shifts[0])">التفاصيل</button>
+                    <div class="row" v-if="canWrite && !day.shifts[0].settled">
+                      <button v-if="day.shifts[0].status === 'approved'" class="btn btn-sm btn-warn" @click="reopenShiftAction(day.shifts[0])" :disabled="busy">تعديل / فتح</button>
+                      <button v-if="day.shifts[0].status === 'reopened'" class="btn btn-sm btn-primary" @click="openShiftModal(day.shifts[0])" :disabled="busy">حفظ التعديل</button>
+                      <button v-if="day.shifts[0].status !== 'approved'" class="btn btn-sm btn-danger-soft" @click="deleteShiftAction(day.shifts[0])" :disabled="busy">حذف</button>
                     </div>
                   </div>
                 </div>
-              </div>
+              </template>
+
+              <!-- وضع الفترات (صباحي / مسائي) -->
+              <template v-else>
+                <div class="cc-day-head cc-tap" @click="toggleDayExpand(day.work_date)">
+                  <div style="min-width:0;">
+                    <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                      <strong class="ltr" style="font-size:0.96rem;">{{ day.work_date }}</strong>
+                      <span v-if="!isOwnerOnly" class="badge badge-info">{{ dayShiftTypesLabel(day.shifts) }}</span>
+                      <span v-if="day.pendingCount > 0" class="badge badge-warn">{{ day.pendingCount }} للمراجعة</span>
+                      <span v-else-if="day.reopenedCount > 0" class="badge badge-danger">مفتوحة</span>
+                      <span v-else-if="!isOwnerOnly && day.allSettled" class="badge badge-ok">مُسوّى</span>
+                    </div>
+                    <div class="muted num" style="font-size:0.78rem; margin-top:4px;">
+                      مبيعات: <strong>{{ miToTnd(day.salesMi) }}</strong>
+                      • مصاريف: <strong>{{ miToTnd(day.expensesMi) }}</strong>
+                      <span v-if="day.wagesMi > 0"> • أجور: <strong>{{ miToTnd(day.wagesMi) }}</strong></span>
+                    </div>
+                  </div>
+                  <div style="text-align:left; flex-shrink:0;">
+                    <strong class="num" style="color:var(--primary); font-size:1rem; display:block;">
+                      {{ miToTnd(day.netMi) }} د.ت
+                    </strong>
+                    <span class="muted" style="font-size:0.76rem; font-weight:700;">
+                      {{ expandedDays[day.work_date] ? "إخفاء ▲" : "الفترات ▼" }}
+                    </span>
+                  </div>
+                </div>
+
+                <div v-if="expandedDays[day.work_date]" class="cc-day-body">
+                  <div v-for="s in day.shifts" :key="s.id" class="cc-shift-sub">
+                    <div class="row" style="margin-bottom:6px;">
+                      <div>
+                        <span v-if="!isOwnerOnly" class="badge badge-info">{{ shiftTypeLabel(s.shift_type) }}</span>
+                        <strong v-if="!isOwnerOnly" style="margin-right:6px; font-size:0.9rem;">{{ s.worker_name_snapshot }}</strong>
+                        <strong v-else style="font-size:0.9rem;">يومية مسجّلة</strong>
+                      </div>
+                      <div class="row" style="gap:4px;" v-if="!isOwnerOnly">
+                        <span v-if="s.settled" class="badge badge-ok">مُسوّاة</span>
+                        <span class="badge" :class="shiftStatusBadge(s.status).cls">{{ shiftStatusBadge(s.status).label }}</span>
+                      </div>
+                    </div>
+
+                    <div class="muted num" style="font-size:0.82rem; margin-bottom:8px;">
+                      مبيعات: <strong>{{ miToTnd(s.sales_total_mi) }}</strong>
+                      • مصاريف: <strong>{{ miToTnd(s.expenses_total_mi) }}</strong>
+                      <span v-if="!isOwnerOnly && !s.is_owner_shift"> • أجر: <strong>{{ miToTnd(s.wage_mi) }}</strong></span>
+                      • صافي: <strong style="color:var(--primary);">{{ miToTnd(shiftNetMi(s)) }} د.ت</strong>
+                    </div>
+
+                    <div class="row">
+                      <button class="btn btn-sm btn-outline" @click="openShiftDetail(s)">التفاصيل</button>
+                      <div class="row" v-if="canWrite && !s.settled">
+                        <button v-if="s.status === 'pending'" class="btn btn-sm btn-primary" @click="openApproveShiftModal(s)" :disabled="busy">اعتماد</button>
+                        <button v-if="s.status === 'approved' || s.status === 'pending'" class="btn btn-sm btn-warn" @click="reopenShiftAction(s)" :disabled="busy">إعادة فتح</button>
+                        <button v-if="s.status === 'reopened'" class="btn btn-sm btn-primary" @click="openShiftModal(s)" :disabled="busy">تعديل</button>
+                        <button v-if="s.status === 'pending' || s.status === 'reopened'" class="btn btn-sm btn-danger-soft" @click="deleteShiftAction(s)" :disabled="busy">حذف</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
             </div>
           </template>
 
-          <!-- قسم العمال -->
-          <template v-if="tab === 'workers' && hasWorkersInPattern">
+          <!-- قسم العمال (يظهر فقط عند وجود عمال) -->
+          <template v-if="tab === 'workers' && !isOwnerOnly">
             <div v-if="!activeWorkers.length" class="card" style="text-align:center;">
               <p class="muted">لا يوجد عمال نشطون في النمط الحالي.</p>
             </div>
@@ -575,7 +659,7 @@
                 </div>
                 <div class="muted" style="margin-bottom:8px;">
                   الدفع: <strong>{{ paymentSourceLabel(inv.payment_source) }}</strong>
-                  • {{ inv.worker_name_snapshot }}
+                  <span v-if="!isOwnerOnly"> • {{ inv.worker_name_snapshot }}</span>
                   <span v-if="inv.note" style="display:block;">ملاحظة: {{ inv.note }}</span>
                 </div>
                 <div class="row">
@@ -588,15 +672,13 @@
               </div>
             </div>
 
-            <div class="cc-month-switcher">
-              <button type="button" class="cc-month-nav cc-tap" @click="shiftMonth(-1)" :disabled="busy">السابق</button>
-              <button type="button" class="cc-month-label cc-tap" @click="openMonthPicker">{{ selectedMonthLabel }} ▾</button>
-              <button type="button" class="cc-month-nav cc-tap" @click="shiftMonth(1)" :disabled="busy">التالي</button>
+            <div class="row" style="margin-bottom:8px;">
+              <strong>فواتير {{ currentMonthLabel }} ({{ monthInvoices.length }})</strong>
+              <button type="button" class="btn btn-sm btn-outline" @click="openArchive">📊 الأرشيف</button>
             </div>
 
-            <strong style="display:block; margin-bottom:8px;">فواتير {{ selectedMonthLabel }} ({{ monthInvoices.length }})</strong>
             <div v-if="!monthInvoices.length" class="card" style="text-align:center;">
-              <p class="muted">لا توجد فواتير مخزن مسجّلة في شهر {{ selectedMonthLabel }}.</p>
+              <p class="muted">لا توجد فواتير مخزن مسجّلة في شهر {{ currentMonthLabel }}.</p>
             </div>
             <div v-for="inv in monthInvoices" :key="inv.id" class="card">
               <div class="row" style="margin-bottom:6px;">
@@ -605,14 +687,14 @@
                   <span class="muted ltr" style="margin-right:6px;">{{ inv.work_date }}</span>
                 </div>
                 <div class="row" style="gap:4px;">
-                  <span v-if="inv.settled" class="badge badge-ok">مُسوّاة</span>
-                  <span class="badge" :class="invoiceStatusBadge(inv.status).cls">{{ invoiceStatusBadge(inv.status).label }}</span>
+                  <span v-if="!isOwnerOnly && inv.settled" class="badge badge-ok">مُسوّاة</span>
+                  <span v-if="!isOwnerOnly || inv.status !== 'approved'" class="badge" :class="invoiceStatusBadge(inv.status).cls">{{ invoiceStatusBadge(inv.status).label }}</span>
                 </div>
               </div>
               <div class="muted num" style="margin-bottom:8px;">
                 المبلغ: <strong>{{ miToTnd(inv.total_amount_mi) }} د.ت</strong>
                 • {{ paymentSourceLabel(inv.payment_source) }}
-                • {{ inv.worker_name_snapshot }}
+                <span v-if="!isOwnerOnly"> • {{ inv.worker_name_snapshot }}</span>
               </div>
               <div class="row">
                 <button class="btn btn-sm btn-outline" @click="openInvoiceDetail(inv)">التفاصيل</button>
@@ -632,6 +714,10 @@
             <button class="cc-module-item cc-tap" @click="tab = 'menu'">
               <div class="cc-module-ico">☕</div>
               <span>السلع والأسعار ({{ products.length }})</span>
+            </button>
+            <button class="cc-module-item cc-tap" @click="openArchive">
+              <div class="cc-module-ico">📊</div>
+              <span>الأرشيف</span>
             </button>
             <button class="cc-module-item cc-tap" @click="tab = 'finance'">
               <div class="cc-module-ico">🧾</div>
@@ -656,7 +742,143 @@
           </div>
         </section>
 
-        <!-- ==================== 4. صفحة السلع والأسعار ==================== -->
+        <!-- ==================== 4. صفحة الأرشيف والرسم البياني ==================== -->
+        <section v-if="tab === 'archive'">
+          <div class="cc-year-switcher">
+            <button type="button" class="cc-year-nav cc-tap" @click="changeArchiveYear(-1)" :disabled="archiveLoading">السنة السابقة</button>
+            <div class="cc-year-label">{{ archiveYear }}</div>
+            <button type="button" class="cc-year-nav cc-tap" @click="changeArchiveYear(1)" :disabled="archiveLoading">السنة التالية</button>
+          </div>
+
+          <!-- ملخص السنة -->
+          <div class="grid-3-inline" style="margin-bottom:12px;">
+            <div class="stat" style="padding:10px 4px;">
+              <div class="stat-val" style="font-size:1rem;" :style="{ color: archiveYearTotals.netMi >= 0 ? 'var(--ok)' : 'var(--danger)' }">
+                {{ miToTnd(archiveYearTotals.netMi) }}
+              </div>
+              <div class="stat-lbl">ربح {{ archiveYear }}</div>
+            </div>
+            <div class="stat" style="padding:10px 4px;">
+              <div class="stat-val" style="font-size:1rem; color:var(--primary);">{{ miToTnd(archiveYearTotals.salesMi) }}</div>
+              <div class="stat-lbl">المداخيل</div>
+            </div>
+            <div class="stat" style="padding:10px 4px;">
+              <div class="stat-val" style="font-size:1rem; color:var(--danger);">{{ miToTnd(archiveYearTotals.expensesMi) }}</div>
+              <div class="stat-lbl">المصاريف</div>
+            </div>
+          </div>
+
+          <!-- الرسم البياني التفاعلي -->
+          <div class="cc-chart-wrap">
+            <div class="cc-segment three" style="margin-bottom:10px;">
+              <button type="button" class="cc-seg-btn cc-tap" :class="{ active: archiveMetric === 'net' }" @click="archiveMetric = 'net'">الربح</button>
+              <button type="button" class="cc-seg-btn cc-tap" :class="{ active: archiveMetric === 'sales' }" @click="archiveMetric = 'sales'">المداخيل</button>
+              <button type="button" class="cc-seg-btn cc-tap" :class="{ active: archiveMetric === 'expenses' }" @click="archiveMetric = 'expenses'">المصاريف</button>
+            </div>
+
+            <div v-if="archiveLoading" class="muted" style="text-align:center; padding:45px 0;">جارٍ تحميل بيانات {{ archiveYear }}...</div>
+            <template v-else>
+              <svg viewBox="0 0 360 165" class="cc-chart-svg" role="img" aria-label="رسم بياني للأشهر">
+                <!-- خط الصفر المرجعي -->
+                <line x1="6" :y1="archiveChart.zeroY" x2="354" :y2="archiveChart.zeroY" stroke="#e5e7eb" stroke-width="1.2" />
+                <g
+                  v-for="bar in archiveChart.bars"
+                  :key="bar.monthKey"
+                  style="cursor:pointer;"
+                  @click="archiveSelectedMonth = bar.monthKey"
+                >
+                  <!-- مساحة لمس شفافة لكل عمود -->
+                  <rect :x="bar.slotX" y="4" :width="bar.slotW" height="156" fill="transparent" />
+                  <!-- خلفية خفيفة للشهر المختار -->
+                  <rect
+                    v-if="archiveSelectedMonth === bar.monthKey"
+                    :x="bar.slotX + 1"
+                    y="6"
+                    :width="bar.slotW - 2"
+                    height="152"
+                    rx="6"
+                    fill="#f0fdfa"
+                  />
+                  <!-- العمود -->
+                  <rect
+                    :x="bar.x"
+                    :y="bar.y"
+                    :width="bar.w"
+                    :height="bar.h"
+                    rx="4"
+                    :fill="bar.color"
+                    :opacity="archiveSelectedMonth === bar.monthKey ? 1 : (bar.hasData ? 0.78 : 0.22)"
+                  />
+                  <!-- اسم الشهر المختصر -->
+                  <text
+                    :x="bar.cx"
+                    y="153"
+                    text-anchor="middle"
+                    font-size="8.5"
+                    :font-weight="archiveSelectedMonth === bar.monthKey ? '800' : '600'"
+                    :fill="archiveSelectedMonth === bar.monthKey ? '#0a544e' : '#6b7280'"
+                  >
+                    {{ bar.shortName }}
+                  </text>
+                </g>
+              </svg>
+
+              <!-- بطاقة قراءة الشهر المحدد من الرسم -->
+              <div v-if="archiveFocusMonth" class="cc-chart-focus">
+                <div>
+                  <strong>{{ archiveFocusMonth.label }}</strong>
+                  <div class="muted num" style="font-size:0.76rem;">
+                    مداخيل: {{ miToTnd(archiveFocusMonth.salesMi) }} • مصاريف: {{ miToTnd(archiveFocusMonth.expensesMi) }}
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <strong class="num" :style="{ color: archiveFocusMonth.netMi >= 0 ? 'var(--ok)' : 'var(--danger)' }">
+                    {{ miToTnd(archiveFocusMonth.netMi) }} د.ت
+                  </strong>
+                  <button
+                    v-if="archiveFocusMonth.hasData"
+                    type="button"
+                    class="btn btn-sm btn-primary"
+                    @click="openArchiveMonthDetail(archiveFocusMonth)"
+                  >
+                    تفاصيل
+                  </button>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <!-- قائمة الأشهر المسجّلة في هذه السنة -->
+          <strong style="display:block; margin-bottom:8px;">الأشهر المسجّلة في {{ archiveYear }} ({{ archiveActiveMonths.length }})</strong>
+          <div v-if="!archiveLoading && !archiveActiveMonths.length" class="card" style="text-align:center;">
+            <p class="muted">لا توجد بيانات مسجّلة في سنة {{ archiveYear }}.</p>
+          </div>
+
+          <div
+            v-for="m in archiveActiveMonths"
+            :key="m.monthKey"
+            class="cc-archive-row cc-tap"
+            @click="openArchiveMonthDetail(m)"
+          >
+            <div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <strong style="font-size:0.95rem;">{{ m.label }}</strong>
+                <span v-if="m.monthKey === currentServerMonth" class="badge badge-info">الشهر الحالي</span>
+              </div>
+              <div class="muted num" style="font-size:0.78rem; margin-top:3px;">
+                مداخيل: <strong>{{ miToTnd(m.salesMi) }}</strong> • مصاريف: <strong>{{ miToTnd(m.expensesMi) }}</strong>
+              </div>
+            </div>
+            <div style="text-align:left; flex-shrink:0;">
+              <strong class="num" :style="{ color: m.netMi >= 0 ? 'var(--ok)' : 'var(--danger)', display: 'block' }">
+                {{ miToTnd(m.netMi) }} د.ت
+              </strong>
+              <span class="muted" style="font-size:0.74rem; font-weight:700;">عرض ⬅</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== 5. صفحة السلع والأسعار ==================== -->
         <section v-if="tab === 'menu'">
           <div style="margin-bottom:12px;">
             <input type="search" v-model.trim="menuSearch" placeholder="ابحث عن سلعة أو صنف..." />
@@ -694,16 +916,13 @@
           </div>
         </section>
 
-        <!-- ==================== 5. صفحة تفصيل الشهر والمصاريف الثابتة ==================== -->
+        <!-- ==================== 6. صفحة تفصيل الشهر الحالي والمصاريف الثابتة ==================== -->
         <section v-if="tab === 'finance'">
-          <div class="cc-month-switcher">
-            <button type="button" class="cc-month-nav cc-tap" @click="shiftMonth(-1)" :disabled="busy">السابق</button>
-            <button type="button" class="cc-month-label cc-tap" @click="openMonthPicker">{{ selectedMonthLabel }} ▾</button>
-            <button type="button" class="cc-month-nav cc-tap" @click="shiftMonth(1)" :disabled="busy">التالي</button>
-          </div>
-
           <div class="card">
-            <h3 style="margin:0 0 10px;">تفصيل شهر {{ selectedMonthLabel }}</h3>
+            <div class="row" style="margin-bottom:10px;">
+              <h3 style="margin:0;">تفصيل شهر {{ currentMonthLabel }}</h3>
+              <button type="button" class="btn btn-sm btn-outline" @click="openArchive">📊 الأرشيف</button>
+            </div>
             <div class="row" style="margin-bottom:6px;">
               <span>إجمالي المبيعات</span>
               <strong class="num" style="color:var(--ok);">+ {{ miToTnd(monthStats.salesMi) }} د.ت</strong>
@@ -712,7 +931,7 @@
               <span>المصاريف اليومية</span>
               <strong class="num" style="color:var(--danger);">- {{ miToTnd(monthStats.expensesMi) }} د.ت</strong>
             </div>
-            <div class="row" style="margin-bottom:6px;">
+            <div v-if="!isOwnerOnly || monthStats.wagesMi > 0" class="row" style="margin-bottom:6px;">
               <span>أجور العمال</span>
               <strong class="num" style="color:var(--danger);">- {{ miToTnd(monthStats.wagesMi) }} د.ت</strong>
             </div>
@@ -741,7 +960,7 @@
 
           <strong style="display:block; margin:14px 0 8px;">المصاريف الثابتة ({{ fixedExpenses.length }})</strong>
           <div v-if="!fixedExpenses.length" class="card" style="text-align:center;">
-            <p class="muted">لا توجد مصاريف ثابتة مسجّلة لشهر {{ selectedMonthLabel }}.</p>
+            <p class="muted">لا توجد مصاريف ثابتة مسجّلة لشهر {{ currentMonthLabel }}.</p>
           </div>
 
           <div v-for="fe in fixedExpenses" :key="fe.id" class="card">
@@ -765,13 +984,15 @@
           </div>
         </section>
 
-        <!-- ==================== 6. الإعدادات ومعلومات المقهى ==================== -->
+        <!-- ==================== 7. الإعدادات ومعلومات المقهى ==================== -->
         <section v-if="tab === 'settings'">
           <div class="card">
             <h3 style="margin:0 0 10px;">معلومات المقهى</h3>
             <div class="muted" style="line-height:1.9;">
-              الاسم: <strong>{{ cafe.name }}</strong><br />
-              رمز الدخول للعمال: <strong class="ltr">{{ cafe.code }}</strong><br />
+              الاسم: <strong>{{ cafeDisplayTitle }}</strong><br />
+              <template v-if="!isOwnerOnly">
+                رمز الدخول للعمال: <strong class="ltr">{{ cafe.code }}</strong><br />
+              </template>
               نمط العمل: <strong>{{ WORK_PATTERNS[cafe.work_pattern] || cafe.work_pattern }}</strong><br />
               نهاية الاشتراك: <strong>{{ formatDate(cafe.subscription_until) }}</strong>
               ({{ subDaysLeft > 0 ? `متبقي ${subDaysLeft} يوم` : "منتهي" }})
@@ -831,37 +1052,103 @@
 
     <!-- ==================== النوافذ السفلية المنبثقة (Modals) ==================== -->
 
-    <!-- نافذة اختيار الشهر والسنة بالعربية -->
-    <div v-if="monthPicker.open" class="modal-backdrop" style="z-index:65;" @click.self="monthPicker.open = false">
+    <!-- نافذة تفاصيل شهر من الأرشيف -->
+    <div v-if="archiveDetail.month" class="modal-backdrop" style="z-index:58;" @click.self="archiveDetail.month = null">
       <div class="modal">
         <div class="cc-sheet-handle"></div>
-        <div class="row" style="margin-bottom:12px;">
-          <h3 style="margin:0;">اختر الشهر</h3>
-          <button class="btn btn-sm btn-outline" @click="monthPicker.open = false">إغلاق</button>
+        <div class="row" style="margin-bottom:10px;">
+          <h3 style="margin:0;">أرشيف {{ archiveDetail.month.label }}</h3>
+          <button class="btn btn-sm btn-outline" @click="archiveDetail.month = null">إغلاق</button>
         </div>
 
-        <div class="cc-month-switcher" style="margin-bottom:12px;">
-          <button type="button" class="cc-month-nav cc-tap" @click="monthPicker.year -= 1">السنة السابقة</button>
-          <div class="cc-month-label num">{{ monthPicker.year }}</div>
-          <button type="button" class="cc-month-nav cc-tap" @click="monthPicker.year += 1">السنة التالية</button>
+        <div class="cc-segment three" style="margin-bottom:12px;">
+          <button type="button" class="cc-seg-btn cc-tap" :class="{ active: archiveDetail.subTab === 'summary' }" @click="archiveDetail.subTab = 'summary'">الملخص</button>
+          <button type="button" class="cc-seg-btn cc-tap" :class="{ active: archiveDetail.subTab === 'shifts' }" @click="archiveDetail.subTab = 'shifts'">اليوميات ({{ archiveDetail.shifts.length }})</button>
+          <button type="button" class="cc-seg-btn cc-tap" :class="{ active: archiveDetail.subTab === 'expenses' }" @click="archiveDetail.subTab = 'expenses'">الفواتير والمصاريف</button>
         </div>
 
-        <div class="cc-month-grid">
-          <button
-            type="button"
-            v-for="(mName, idx) in ARABIC_MONTHS"
-            :key="idx"
-            class="cc-month-cell cc-tap"
-            :class="{ active: selectedMonth === `${monthPicker.year}-${String(idx + 1).padStart(2, '0')}` }"
-            @click="pickMonth(idx + 1)"
-          >
-            {{ mName }}
-          </button>
+        <div v-if="archiveDetail.loading" class="muted" style="text-align:center; padding:24px 0;">جارٍ تحميل سجل الشهر...</div>
+
+        <!-- ملخص الشهر المؤرشف -->
+        <div v-else-if="archiveDetail.subTab === 'summary'" class="num">
+          <div class="row" style="margin-bottom:6px;">
+            <span>إجمالي المبيعات</span>
+            <strong style="color:var(--ok);">+ {{ miToTnd(archiveDetail.month.salesMi) }} د.ت</strong>
+          </div>
+          <div class="row" style="margin-bottom:6px;">
+            <span>المصاريف اليومية</span>
+            <strong style="color:var(--danger);">- {{ miToTnd(archiveDetail.month.dailyExpensesMi) }} د.ت</strong>
+          </div>
+          <div v-if="!isOwnerOnly || archiveDetail.month.wagesMi > 0" class="row" style="margin-bottom:6px;">
+            <span>أجور العمال</span>
+            <strong style="color:var(--danger);">- {{ miToTnd(archiveDetail.month.wagesMi) }} د.ت</strong>
+          </div>
+          <div v-if="hasFeature('stock')" class="row" style="margin-bottom:6px;">
+            <span>فواتير المخزن</span>
+            <strong style="color:var(--danger);">- {{ miToTnd(archiveDetail.month.invoicesMi) }} د.ت</strong>
+          </div>
+          <div class="row" style="margin-bottom:6px;">
+            <span>المصاريف الثابتة المدفوعة</span>
+            <strong style="color:var(--danger);">- {{ miToTnd(archiveDetail.month.fixedPaidMi) }} د.ت</strong>
+          </div>
+          <hr class="divider" />
+          <div class="row" style="font-size:1.05rem;">
+            <strong>صافي ربح الشهر</strong>
+            <strong :style="{ color: archiveDetail.month.netMi >= 0 ? 'var(--ok)' : 'var(--danger)' }">
+              {{ miToTnd(archiveDetail.month.netMi) }} د.ت
+            </strong>
+          </div>
+          <div v-if="archiveDetail.month.fixedUnpaidMi > 0" class="muted" style="margin-top:6px;">
+            مصاريف ثابتة غير مدفوعة: {{ miToTnd(archiveDetail.month.fixedUnpaidMi) }} د.ت
+          </div>
         </div>
 
-        <button type="button" class="btn btn-outline btn-block" @click="pickCurrentMonth">
-          العودة للشهر الحالي
-        </button>
+        <!-- يوميات الشهر المؤرشف -->
+        <div v-else-if="archiveDetail.subTab === 'shifts'">
+          <div v-if="!archiveDetail.shifts.length" class="muted" style="text-align:center; padding:16px 0;">لا توجد يوميات في هذا الشهر.</div>
+          <div v-for="s in archiveDetail.shifts" :key="s.id" class="card" style="padding:10px; margin-bottom:8px;">
+            <div class="row" style="margin-bottom:4px;">
+              <div>
+                <strong class="ltr">{{ s.work_date }}</strong>
+                <span v-if="!isOwnerOnly" class="badge badge-info" style="margin-right:6px;">{{ shiftTypeLabel(s.shift_type) }}</span>
+                <span v-if="!isOwnerOnly" class="muted" style="margin-right:6px;">{{ s.worker_name_snapshot }}</span>
+              </div>
+              <strong class="num" style="color:var(--primary);">{{ miToTnd(shiftNetMi(s)) }} د.ت</strong>
+            </div>
+            <div class="row">
+              <span class="muted num" style="font-size:0.78rem;">مبيعات: {{ miToTnd(s.sales_total_mi) }} • مصاريف: {{ miToTnd(s.expenses_total_mi) }}</span>
+              <button class="btn btn-sm btn-outline" @click="openShiftDetail(s)">التفاصيل</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- فواتير ومصاريف الشهر المؤرشف -->
+        <div v-else>
+          <template v-if="hasFeature('stock')">
+            <strong style="display:block; margin-bottom:6px; font-size:0.86rem; color:var(--muted);">فواتير المخزن ({{ archiveDetail.invoices.length }})</strong>
+            <div v-if="!archiveDetail.invoices.length" class="muted" style="margin-bottom:12px;">لا توجد فواتير مخزن.</div>
+            <div v-for="inv in archiveDetail.invoices" :key="inv.id" class="card" style="padding:10px; margin-bottom:8px;">
+              <div class="row" style="margin-bottom:4px;">
+                <div><strong>#{{ inv.invoice_number }}</strong> {{ inv.supplier_name }} <span class="muted ltr">{{ inv.work_date }}</span></div>
+                <strong class="num" style="color:var(--primary);">{{ miToTnd(inv.total_amount_mi) }} د.ت</strong>
+              </div>
+              <div class="row">
+                <span class="muted" style="font-size:0.78rem;">{{ paymentSourceLabel(inv.payment_source) }}</span>
+                <button class="btn btn-sm btn-outline" @click="openInvoiceDetail(inv)">التفاصيل</button>
+              </div>
+            </div>
+          </template>
+
+          <strong style="display:block; margin:10px 0 6px; font-size:0.86rem; color:var(--muted);">المصاريف الثابتة ({{ archiveDetail.fixed.length }})</strong>
+          <div v-if="!archiveDetail.fixed.length" class="muted">لا توجد مصاريف ثابتة مسجّلة.</div>
+          <div v-for="fe in archiveDetail.fixed" :key="fe.id" class="row num" style="padding:7px 0; border-bottom:1px solid var(--border); font-size:0.88rem;">
+            <div>
+              <strong>{{ fe.title }}</strong>
+              <span class="badge" :class="fe.paid_at ? 'badge-ok' : 'badge-warn'" style="margin-right:6px;">{{ fe.paid_at ? "مدفوع" : "غير مدفوع" }}</span>
+            </div>
+            <strong>{{ miToTnd(fe.amount_mi) }} د.ت</strong>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -963,7 +1250,7 @@
       </div>
     </div>
 
-    <!-- 1. نافذة تسجيل / تعديل يومية -->
+    <!-- 1. نافذة تسجيل / تعديل يومية (تتكيف تلقائياً مع وضع المالك فقط) -->
     <div v-if="shiftModal.open" class="modal-backdrop" style="z-index:50;" @click.self="shiftModal.open = false">
       <div class="modal">
         <div class="cc-sheet-handle"></div>
@@ -978,7 +1265,7 @@
             <input type="date" v-model="shiftModal.work_date" required class="ltr" @change="resetShiftTxId" />
           </div>
 
-          <div class="field">
+          <div class="field" v-if="!isOwnerOnly">
             <label>نوع الحصة *</label>
             <div class="cc-segment three" style="margin-bottom:0;">
               <button type="button" class="cc-seg-btn cc-tap" :class="{ active: shiftModal.shift_type === 'morning' }" @click="shiftModal.shift_type = 'morning'; resetShiftTxId()">صباحي</button>
@@ -987,7 +1274,7 @@
             </div>
           </div>
 
-          <div class="field" v-if="activeWorkers.length && !shiftModal.reopenShiftId">
+          <div class="field" v-if="!isOwnerOnly && activeWorkers.length && !shiftModal.reopenShiftId">
             <label>صاحب الحصة</label>
             <div class="cc-chips">
               <button
@@ -1040,7 +1327,7 @@
 
           <div class="field">
             <div class="row" style="margin-bottom:6px;">
-              <label style="margin:0;">المصاريف اليومية (كاسا)</label>
+              <label style="margin:0;">المصاريف اليومية</label>
               <button type="button" class="btn btn-sm btn-outline" @click="addShiftExpenseRow">+ سطر</button>
             </div>
             <div class="cc-chips">
@@ -1073,25 +1360,26 @@
             <input type="text" v-model.trim="shiftModal.note" maxlength="500" placeholder="اختياري" @input="resetShiftTxId" />
           </div>
 
-          <label style="display:flex; align-items:center; gap:8px; margin-bottom:12px; font-size:0.9rem;">
+          <label v-if="!isOwnerOnly" style="display:flex; align-items:center; gap:8px; margin-bottom:12px; font-size:0.9rem;">
             <input type="checkbox" v-model="shiftModal.auto_approve" />
             اعتماد اليومية وخصم المخزون مباشرةً عند الحفظ
           </label>
 
-          <div class="card num" style="background:#f9fafb; padding:10px; margin-bottom:12px;">
-            <div class="row"><span>إجمالي المبيعات:</span><strong>{{ miToTnd(shiftFormTotals.salesMi) }} د.ت</strong></div>
-            <div class="row"><span>إجمالي المصاريف:</span><strong>{{ miToTnd(shiftFormTotals.expensesMi) }} د.ت</strong></div>
+          <div class="cc-sticky-footer">
+            <div class="row num" style="margin-bottom:8px; font-size:0.88rem;">
+              <span>مبيعات: <strong>{{ miToTnd(shiftFormTotals.salesMi) }}</strong> • مصاريف: <strong>{{ miToTnd(shiftFormTotals.expensesMi) }}</strong></span>
+              <strong style="color:var(--primary);">{{ miToTnd(shiftFormTotals.salesMi - shiftFormTotals.expensesMi) }} د.ت</strong>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" :disabled="busy">
+              {{ busy ? "جارٍ الحفظ..." : "حفظ اليومية" }}
+            </button>
           </div>
-
-          <button type="submit" class="btn btn-primary btn-block" :disabled="busy">
-            {{ busy ? "جارٍ الحفظ..." : "حفظ اليومية" }}
-          </button>
         </form>
       </div>
     </div>
 
     <!-- 2. نافذة تفاصيل يومية -->
-    <div v-if="detailShift.shift" class="modal-backdrop" style="z-index:60;" @click.self="detailShift.shift = null">
+    <div v-if="detailShift.shift" class="modal-backdrop" style="z-index:62;" @click.self="detailShift.shift = null">
       <div class="modal">
         <div class="cc-sheet-handle"></div>
         <div class="row" style="margin-bottom:10px;">
@@ -1100,9 +1388,11 @@
         </div>
         <div v-if="detailShift.loading" class="muted">جارٍ التحميل...</div>
         <template v-else>
-          <div class="muted" style="margin-bottom:10px;">
-            الحصة: <strong>{{ shiftTypeLabel(detailShift.shift.shift_type) }}</strong>
-            • {{ detailShift.shift.worker_name_snapshot }}
+          <div class="muted" style="margin-bottom:10px;" v-if="!isOwnerOnly || detailShift.shift.note">
+            <template v-if="!isOwnerOnly">
+              الحصة: <strong>{{ shiftTypeLabel(detailShift.shift.shift_type) }}</strong>
+              • {{ detailShift.shift.worker_name_snapshot }}
+            </template>
             <span v-if="detailShift.shift.note" style="display:block;">ملاحظة: {{ detailShift.shift.note }}</span>
           </div>
 
@@ -1124,7 +1414,7 @@
           <div class="num" style="line-height:1.8;">
             <div class="row"><span>إجمالي المبيعات</span><strong>{{ miToTnd(detailShift.shift.sales_total_mi) }} د.ت</strong></div>
             <div class="row"><span>إجمالي المصاريف</span><strong>{{ miToTnd(detailShift.shift.expenses_total_mi) }} د.ت</strong></div>
-            <div class="row" v-if="!detailShift.shift.is_owner_shift"><span>أجر العامل</span><strong>{{ miToTnd(detailShift.shift.wage_mi) }} د.ت</strong></div>
+            <div class="row" v-if="!isOwnerOnly && !detailShift.shift.is_owner_shift"><span>أجر العامل</span><strong>{{ miToTnd(detailShift.shift.wage_mi) }} د.ت</strong></div>
             <div class="row"><strong>الصافي</strong><strong style="color:var(--primary);">{{ miToTnd(shiftNetMi(detailShift.shift)) }} د.ت</strong></div>
           </div>
         </template>
@@ -1337,7 +1627,6 @@
         </div>
 
         <form @submit.prevent="saveProduct(false)">
-          <!-- اختيار الصنف بالضغط -->
           <div class="field">
             <label>1. اختر الصنف</label>
             <div class="cc-chips">
@@ -1370,7 +1659,6 @@
             />
           </div>
 
-          <!-- اختيار السلعة من الأمثلة الجاهزة (عند الإضافة الجديدة) -->
           <div class="field" v-if="!productModal.id && currentCategoryPresets.length && !productModal.customCategoryMode">
             <label>2. اختر السلعة</label>
             <div class="cc-chips">
@@ -1398,7 +1686,6 @@
             </div>
           </div>
 
-          <!-- شارة السلعة المختارة أو حقل الإدخال اليدوي -->
           <div class="cc-picked-banner" v-if="!productModal.id && !productModal.customNameMode && !productModal.customCategoryMode && currentCategoryPresets.length && productModal.name">
             <div>
               <div style="font-size:0.74rem; opacity:0.85;">السلعة المختارة</div>
@@ -1422,7 +1709,6 @@
             />
           </div>
 
-          <!-- السعر بالضغط السريع -->
           <div class="field">
             <label>3. سعر البيع (د.ت) *</label>
             <div class="cc-chips">
@@ -1453,7 +1739,6 @@
             </div>
           </div>
 
-          <!-- وحدة البيع بالضغط -->
           <div class="field">
             <label>وحدة البيع</label>
             <div class="cc-chips">
@@ -1471,7 +1756,6 @@
             <input type="text" v-model.trim="productModal.sale_unit" maxlength="30" placeholder="كأس / قارورة / رأس" />
           </div>
 
-          <!-- الربط بالمخزن -->
           <div v-if="hasFeature('stock') && stockItems.length" class="grid-2">
             <div class="field">
               <label>ربط بمادة مخزن (اختياري)</label>
@@ -1505,7 +1789,7 @@
       </div>
     </div>
 
-    <!-- 9. نافذة إضافة / تعديل مادة مخزن -->
+    <!-- 9. نافذة إضافة / تعديل مادة مخزن (مع أمثلة جاهزة عند الإضافة) -->
     <div v-if="stockItemModal.open" class="modal-backdrop" style="z-index:60;" @click.self="stockItemModal.open = false">
       <div class="modal">
         <div class="cc-sheet-handle"></div>
@@ -1514,6 +1798,21 @@
           <button class="btn btn-sm btn-outline" @click="stockItemModal.open = false">إغلاق</button>
         </div>
         <form @submit.prevent="saveStockItem">
+          <div class="field" v-if="!stockItemModal.id">
+            <label>اختيار سريع من مواد المقهى</label>
+            <div class="cc-chips">
+              <button
+                type="button"
+                v-for="preset in STOCK_CATALOG"
+                :key="preset.name"
+                class="cc-chip cc-tap"
+                :class="{ active: stockItemModal.name === preset.name }"
+                @click="applyStockPresetToModal(preset)"
+              >
+                {{ preset.name }}
+              </button>
+            </div>
+          </div>
           <div class="grid-2">
             <div class="field">
               <label>اسم المادة *</label>
@@ -1589,7 +1888,7 @@
       </div>
     </div>
 
-    <!-- 11. نافذة تسجيل فاتورة مخزن -->
+    <!-- 11. نافذة تسجيل فاتورة مخزن (معاد تصميمها بالكامل للوضوح والسرعة) -->
     <div v-if="invoiceModal.open" class="modal-backdrop" style="z-index:50;" @click.self="invoiceModal.open = false">
       <div class="modal">
         <div class="cc-sheet-handle"></div>
@@ -1597,28 +1896,68 @@
           <h3 style="margin:0;">تسجيل فاتورة مخزن</h3>
           <button class="btn btn-sm btn-outline" @click="invoiceModal.open = false">إغلاق</button>
         </div>
+
         <form @submit.prevent="submitInvoiceForm">
-          <div class="grid-2">
-            <div class="field">
+          <!-- التاريخ والمزوّد في سطر واحد -->
+          <div class="cc-inv-top-grid">
+            <div class="field" style="margin:0;">
               <label>التاريخ *</label>
               <input type="date" v-model="invoiceModal.work_date" required class="ltr" @change="resetInvoiceTxId" />
             </div>
-            <div class="field">
+            <div class="field" style="margin:0;">
               <label>المزوّد *</label>
               <input type="text" v-model.trim="invoiceModal.supplier_name" required maxlength="120" placeholder="اسم المزوّد" @input="resetInvoiceTxId" />
             </div>
           </div>
 
+          <!-- أزرار آخر المزوّدين للاختيار بضغطة -->
+          <div class="cc-chips" v-if="recentSuppliers.length" style="margin-bottom:10px;">
+            <button
+              type="button"
+              v-for="sup in recentSuppliers"
+              :key="sup"
+              class="cc-chip cc-tap"
+              :class="{ active: invoiceModal.supplier_name === sup }"
+              style="padding:5px 9px; font-size:0.76rem;"
+              @click="invoiceModal.supplier_name = sup; resetInvoiceTxId()"
+            >
+              {{ sup }}
+            </button>
+          </div>
+
+          <!-- مصدر الدفع -->
           <div class="field">
-            <label>مصدر الدفع</label>
-            <div class="cc-chips">
-              <button type="button" class="cc-chip cc-tap" :class="{ active: invoiceModal.payment_source === 'owner_cash' }" @click="invoiceModal.payment_source = 'owner_cash'; resetInvoiceTxId()">مال المالك</button>
-              <button type="button" class="cc-chip cc-tap" :class="{ active: invoiceModal.payment_source === 'supplier_credit' }" @click="invoiceModal.payment_source = 'supplier_credit'; resetInvoiceTxId()">كريدي مزوّد</button>
-              <button v-if="activeWorkers.length" type="button" class="cc-chip cc-tap" :class="{ active: invoiceModal.payment_source === 'worker_cash' }" @click="invoiceModal.payment_source = 'worker_cash'; resetInvoiceTxId()">كاسة العامل</button>
+            <label>طريقة الدفع</label>
+            <div class="cc-chips" style="margin-bottom:0;">
+              <button
+                type="button"
+                class="cc-chip cc-tap"
+                :class="{ active: invoiceModal.payment_source === 'owner_cash' }"
+                @click="invoiceModal.payment_source = 'owner_cash'; resetInvoiceTxId()"
+              >
+                {{ isOwnerOnly ? "نقداً (كاش)" : "مال المالك" }}
+              </button>
+              <button
+                type="button"
+                class="cc-chip cc-tap"
+                :class="{ active: invoiceModal.payment_source === 'supplier_credit' }"
+                @click="invoiceModal.payment_source = 'supplier_credit'; resetInvoiceTxId()"
+              >
+                كريدي مزوّد
+              </button>
+              <button
+                v-if="!isOwnerOnly && activeWorkers.length"
+                type="button"
+                class="cc-chip cc-tap"
+                :class="{ active: invoiceModal.payment_source === 'worker_cash' }"
+                @click="invoiceModal.payment_source = 'worker_cash'; resetInvoiceTxId()"
+              >
+                كاسة العامل
+              </button>
             </div>
           </div>
 
-          <div class="field" v-if="invoiceModal.payment_source === 'worker_cash'">
+          <div class="field" v-if="!isOwnerOnly && invoiceModal.payment_source === 'worker_cash'">
             <label>العامل الذي دفع *</label>
             <div class="cc-chips">
               <button
@@ -1634,57 +1973,146 @@
             </div>
           </div>
 
+          <!-- قسم السلع المشتراة -->
           <div class="field">
             <div class="row" style="margin-bottom:6px;">
-              <label style="margin:0;">اختر المواد بالضغط</label>
-              <button type="button" class="btn btn-sm btn-outline" @click="addInvoiceLine">+ سطر فارغ</button>
+              <label style="margin:0;">السلع المشتراة ({{ invoiceModal.items.length }})</label>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline"
+                style="border-color:var(--primary); color:var(--primary-dark);"
+                @click="invoiceQuickAdd.open = !invoiceQuickAdd.open"
+              >
+                {{ invoiceQuickAdd.open ? "إخفاء الإضافة" : "+ مادة جديدة" }}
+              </button>
             </div>
-            <div v-if="!activeStockItems.length" class="muted" style="margin-bottom:8px;">أضف مواد المخزن أولاً من تبويب «المخزن».</div>
-            <div v-else class="cc-chips">
+
+            <!-- مواد المخزن المعرّفة مسبقاً (اضغط لإضافتها فوراً للفاتورة) -->
+            <div v-if="activeStockItems.length" class="cc-chips" style="margin-bottom:8px;">
               <button
                 type="button"
                 v-for="st in activeStockItems"
                 :key="st.id"
                 class="cc-chip cc-tap"
+                :class="{ active: invoiceModal.items.some(ln => ln.stock_item_id === st.id) }"
                 @click="quickPickInvoiceItem(st)"
               >
                 + {{ st.name }}
               </button>
             </div>
-            <div v-if="activeStockItems.length && !invoiceModal.items.length" class="muted" style="font-size:0.8rem; margin-bottom:6px;">
-              اضغط على أي مادة بالأعلى لإضافتها فوراً للفاتورة.
+
+            <!-- صندوق إضافة مادة جديدة مباشرة من داخل الفاتورة (يفتح تلقائياً إذا كان المخزن فارغاً) -->
+            <div v-if="invoiceQuickAdd.open || !activeStockItems.length" class="cc-quick-add-box">
+              <div style="font-size:0.82rem; font-weight:700; color:var(--primary-dark); margin-bottom:6px;">
+                {{ activeStockItems.length ? "إضافة مادة جديدة للمخزن وللفاتورة مباشرة:" : "مخزنك فارغ — اضغط على أي مادة اشتريتها لإضافتها فوراً:" }}
+              </div>
+              <div class="cc-chips" style="margin-bottom:8px;">
+                <button
+                  type="button"
+                  v-for="preset in availableStockCatalogPresets"
+                  :key="preset.name"
+                  class="cc-chip cc-tap"
+                  style="background:#fff;"
+                  :disabled="busy"
+                  @click="quickCreateStockAndPick(preset)"
+                >
+                  + {{ preset.name }} ({{ preset.pack_label }} {{ preset.pack_size }})
+                </button>
+                <button
+                  type="button"
+                  class="cc-chip cc-tap"
+                  :class="{ active: invoiceQuickAdd.manual }"
+                  @click="invoiceQuickAdd.manual = !invoiceQuickAdd.manual"
+                >
+                  + مادة أخرى (يدوي)
+                </button>
+              </div>
+
+              <!-- إدخال مادة جديدة يدوياً داخل الفاتورة -->
+              <div v-if="invoiceQuickAdd.manual" style="background:#fff; padding:8px; border-radius:10px; border:1px solid var(--border);">
+                <div class="grid-2" style="gap:6px; margin-bottom:6px;">
+                  <input type="text" v-model.trim="invoiceQuickAdd.name" placeholder="اسم المادة (مثلاً: عسل)" maxlength="80" />
+                  <input type="text" v-model.trim="invoiceQuickAdd.unit" placeholder="الوحدة (قارورة / كغ)" maxlength="30" />
+                </div>
+                <div class="grid-2" style="gap:6px; margin-bottom:8px;">
+                  <input type="text" v-model.trim="invoiceQuickAdd.pack_label" placeholder="اسم العبوة (صندوق / ستيكة)" maxlength="30" />
+                  <input type="number" min="1" max="100000" v-model.number="invoiceQuickAdd.pack_size" placeholder="عدد الوحدات في العبوة" class="ltr" />
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-primary btn-block"
+                  :disabled="busy || !invoiceQuickAdd.name"
+                  @click="submitManualStockAndPick"
+                >
+                  إضافة المادة وإدراجها في الفاتورة
+                </button>
+              </div>
             </div>
 
-            <div v-for="(ln, idx) in invoiceModal.items" :key="idx" class="card" style="background:#f9fafb; padding:8px; margin-bottom:8px;">
-              <div class="row" style="margin-bottom:6px; flex-wrap:nowrap;">
-                <select v-model="ln.stock_item_id" required style="flex:1;" @change="onInvoiceItemPick(ln)">
-                  <option value="">اختر مادة...</option>
-                  <option v-for="st in activeStockItems" :key="st.id" :value="st.id">
-                    {{ st.name }} ({{ st.pack_label || st.unit }} = {{ st.pack_size }} {{ st.unit }})
-                  </option>
-                </select>
-                <button type="button" class="btn btn-sm btn-danger-soft" @click="removeInvoiceLine(idx)">×</button>
-              </div>
-              <div class="grid-3">
-                <div class="field" style="margin:0;">
-                  <label>الكمية</label>
-                  <div class="cc-stepper">
-                    <button type="button" class="cc-step-btn cc-tap" style="min-width:28px; height:36px;" @click="bumpInvoiceQty(ln, -1)">-</button>
-                    <input type="number" min="1" max="100000" step="1" v-model.number="ln.pack_qty" required class="ltr cc-step-input" style="flex:1;" @input="onInvoiceQtyChange(ln)" />
-                    <button type="button" class="cc-step-btn plus cc-tap" style="min-width:28px; height:36px;" @click="bumpInvoiceQty(ln, 1)">+</button>
+            <!-- قائمة السلع المضافة للفاتورة بشكل مضغوط -->
+            <div v-if="!invoiceModal.items.length" class="card" style="text-align:center; padding:12px; background:#f9fafb;">
+              <span class="muted" style="font-size:0.84rem;">اضغط على السلع بالأعلى لإضافتها إلى هذه الفاتورة.</span>
+            </div>
+
+            <div v-for="(ln, idx) in invoiceModal.items" :key="ln.stock_item_id + '_' + idx" class="cc-inv-line">
+              <div class="row" style="flex-wrap:nowrap;">
+                <div style="min-width:0;">
+                  <strong style="font-size:0.92rem;">{{ stockItemById(ln.stock_item_id)?.name || "مادة" }}</strong>
+                  <div class="muted" style="font-size:0.74rem;">
+                    {{ stockItemById(ln.stock_item_id)?.pack_label || "عبوة" }} = {{ stockItemById(ln.stock_item_id)?.pack_size || 1 }} {{ stockItemById(ln.stock_item_id)?.unit || "وحدة" }}
                   </div>
                 </div>
-                <div class="field" style="margin:0;">
-                  <label>الشراء بـ</label>
-                  <select v-model="ln.by_unit" @change="onInvoiceQtyChange(ln)">
-                    <option :value="false">العبوة</option>
-                    <option :value="true">الوحدة</option>
-                  </select>
+                <button type="button" class="btn btn-sm btn-danger-soft" @click="removeInvoiceLine(idx)">×</button>
+              </div>
+
+              <div class="cc-inv-controls">
+                <div class="cc-stepper">
+                  <button type="button" class="cc-step-btn cc-tap" @click="bumpInvoiceQty(ln, -1)">-</button>
+                  <input
+                    type="number"
+                    min="1"
+                    max="100000"
+                    step="1"
+                    v-model.number="ln.pack_qty"
+                    required
+                    class="ltr cc-step-input"
+                    @input="onInvoiceQtyChange(ln)"
+                  />
+                  <button type="button" class="cc-step-btn plus cc-tap" @click="bumpInvoiceQty(ln, 1)">+</button>
                 </div>
-                <div class="field" style="margin:0;">
-                  <label>التكلفة (د.ت)</label>
-                  <input type="text" inputmode="decimal" v-model.trim="ln.line_cost_tnd" required class="ltr" @input="resetInvoiceTxId" />
+
+                <div class="cc-unit-toggle">
+                  <button
+                    type="button"
+                    class="cc-unit-btn cc-tap"
+                    :class="{ active: !ln.by_unit }"
+                    @click="ln.by_unit = false; onInvoiceQtyChange(ln)"
+                  >
+                    {{ stockItemById(ln.stock_item_id)?.pack_label || "عبوة" }}
+                  </button>
+                  <button
+                    type="button"
+                    class="cc-unit-btn cc-tap"
+                    :class="{ active: ln.by_unit }"
+                    @click="ln.by_unit = true; onInvoiceQtyChange(ln)"
+                  >
+                    {{ stockItemById(ln.stock_item_id)?.unit || "وحدة" }}
+                  </button>
                 </div>
+              </div>
+
+              <div class="row" style="flex-wrap:nowrap; gap:8px;">
+                <span class="muted" style="font-size:0.8rem; white-space:nowrap;">التكلفة الإجمالية (د.ت):</span>
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  v-model.trim="ln.line_cost_tnd"
+                  required
+                  class="ltr"
+                  style="max-width:140px; text-align:center; font-weight:800; padding:7px 8px;"
+                  placeholder="0.000"
+                  @input="resetInvoiceTxId"
+                />
               </div>
             </div>
           </div>
@@ -1694,24 +2122,27 @@
             <input type="text" v-model.trim="invoiceModal.note" maxlength="500" placeholder="اختياري" @input="resetInvoiceTxId" />
           </div>
 
-          <label style="display:flex; align-items:center; gap:8px; margin-bottom:12px; font-size:0.9rem;">
+          <label v-if="!isOwnerOnly" style="display:flex; align-items:center; gap:8px; margin-bottom:10px; font-size:0.9rem;">
             <input type="checkbox" v-model="invoiceModal.auto_approve" />
             اعتماد الفاتورة وإضافتها للمخزون فوراً
           </label>
 
-          <div class="card num" style="background:#f9fafb; padding:10px; margin-bottom:12px;">
-            <div class="row"><span>إجمالي الفاتورة:</span><strong>{{ miToTnd(invoiceFormTotalMi) }} د.ت</strong></div>
+          <!-- شريط الحفظ والإجمالي المثبت أسفل النافذة -->
+          <div class="cc-sticky-footer">
+            <div class="row num" style="margin-bottom:8px;">
+              <span>إجمالي الفاتورة ({{ invoiceModal.items.length }} سلعة):</span>
+              <strong style="font-size:1.1rem; color:var(--primary);">{{ miToTnd(invoiceFormTotalMi) }} د.ت</strong>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" :disabled="busy || !invoiceModal.items.length">
+              {{ busy ? "جارٍ الحفظ..." : "حفظ الفاتورة" }}
+            </button>
           </div>
-
-          <button type="submit" class="btn btn-primary btn-block" :disabled="busy || !invoiceModal.items.length">
-            {{ busy ? "جارٍ الحفظ..." : "حفظ الفاتورة" }}
-          </button>
         </form>
       </div>
     </div>
 
     <!-- 12. نافذة تفاصيل فاتورة مخزن -->
-    <div v-if="detailInvoice.inv" class="modal-backdrop" style="z-index:60;" @click.self="detailInvoice.inv = null">
+    <div v-if="detailInvoice.inv" class="modal-backdrop" style="z-index:62;" @click.self="detailInvoice.inv = null">
       <div class="modal">
         <div class="cc-sheet-handle"></div>
         <div class="row" style="margin-bottom:10px;">
@@ -1722,7 +2153,8 @@
         <template v-else>
           <div class="muted" style="margin-bottom:10px;">
             المزوّد: <strong>{{ detailInvoice.inv.supplier_name }}</strong> • {{ detailInvoice.inv.work_date }}<br />
-            الدفع: {{ paymentSourceLabel(detailInvoice.inv.payment_source) }} • {{ detailInvoice.inv.worker_name_snapshot }}
+            الدفع: {{ paymentSourceLabel(detailInvoice.inv.payment_source) }}
+            <span v-if="!isOwnerOnly"> • {{ detailInvoice.inv.worker_name_snapshot }}</span>
           </div>
           <div v-for="it in detailInvoice.items" :key="it.id" class="row num" style="padding:6px 0; border-bottom:1px solid var(--border); font-size:0.9rem;">
             <span>{{ it.item_name_snapshot }} — {{ it.pack_qty }} {{ it.pack_unit }} ({{ it.converted_qty }} {{ it.unit_snapshot }})</span>
@@ -1742,7 +2174,7 @@
       <div class="modal">
         <div class="cc-sheet-handle"></div>
         <div class="row" style="margin-bottom:10px;">
-          <h3 style="margin:0;">مصروف ثابت لشهر {{ selectedMonthLabel }}</h3>
+          <h3 style="margin:0;">مصروف ثابت لشهر {{ currentMonthLabel }}</h3>
           <button class="btn btn-sm btn-outline" @click="fixedModal.open = false">إغلاق</button>
         </div>
         <form @submit.prevent="saveFixedExpense">
@@ -1842,6 +2274,10 @@
           "جانفي", "فيفري", "مارس", "أفريل", "ماي", "جوان",
           "جويلية", "أوت", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر",
         ];
+        const SHORT_ARABIC_MONTHS = [
+          "جان", "فيف", "مار", "أفر", "ماي", "جوا",
+          "جوي", "أوت", "سبت", "أكت", "نوف", "ديس",
+        ];
 
         const QUICK_EXPENSE_LABELS = ["ثلج", "ماء", "حليب", "تنظيف", "غاز", "خبز", "نقل"];
         const QUICK_FIXED_LABELS = ["كراء", "كهرباء STEG", "ماء SONEDE", "أنترنت", "beIN Sports", "صيانة"];
@@ -1901,6 +2337,25 @@
           },
         ];
 
+        const STOCK_CATALOG = [
+          { name: "ماء 0.5 لتر", unit: "قارورة", pack_label: "ستيكة", pack_size: 12, low_threshold: 12 },
+          { name: "ماء 1 لتر", unit: "قارورة", pack_label: "ستيكة", pack_size: 6, low_threshold: 6 },
+          { name: "ماء 1.5 لتر", unit: "قارورة", pack_label: "ستيكة", pack_size: 6, low_threshold: 6 },
+          { name: "ماء غازي", unit: "قارورة", pack_label: "ستيكة", pack_size: 6, low_threshold: 6 },
+          { name: "بن قهوة", unit: "كغ", pack_label: "كيس", pack_size: 1, low_threshold: 2 },
+          { name: "حليب", unit: "لتر", pack_label: "صندوق", pack_size: 6, low_threshold: 6 },
+          { name: "كوكا كولا", unit: "قارورة", pack_label: "ستيكة", pack_size: 12, low_threshold: 12 },
+          { name: "بوقة", unit: "قارورة", pack_label: "ستيكة", pack_size: 12, low_threshold: 12 },
+          { name: "فانتا / غازوز", unit: "قارورة", pack_label: "ستيكة", pack_size: 12, low_threshold: 12 },
+          { name: "عصير معلب", unit: "علبة", pack_label: "صندوق", pack_size: 12, low_threshold: 6 },
+          { name: "مشروب طاقة", unit: "علبة", pack_label: "صندوق", pack_size: 24, low_threshold: 6 },
+          { name: "سكر", unit: "كغ", pack_label: "كيس", pack_size: 5, low_threshold: 5 },
+          { name: "شاي", unit: "كغ", pack_label: "كيس", pack_size: 1, low_threshold: 1 },
+          { name: "معسل شيشة", unit: "علبة", pack_label: "صندوق", pack_size: 10, low_threshold: 3 },
+          { name: "فحم شيشة", unit: "كغ", pack_label: "صندوق", pack_size: 10, low_threshold: 3 },
+          { name: "كؤوس ورقية", unit: "كأس", pack_label: "رولو", pack_size: 50, low_threshold: 50 },
+        ];
+
         const booting = ref(true);
         const busy = ref(false);
         const refreshing = ref(false);
@@ -1913,7 +2368,6 @@
         const serverDateStr = ref(new Date().toISOString().slice(0, 10));
         const serverEpochMs = ref(Date.now());
         const currentServerMonth = ref(new Date().toISOString().slice(0, 7));
-        const selectedMonth = ref(new Date().toISOString().slice(0, 7));
 
         const tab = ref("home");
         const stockSubTab = ref("items");
@@ -1951,37 +2405,22 @@
           return `${prefix}_${rnd}`;
         };
 
-        // --- الأشهر بالعربية ومبدّل الشهر ---
+        const formatCafeTitle = (name) => {
+          const clean = String(name || "").trim();
+          if (!clean) return "مقهى";
+          if (clean.startsWith("مقهى") || clean.startsWith("قهوة")) return clean;
+          return `مقهى ${clean}`;
+        };
+
+        const cafeDisplayTitle = computed(() => formatCafeTitle(cafe.value?.name));
+
         const formatMonthArabic = (ym) => {
           const [y, m] = String(ym || "").split("-").map(Number);
           if (!y || !m || m < 1 || m > 12) return ym || "";
           return `${ARABIC_MONTHS[m - 1]} ${y}`;
         };
 
-        const selectedMonthLabel = computed(() => formatMonthArabic(selectedMonth.value));
-
-        const monthPicker = reactive({ open: false, year: new Date().getFullYear() });
-        const openMonthPicker = () => {
-          const [y] = selectedMonth.value.split("-").map(Number);
-          monthPicker.year = y || new Date().getFullYear();
-          monthPicker.open = true;
-        };
-        const pickMonth = (monthNum) => {
-          selectedMonth.value = `${monthPicker.year}-${String(monthNum).padStart(2, "0")}`;
-          monthPicker.open = false;
-          refreshMonthData();
-        };
-        const pickCurrentMonth = () => {
-          selectedMonth.value = currentServerMonth.value;
-          monthPicker.open = false;
-          refreshMonthData();
-        };
-        const shiftMonth = (delta) => {
-          const [y, m] = selectedMonth.value.split("-").map(Number);
-          const d = new Date(Date.UTC(y, (m - 1) + delta, 1));
-          selectedMonth.value = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
-          refreshMonthData();
-        };
+        const currentMonthLabel = computed(() => formatMonthArabic(currentServerMonth.value));
 
         const formatDateTime = (iso) => {
           if (!iso) return "—";
@@ -2012,9 +2451,7 @@
           return Boolean(cafe.value.active && subDaysLeft.value > 0);
         });
 
-        const hasWorkersInPattern = computed(() =>
-          cafe.value && cafe.value.work_pattern !== "owner_only"
-        );
+        const isOwnerOnly = computed(() => cafe.value?.work_pattern === "owner_only");
 
         const activeWorkers = computed(() =>
           members.value.filter((m) => m.role === "worker" && m.active)
@@ -2059,19 +2496,23 @@
         const headerInfo = computed(() => {
           const map = {
             home: {
-              title: cafe.value?.name || "CassaCafe",
+              title: cafeDisplayTitle.value,
               sub: `${serverToday.value || "توقيت تونس"}${isSuperAdmin.value ? " • وضع المشرف" : ""}`,
             },
-            shifts: { title: "اليوميات", sub: "جملية باليوم وتفصيل الفترات بالضغط" },
+            shifts: {
+              title: "اليوميات",
+              sub: isOwnerOnly.value ? `سجل المبيعات والمصاريف — ${currentMonthLabel.value}` : `جملية باليوم وتفصيل الفترات — ${currentMonthLabel.value}`,
+            },
             workers: { title: "العمال والتسوية", sub: "أرصدة وتسويات العمال" },
             stock: {
               title: stockSubTab.value === "items" ? "المخزن" : "فواتير المخزن",
-              sub: stockSubTab.value === "items" ? "اضغط على أي مادة لمفصل تحركاتها" : "فواتير المشتريات والمزوّدين",
+              sub: stockSubTab.value === "items" ? "اضغط على أي مادة لمفصل تحركاتها" : `مشتريات شهر ${currentMonthLabel.value}`,
             },
-            cafe: { title: "أقسام المقهى", sub: cafe.value?.name || "" },
+            cafe: { title: "أقسام المقهى", sub: cafeDisplayTitle.value },
+            archive: { title: "الأرشيف والرسم البياني", sub: `متابعة الأشهر والسنوات — ${cafeDisplayTitle.value}` },
             menu: { title: "السلع والأسعار", sub: `${products.value.length} سلعة` },
-            finance: { title: "المصاريف وتفصيل الشهر", sub: selectedMonthLabel.value },
-            settings: { title: "الإعدادات ومعلومات المقهى", sub: cafe.value?.name || "" },
+            finance: { title: "المصاريف وتفصيل الشهر", sub: currentMonthLabel.value },
+            settings: { title: "الإعدادات ومعلومات المقهى", sub: cafeDisplayTitle.value },
           };
           return map[tab.value] || map.home;
         });
@@ -2086,7 +2527,6 @@
           approved: { label: "معتمدة", cls: "badge-ok" },
         }[st] || { label: st, cls: "badge-info" });
 
-        // --- تجميع اليوميات جملية حسب اليوم ---
         const SHIFT_ORDER = { morning: 1, evening: 2, full: 3 };
         const groupedMonthShifts = computed(() => {
           const map = new Map();
@@ -2129,11 +2569,14 @@
         const dayShiftTypesLabel = (shifts) =>
           shifts.map((s) => shiftTypeLabel(s.shift_type)).join(" + ");
 
-        const paymentSourceLabel = (src) => ({
-          worker_cash: "كاسة العامل",
-          owner_cash: "مال المالك",
-          supplier_credit: "كريدي مزوّد",
-        }[src] || src);
+        const paymentSourceLabel = (src) => {
+          if (isOwnerOnly.value && src === "owner_cash") return "نقداً (كاش)";
+          return ({
+            worker_cash: "كاسة العامل",
+            owner_cash: "مال المالك",
+            supplier_credit: "كريدي مزوّد",
+          }[src] || src);
+        };
 
         const invoiceStatusBadge = (st) => ({
           pending: { label: "للمراجعة", cls: "badge-warn" },
@@ -2166,7 +2609,8 @@
           return t || "حركة مخزن";
         };
 
-        const stockItemNameById = (id) => stockItems.value.find((s) => s.id === id)?.name || "—";
+        const stockItemById = (id) => stockItems.value.find((s) => s.id === id) || null;
+        const stockItemNameById = (id) => stockItemById(id)?.name || "—";
         const memberNameById = (id) => members.value.find((m) => m.id === id)?.display_name || "عامل";
         const actorNameByUserId = (uid) => {
           if (!uid) return "";
@@ -2260,6 +2704,239 @@
           };
         };
 
+        // ==================== الأرشيف والرسم البياني ====================
+        const archiveYear = ref(new Date().getFullYear());
+        const archiveLoading = ref(false);
+        const archiveMetric = ref("net");
+        const archiveMonths = ref([]);
+        const archiveSelectedMonth = ref("");
+
+        const loadArchiveYear = async (year) => {
+          if (!cafe.value) return;
+          archiveLoading.value = true;
+          try {
+            const cid = cafe.value.id;
+            const startMk = `${year}-01`;
+            const endMk = `${year}-12`;
+
+            const [shRes, invRes, feRes] = await Promise.all([
+              supabase
+                .from("daily_shifts")
+                .select("month_key, sales_total_mi, expenses_total_mi, wage_mi")
+                .eq("cafe_id", cid)
+                .eq("status", "approved")
+                .gte("month_key", startMk)
+                .lte("month_key", endMk),
+              hasFeature("stock")
+                ? supabase
+                    .from("stock_invoices")
+                    .select("month_key, total_amount_mi")
+                    .eq("cafe_id", cid)
+                    .eq("status", "approved")
+                    .gte("month_key", startMk)
+                    .lte("month_key", endMk)
+                : Promise.resolve({ data: [], error: null }),
+              supabase
+                .from("fixed_expenses")
+                .select("month_key, amount_mi, paid_at")
+                .eq("cafe_id", cid)
+                .gte("month_key", startMk)
+                .lte("month_key", endMk),
+            ]);
+
+            if (shRes.error) throw shRes.error;
+
+            const buckets = [];
+            for (let m = 1; m <= 12; m++) {
+              const mk = `${year}-${String(m).padStart(2, "0")}`;
+              buckets.push({
+                monthNum: m,
+                monthKey: mk,
+                label: `${ARABIC_MONTHS[m - 1]} ${year}`,
+                shortName: SHORT_ARABIC_MONTHS[m - 1],
+                salesMi: 0,
+                dailyExpensesMi: 0,
+                wagesMi: 0,
+                invoicesMi: 0,
+                fixedPaidMi: 0,
+                fixedUnpaidMi: 0,
+                expensesMi: 0,
+                netMi: 0,
+                hasData: false,
+              });
+            }
+
+            const byKey = new Map(buckets.map((b) => [b.monthKey, b]));
+
+            for (const s of shRes.data || []) {
+              const b = byKey.get(s.month_key);
+              if (!b) continue;
+              b.salesMi += Number(s.sales_total_mi || 0);
+              b.dailyExpensesMi += Number(s.expenses_total_mi || 0);
+              b.wagesMi += Number(s.wage_mi || 0);
+              b.hasData = true;
+            }
+
+            for (const inv of invRes.data || []) {
+              const b = byKey.get(inv.month_key);
+              if (!b) continue;
+              b.invoicesMi += Number(inv.total_amount_mi || 0);
+              b.hasData = true;
+            }
+
+            for (const fe of feRes.data || []) {
+              const b = byKey.get(fe.month_key);
+              if (!b) continue;
+              if (fe.paid_at) b.fixedPaidMi += Number(fe.amount_mi || 0);
+              else b.fixedUnpaidMi += Number(fe.amount_mi || 0);
+              b.hasData = true;
+            }
+
+            for (const b of buckets) {
+              b.expensesMi = b.dailyExpensesMi + b.wagesMi + b.invoicesMi + b.fixedPaidMi;
+              b.netMi = b.salesMi - b.expensesMi;
+            }
+
+            archiveMonths.value = buckets;
+
+            const active = buckets.filter((b) => b.hasData);
+            if (active.length) {
+              archiveSelectedMonth.value = active[active.length - 1].monthKey;
+            } else {
+              archiveSelectedMonth.value = buckets[0].monthKey;
+            }
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            archiveLoading.value = false;
+          }
+        };
+
+        const openArchive = async () => {
+          tab.value = "archive";
+          const y = Number(currentServerMonth.value.slice(0, 4)) || new Date().getFullYear();
+          archiveYear.value = y;
+          await loadArchiveYear(y);
+        };
+
+        const changeArchiveYear = async (delta) => {
+          archiveYear.value += delta;
+          await loadArchiveYear(archiveYear.value);
+        };
+
+        const archiveYearTotals = computed(() => {
+          let salesMi = 0;
+          let expensesMi = 0;
+          for (const b of archiveMonths.value) {
+            salesMi += b.salesMi;
+            expensesMi += b.expensesMi;
+          }
+          return { salesMi, expensesMi, netMi: salesMi - expensesMi };
+        });
+
+        const archiveActiveMonths = computed(() =>
+          [...archiveMonths.value].filter((b) => b.hasData).reverse()
+        );
+
+        const archiveFocusMonth = computed(() =>
+          archiveMonths.value.find((b) => b.monthKey === archiveSelectedMonth.value) || archiveMonths.value[0] || null
+        );
+
+        const archiveChart = computed(() => {
+          const topPad = 12;
+          const chartH = 122;
+          const slotW = 348 / 12;
+          const barW = 16;
+
+          const vals = archiveMonths.value.map((b) =>
+            archiveMetric.value === "sales" ? b.salesMi
+              : archiveMetric.value === "expenses" ? b.expensesMi
+              : b.netMi
+          );
+
+          const maxPos = Math.max(0, ...vals);
+          const minNeg = Math.min(0, ...vals);
+          const allZero = maxPos === 0 && minNeg === 0;
+          const span = allZero ? 1 : (maxPos - minNeg);
+          const zeroY = allZero ? (topPad + chartH) : (topPad + (maxPos / span) * chartH);
+
+          const bars = archiveMonths.value.map((b, i) => {
+            const val = vals[i] || 0;
+            const slotX = 6 + i * slotW;
+            const cx = slotX + slotW / 2;
+            const x = cx - barW / 2;
+            let h = 0;
+            let y = zeroY;
+            if (val > 0) {
+              h = Math.max(4, (val / span) * chartH);
+              y = zeroY - h;
+            } else if (val < 0) {
+              h = Math.max(4, (Math.abs(val) / span) * chartH);
+              y = zeroY;
+            } else {
+              h = 2;
+              y = zeroY - 2;
+            }
+
+            let color = "#0f766e";
+            if (archiveMetric.value === "expenses") color = "#d97706";
+            else if (archiveMetric.value === "net" && val < 0) color = "#dc2626";
+            else if (!b.hasData) color = "#cbd5e1";
+
+            return {
+              monthKey: b.monthKey,
+              shortName: b.shortName,
+              hasData: b.hasData,
+              slotX,
+              slotW,
+              cx,
+              x,
+              y,
+              w: barW,
+              h,
+              color,
+            };
+          });
+
+          return { zeroY, bars };
+        });
+
+        const archiveDetail = reactive({
+          month: null,
+          subTab: "summary",
+          loading: false,
+          shifts: [],
+          invoices: [],
+          fixed: [],
+        });
+
+        const openArchiveMonthDetail = async (monthObj) => {
+          archiveDetail.month = monthObj;
+          archiveDetail.subTab = "summary";
+          archiveDetail.loading = true;
+          archiveDetail.shifts = [];
+          archiveDetail.invoices = [];
+          archiveDetail.fixed = [];
+          try {
+            const cid = cafe.value.id;
+            const mk = monthObj.monthKey;
+            const [msRes, miRes, feRes] = await Promise.all([
+              supabase.from("daily_shifts").select("*").eq("cafe_id", cid).eq("month_key", mk).order("work_date", { ascending: false }),
+              hasFeature("stock")
+                ? supabase.from("stock_invoices").select("*").eq("cafe_id", cid).eq("month_key", mk).order("work_date", { ascending: false })
+                : Promise.resolve({ data: [], error: null }),
+              supabase.from("fixed_expenses").select("*").eq("cafe_id", cid).eq("month_key", mk).order("due_date", { ascending: true }),
+            ]);
+            archiveDetail.shifts = msRes.error ? [] : (msRes.data || []);
+            archiveDetail.invoices = miRes.error ? [] : (miRes.data || []);
+            archiveDetail.fixed = feRes.error ? [] : (feRes.data || []);
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            archiveDetail.loading = false;
+          }
+        };
+
         // --- مشاركة واتساب ---
         const whatsappShareUrl = computed(() => {
           if (!shareCard.value) return "#";
@@ -2281,7 +2958,7 @@
           }
         };
 
-        // --- مفصل تحركات مادة المخزن (stock_movements) ---
+        // --- مفصل تحركات مادة المخزن ---
         const stockDetail = reactive({ item: null, loading: false, moves: [] });
 
         const stockDetailSummary = computed(() => {
@@ -2353,6 +3030,7 @@
           recentSettlements.value = [];
           stockDetail.item = null;
           stockDetail.moves = [];
+          archiveDetail.month = null;
           shareCard.value = null;
           loginForm.password = "";
         };
@@ -2389,7 +3067,6 @@
               serverDateStr.value = t.today;
               serverToday.value = `${t.today} • ${t.time_hhmm}`;
               currentServerMonth.value = t.today.slice(0, 7);
-              selectedMonth.value = t.today.slice(0, 7);
               if (t.epoch_ms) serverEpochMs.value = Number(t.epoch_ms);
             }
 
@@ -2478,6 +3155,9 @@
             }
 
             await refreshMonthData(false);
+            if (tab.value === "archive") {
+              await loadArchiveYear(archiveYear.value);
+            }
             if (shouldNotify) notify("تم تحديث البيانات بنجاح.");
           } catch (e) {
             notify(translateError(e), "err");
@@ -2493,7 +3173,7 @@
           if (manageBusy) busy.value = true;
           try {
             const cid = cafe.value.id;
-            const mk = selectedMonth.value;
+            const mk = currentServerMonth.value;
             const [msRes, miRes, feRes] = await Promise.all([
               supabase.from("daily_shifts").select("*").eq("cafe_id", cid).eq("month_key", mk).order("work_date", { ascending: false }).order("created_at", { ascending: false }),
               hasFeature("stock")
@@ -2593,8 +3273,8 @@
           if (reopenShift) {
             shiftModal.reopenShiftId = reopenShift.id;
             shiftModal.work_date = reopenShift.work_date;
-            shiftModal.shift_type = reopenShift.shift_type;
-            shiftModal.worker_member_id = reopenShift.is_owner_shift ? "" : (reopenShift.worker_member_id || "");
+            shiftModal.shift_type = isOwnerOnly.value ? "full" : reopenShift.shift_type;
+            shiftModal.worker_member_id = (isOwnerOnly.value || reopenShift.is_owner_shift) ? "" : (reopenShift.worker_member_id || "");
             shiftModal.note = reopenShift.note || "";
             busy.value = true;
             try {
@@ -2622,7 +3302,9 @@
           } else {
             shiftModal.reopenShiftId = null;
             shiftModal.work_date = serverDateStr.value;
-            shiftModal.shift_type = cafe.value?.work_pattern === "worker_owner" || cafe.value?.work_pattern === "two_workers" ? "evening" : "full";
+            shiftModal.shift_type = isOwnerOnly.value
+              ? "full"
+              : (cafe.value?.work_pattern === "worker_owner" || cafe.value?.work_pattern === "two_workers" ? "evening" : "full");
             shiftModal.worker_member_id = "";
             shiftModal.note = "";
             shiftModal.open = true;
@@ -2658,19 +3340,19 @@
             const { error } = await supabase.rpc("submit_shift", {
               p_client_tx_id: shiftModal.client_tx_id,
               p_work_date: shiftModal.work_date,
-              p_shift_type: shiftModal.shift_type,
+              p_shift_type: isOwnerOnly.value ? "full" : shiftModal.shift_type,
               p_sales: sales,
               p_expenses: expenses,
               p_note: shiftModal.note,
               p_session_version: null,
               p_reopen_shift_id: shiftModal.reopenShiftId,
               p_cafe_id: cafe.value.id,
-              p_worker_member_id: shiftModal.worker_member_id || null,
-              p_auto_approve: shiftModal.auto_approve,
+              p_worker_member_id: isOwnerOnly.value ? null : (shiftModal.worker_member_id || null),
+              p_auto_approve: isOwnerOnly.value ? true : shiftModal.auto_approve,
             });
             if (error) throw error;
             shiftModal.open = false;
-            notify(shiftModal.auto_approve ? "تم تسجيل واعتماد اليومية." : "تم حفظ اليومية.");
+            notify(isOwnerOnly.value || shiftModal.auto_approve ? "تم حفظ اليومية." : "تم تسجيل اليومية.");
             await refreshAll(false);
           } catch (e) {
             notify(translateError(e), "err");
@@ -2725,14 +3407,18 @@
         };
 
         const reopenShiftAction = async (s) => {
-          const reason = prompt("سبب إعادة فتح اليومية (اختياري):", "");
+          const reason = isOwnerOnly.value ? "تعديل من المالك" : prompt("سبب إعادة فتح اليومية (اختياري):", "");
           if (reason === null) return;
           busy.value = true;
           try {
             const { error } = await supabase.rpc("reopen_shift", { p_shift_id: s.id, p_reason: reason });
             if (error) throw error;
-            notify("تمت إعادة فتح اليومية للتعديل.");
+            notify("تم فتح اليومية للتعديل.");
             await refreshAll(false);
+            if (isOwnerOnly.value) {
+              const refreshed = monthShifts.value.find((x) => x.id === s.id) || unsettledShifts.value.find((x) => x.id === s.id);
+              if (refreshed) await openShiftModal(refreshed);
+            }
           } catch (e) {
             notify(translateError(e), "err");
           } finally {
@@ -2826,7 +3512,7 @@
           try {
             const { error } = await supabase.rpc("settle_worker", {
               p_worker_member_id: settleModal.worker.id,
-              p_month_key: selectedMonth.value,
+              p_month_key: currentServerMonth.value,
               p_shift_ids: settleModal.selectedShiftIds,
               p_invoice_ids: settleModal.selectedInvoiceIds,
               p_paid_amount_mi: settleComputed.value.signedPaidMi,
@@ -2891,7 +3577,7 @@
             pinModal.worker = null;
             notify("تم تحديث رمز PIN.");
             openShareCard(`رمز PIN الجديد (${w.display_name})`, [
-              `بيانات دخول العامل — ${cafe.value.name}`,
+              `بيانات دخول العامل — ${cafeDisplayTitle.value}`,
               `رمز المقهى: ${cafe.value.code}`,
               `المقعد: ${w.slot}`,
               `رمز PIN الجديد: ${pin}`,
@@ -2944,7 +3630,7 @@
             notify("تم تصفير المقعد لعامل جديد.");
             if (w.user_id && pin) {
               openShareCard(`بيانات العامل الجديد (${w.slot})`, [
-                `مرحباً بك في CassaCafe — ${cafe.value.name}`,
+                `مرحباً بك في CassaCafe — ${cafeDisplayTitle.value}`,
                 `رمز المقهى: ${cafe.value.code}`,
                 `المقعد: ${w.slot}`,
                 `رمز PIN: ${pin}`,
@@ -2966,7 +3652,7 @@
           }
         };
 
-        // ==================== 3. منطق السلع والأسعار (تاكتيل + أمثلة جاهزة) ====================
+        // ==================== 3. منطق السلع والأسعار ====================
         const productModal = reactive({
           open: false,
           id: null,
@@ -3019,9 +3705,7 @@
         const enableCustomCategory = () => {
           productModal.customCategoryMode = true;
           productModal.category = "";
-          if (!productModal.id) {
-            productModal.customNameMode = true;
-          }
+          if (!productModal.id) productModal.customNameMode = true;
         };
 
         const selectProductPreset = (preset) => {
@@ -3036,9 +3720,7 @@
           productModal.name = "";
         };
 
-        const setQuickPrice = (priceStr) => {
-          productModal.price_tnd = priceStr;
-        };
+        const setQuickPrice = (priceStr) => { productModal.price_tnd = priceStr; };
 
         const bumpProductPrice = (deltaMi) => {
           const next = Math.max(0, tndToMi(productModal.price_tnd || "0") + deltaMi);
@@ -3101,8 +3783,7 @@
               productModal.stock_deduct_qty = 1;
               productModal.customCategoryMode = false;
               productModal.category = catName;
-              const hasPresets = PRODUCT_CATALOG.some((c) => c.category === catName);
-              productModal.customNameMode = !hasPresets;
+              productModal.customNameMode = !PRODUCT_CATALOG.some((c) => c.category === catName);
             } else {
               productModal.open = false;
               notify("تم حفظ السلعة.");
@@ -3137,13 +3818,20 @@
           open: false,
           id: null,
           name: "",
-          unit: "وحدة",
+          unit: "قارورة",
           pack_label: "ستيكة",
           pack_size: 12,
           unit_cost_tnd: "0",
           low_threshold: 5,
           current_qty: 0,
         });
+        const applyStockPresetToModal = (preset) => {
+          stockItemModal.name = preset.name;
+          stockItemModal.unit = preset.unit;
+          stockItemModal.pack_label = preset.pack_label;
+          stockItemModal.pack_size = preset.pack_size;
+          stockItemModal.low_threshold = preset.low_threshold;
+        };
         const openStockItemModal = (st) => {
           stockItemModal.open = true;
           stockItemModal.id = st?.id || null;
@@ -3234,6 +3922,7 @@
           }
         };
 
+        // --- الفاتورة المعاد تصميمها ---
         const invoiceModal = reactive({
           open: false,
           client_tx_id: "",
@@ -3245,45 +3934,124 @@
           auto_approve: true,
           items: [],
         });
+
+        const invoiceQuickAdd = reactive({
+          open: false,
+          manual: false,
+          name: "",
+          unit: "قارورة",
+          pack_label: "ستيكة",
+          pack_size: 6,
+        });
+
+        const recentSuppliers = computed(() => {
+          const seen = [];
+          for (const inv of [...monthInvoices.value, ...unsettledInvoices.value]) {
+            const name = String(inv.supplier_name || "").trim();
+            if (name && !seen.includes(name)) seen.push(name);
+            if (seen.length >= 6) break;
+          }
+          return seen;
+        });
+
+        const availableStockCatalogPresets = computed(() => {
+          const existing = new Set(stockItems.value.map((s) => String(s.name || "").trim().toLowerCase()));
+          return STOCK_CATALOG.filter((p) => !existing.has(p.name.trim().toLowerCase()));
+        });
+
         const resetInvoiceTxId = () => { invoiceModal.client_tx_id = generateTxId("inv"); };
         const invoiceFormTotalMi = computed(() =>
           invoiceModal.items.reduce((a, ln) => a + tndToMi(ln.line_cost_tnd || "0"), 0)
         );
-        const addInvoiceLine = () => {
-          invoiceModal.items.push({ stock_item_id: "", pack_qty: 1, by_unit: false, line_cost_tnd: "" });
-          resetInvoiceTxId();
-        };
+
         const removeInvoiceLine = (idx) => {
           invoiceModal.items.splice(idx, 1);
           resetInvoiceTxId();
         };
+
         const recalcInvoiceLineCost = (ln) => {
-          const st = stockItems.value.find((x) => x.id === ln.stock_item_id);
+          const st = stockItemById(ln.stock_item_id);
           if (!st || !st.unit_cost_mi) return;
           const units = ln.by_unit ? Number(ln.pack_qty || 0) : Number(ln.pack_qty || 0) * Number(st.pack_size || 1);
           ln.line_cost_tnd = miToTnd(units * Number(st.unit_cost_mi));
         };
-        const onInvoiceItemPick = (ln) => { recalcInvoiceLineCost(ln); resetInvoiceTxId(); };
+
         const onInvoiceQtyChange = (ln) => { recalcInvoiceLineCost(ln); resetInvoiceTxId(); };
         const bumpInvoiceQty = (ln, delta) => {
           ln.pack_qty = Math.max(1, Math.round(Number(ln.pack_qty || 1)) + delta);
           onInvoiceQtyChange(ln);
         };
+
         const quickPickInvoiceItem = (st) => {
           const existing = invoiceModal.items.find((ln) => ln.stock_item_id === st.id);
           if (existing) {
             bumpInvoiceQty(existing, 1);
             return;
           }
-          if (invoiceModal.items.length === 1 && !invoiceModal.items[0].stock_item_id) {
-            invoiceModal.items[0].stock_item_id = st.id;
-            invoiceModal.items[0].pack_qty = 1;
-            onInvoiceItemPick(invoiceModal.items[0]);
-            return;
-          }
           const ln = { stock_item_id: st.id, pack_qty: 1, by_unit: false, line_cost_tnd: "" };
           invoiceModal.items.push(ln);
-          onInvoiceItemPick(ln);
+          recalcInvoiceLineCost(ln);
+          resetInvoiceTxId();
+        };
+
+        const createStockItemAndPick = async (spec) => {
+          const cleanName = String(spec.name || "").trim();
+          if (!cleanName) return;
+
+          const found = stockItems.value.find((s) => String(s.name || "").trim().toLowerCase() === cleanName.toLowerCase());
+          if (found) {
+            if (!found.active) {
+              await supabase.from("stock_items").update({ active: true, updated_at: new Date().toISOString() }).eq("id", found.id).eq("cafe_id", cafe.value.id);
+              found.active = true;
+            }
+            quickPickInvoiceItem(found);
+            return;
+          }
+
+          busy.value = true;
+          try {
+            const { data, error } = await supabase
+              .from("stock_items")
+              .insert({
+                cafe_id: cafe.value.id,
+                name: cleanName,
+                unit: String(spec.unit || "وحدة").trim() || "وحدة",
+                pack_label: String(spec.pack_label || spec.unit || "عبوة").trim() || "عبوة",
+                pack_size: Math.max(1, Math.round(Number(spec.pack_size || 1))),
+                unit_cost_mi: 0,
+                low_threshold: Math.max(0, Math.round(Number(spec.low_threshold ?? 5))),
+                current_qty: 0,
+                active: true,
+                updated_at: new Date().toISOString(),
+              })
+              .select()
+              .single();
+            if (error) throw error;
+            stockItems.value.push(data);
+            quickPickInvoiceItem(data);
+            notify(`تمت إضافة «${data.name}» للمخزن وللفاتورة.`);
+          } catch (e) {
+            notify(translateError(e), "err");
+          } finally {
+            busy.value = false;
+          }
+        };
+
+        const quickCreateStockAndPick = async (preset) => {
+          await createStockItemAndPick(preset);
+        };
+
+        const submitManualStockAndPick = async () => {
+          if (!invoiceQuickAdd.name.trim()) return;
+          await createStockItemAndPick({
+            name: invoiceQuickAdd.name,
+            unit: invoiceQuickAdd.unit,
+            pack_label: invoiceQuickAdd.pack_label,
+            pack_size: invoiceQuickAdd.pack_size,
+            low_threshold: 5,
+          });
+          invoiceQuickAdd.name = "";
+          invoiceQuickAdd.manual = false;
         };
 
         const openInvoiceModal = () => {
@@ -3296,7 +4064,14 @@
           invoiceModal.note = "";
           invoiceModal.auto_approve = true;
           invoiceModal.items = [];
+          invoiceQuickAdd.open = activeStockItems.value.length === 0;
+          invoiceQuickAdd.manual = false;
+          invoiceQuickAdd.name = "";
+          invoiceQuickAdd.unit = "قارورة";
+          invoiceQuickAdd.pack_label = "ستيكة";
+          invoiceQuickAdd.pack_size = 6;
         };
+
         const submitInvoiceForm = async () => {
           const items = invoiceModal.items
             .filter((ln) => ln.stock_item_id && Number(ln.pack_qty) > 0)
@@ -3308,23 +4083,27 @@
             }));
           if (!items.length) return notify(translateError("EMPTY_INVOICE"), "err");
 
+          const src = isOwnerOnly.value && invoiceModal.payment_source === "worker_cash"
+            ? "owner_cash"
+            : invoiceModal.payment_source;
+
           busy.value = true;
           try {
             const { error } = await supabase.rpc("submit_stock_invoice", {
               p_client_tx_id: invoiceModal.client_tx_id,
               p_work_date: invoiceModal.work_date,
               p_supplier_name: invoiceModal.supplier_name,
-              p_payment_source: invoiceModal.payment_source,
+              p_payment_source: src,
               p_items: items,
               p_note: invoiceModal.note,
               p_session_version: null,
               p_cafe_id: cafe.value.id,
-              p_worker_member_id: invoiceModal.payment_source === "worker_cash" ? (invoiceModal.worker_member_id || null) : null,
-              p_auto_approve: invoiceModal.auto_approve,
+              p_worker_member_id: (!isOwnerOnly.value && src === "worker_cash") ? (invoiceModal.worker_member_id || null) : null,
+              p_auto_approve: isOwnerOnly.value ? true : invoiceModal.auto_approve,
             });
             if (error) throw error;
             invoiceModal.open = false;
-            notify(invoiceModal.auto_approve ? "تم تسجيل واعتماد الفاتورة." : "تم حفظ الفاتورة.");
+            notify(isOwnerOnly.value || invoiceModal.auto_approve ? "تم حفظ الفاتورة وإضافتها للمخزون." : "تم حفظ الفاتورة.");
             await refreshAll(false);
           } catch (e) {
             notify(translateError(e), "err");
@@ -3406,7 +4185,7 @@
           fixedModal.open = true;
           fixedModal.title = "";
           fixedModal.amount_tnd = "";
-          fixedModal.due_date = `${selectedMonth.value}-01`;
+          fixedModal.due_date = `${currentServerMonth.value}-01`;
           fixedModal.reminder_enabled = true;
           fixedModal.is_paid = false;
         };
@@ -3417,7 +4196,7 @@
           try {
             const { error } = await supabase.from("fixed_expenses").insert({
               cafe_id: cafe.value.id,
-              month_key: selectedMonth.value,
+              month_key: currentServerMonth.value,
               title: fixedModal.title,
               amount_mi: amountMi,
               due_date: fixedModal.due_date || null,
@@ -3511,26 +4290,31 @@
         onMounted(() => checkSession(false));
 
         return {
-          ARABIC_MONTHS, QUICK_EXPENSE_LABELS, QUICK_FIXED_LABELS, QUICK_PRICES, QUICK_UNITS,
+          QUICK_EXPENSE_LABELS, QUICK_FIXED_LABELS, QUICK_PRICES, QUICK_UNITS, STOCK_CATALOG,
           booting, busy, refreshing, currentUserId, isSuperAdmin, availableCafes, cafe,
-          serverToday, selectedMonth, selectedMonthLabel, monthPicker, openMonthPicker, pickMonth, pickCurrentMonth, shiftMonth,
+          formatCafeTitle, cafeDisplayTitle,
+          serverToday, currentServerMonth, currentMonthLabel,
           tab, stockSubTab, stockFilter, menuSearch, feedbackNote, shareCard, whatsappShareUrl,
           products, filteredProducts, stockItems, activeStockItems, filteredStockItems, stockSummary, activeWorkers,
           activeBottomNav, headerInfo,
           monthShifts, groupedMonthShifts, expandedDays, toggleDayExpand, dayShiftTypesLabel,
           attentionShifts, pendingShifts, monthInvoices, pendingInvoices,
           fixedExpenses, dueFixedAlerts, recentSettlements,
-          subDaysLeft, canWrite, hasWorkersInPattern, pendingCount, monthStats,
+          subDaysLeft, canWrite, isOwnerOnly, pendingCount, monthStats,
           loginForm, toast,
+          archiveYear, archiveLoading, archiveMetric, archiveSelectedMonth, archiveYearTotals,
+          archiveActiveMonths, archiveFocusMonth, archiveChart, archiveDetail,
+          openArchive, changeArchiveYear, openArchiveMonthDetail,
           stockDetail, stockDetailSummary,
           allProductCategories, currentCategoryPresets, existingProductNames,
           selectProductCategory, enableCustomCategory, selectProductPreset, enableCustomProductName, setQuickPrice, bumpProductPrice,
           shiftModal, shiftModalProducts, shiftFormTotals, detailShift, approveShiftModal,
           settleModal, settleComputed, workerEditModal, pinModal, resetModal,
-          productModal, stockItemModal, adjustModal, invoiceModal, invoiceFormTotalMi, detailInvoice, fixedModal,
+          productModal, stockItemModal, applyStockPresetToModal, adjustModal,
+          invoiceModal, invoiceQuickAdd, recentSuppliers, availableStockCatalogPresets, invoiceFormTotalMi, detailInvoice, fixedModal,
           WORK_PATTERNS, FEATURE_LABELS,
           hasFeature, miToTnd, formatDate, formatDateTime, shiftNetMi, shiftTypeLabel, shiftStatusBadge,
-          paymentSourceLabel, invoiceStatusBadge, moveTypeLabel, stockItemNameById, memberNameById, actorNameByUserId, workerSummary, generateRandomPin,
+          paymentSourceLabel, invoiceStatusBadge, moveTypeLabel, stockItemById, stockItemNameById, memberNameById, actorNameByUserId, workerSummary, generateRandomPin,
           login, logout, selectCafe, refreshAll, refreshMonthData, copyShareCard,
           openStockDetail,
           changeShiftProductQty, addQuickShiftExpense, bumpExpenseAmount,
@@ -3540,8 +4324,9 @@
           openEditWorkerModal, submitEditWorker, openPinModal, submitWorkerPin, openResetModal, submitResetWorker,
           openProductModal, saveProduct, toggleProductActive,
           openStockItemModal, saveStockItem, toggleStockItemActive, openAdjustStockModal, bumpAdjustDelta, submitAdjustStock,
-          openInvoiceModal, resetInvoiceTxId, addInvoiceLine, removeInvoiceLine, onInvoiceItemPick, onInvoiceQtyChange,
-          bumpInvoiceQty, quickPickInvoiceItem, submitInvoiceForm, openInvoiceDetail, approveInvoiceAction, rejectInvoiceAction, reverseInvoiceAction,
+          openInvoiceModal, resetInvoiceTxId, removeInvoiceLine, onInvoiceQtyChange, bumpInvoiceQty,
+          quickPickInvoiceItem, quickCreateStockAndPick, submitManualStockAndPick,
+          submitInvoiceForm, openInvoiceDetail, approveInvoiceAction, rejectInvoiceAction, reverseInvoiceAction,
           openFixedModal, saveFixedExpense, markFixedPaid, markFixedUnpaid, deleteFixedExpense, sendFeedback,
         };
       },
