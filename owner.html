@@ -9,6 +9,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./core/styles.css?v=1.3.0" />
   <style>
+    .num-ltr {
+      direction: ltr !important;
+      unicode-bidi: isolate !important;
+      display: inline-block;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
     /* شريط تبديل السنة في الأرشيف */
     .cc-year-switcher {
       display: grid;
@@ -321,7 +329,7 @@
             <strong style="display:block; margin-bottom:6px;">تذكير مصاريف ثابتة مستحقّة:</strong>
             <div v-for="fe in dueFixedAlerts" :key="fe.id" class="row" style="margin-bottom:6px;">
               <span style="font-size:0.84rem;">
-                • <strong>{{ fe.title }}</strong> — <span class="num">{{ miToTnd(fe.amount_mi) }}</span> د.ت
+                • <strong>{{ fe.title }}</strong> — <span class="num-ltr">{{ formatMi(fe.amount_mi) }}</span> مي
               </span>
               <button v-if="canWrite" class="btn btn-sm btn-primary" @click="markFixedPaid(fe)" :disabled="busy">تم الدفع</button>
             </div>
@@ -330,16 +338,16 @@
           <div class="cc-hero">
             <div class="cc-hero-lbl">ربح شهر {{ currentMonthLabel }}</div>
             <div class="cc-hero-val">
-              {{ miToTnd(monthStats.netMi) }} <small>د.ت</small>
+              <span class="num-ltr">{{ formatMi(monthStats.netMi) }}</span> <small>مي</small>
             </div>
             <div class="cc-hero-split">
               <div class="cc-hero-cell cc-tap" @click="tab = 'shifts'">
                 <span>المداخيل ▲</span>
-                <strong>{{ miToTnd(monthStats.salesMi) }}</strong>
+                <strong><span class="num-ltr">{{ formatMi(monthStats.salesMi) }}</span> مي</strong>
               </div>
               <div class="cc-hero-cell cc-tap" @click="tab = 'finance'">
                 <span>كل المصاريف ▼</span>
-                <strong>{{ miToTnd(monthStats.totalExpensesMi) }}</strong>
+                <strong><span class="num-ltr">{{ formatMi(monthStats.totalExpensesMi) }}</span> مي</strong>
               </div>
             </div>
           </div>
@@ -358,7 +366,7 @@
               <div class="cc-summary-ico">📦</div>
               <div>
                 <div class="muted" style="font-size:0.78rem;">المخزون الموجود ({{ stockSummary.count }} مادة)</div>
-                <strong class="num" style="font-size:1.02rem;">{{ miToTnd(stockSummary.totalValueMi) }} د.ت</strong>
+                <strong style="font-size:1.02rem;"><span class="num-ltr">{{ formatMi(stockSummary.totalValueMi) }}</span> مي</strong>
               </div>
             </div>
             <span class="badge" :class="stockSummary.lowCount > 0 ? 'badge-warn' : 'badge-ok'">
@@ -371,7 +379,7 @@
               <div class="cc-summary-ico" style="background:var(--warn-soft); color:#92400e;">🧾</div>
               <div>
                 <div class="muted" style="font-size:0.78rem;">مصاريف ثابتة لم تُدفع بعد</div>
-                <strong class="num" style="font-size:1rem;">{{ miToTnd(monthStats.fixedUnpaidMi) }} د.ت</strong>
+                <strong style="font-size:1rem;"><span class="num-ltr">{{ formatMi(monthStats.fixedUnpaidMi) }}</span> مي</strong>
               </div>
             </div>
             <span class="muted" style="font-weight:700;">عرض ⬅</span>
@@ -391,7 +399,7 @@
           </div>
 
           <template v-if="tab === 'shifts'">
-            <!-- الورديات التي تتطلب مراجعة واعتماداً (من أي شهر حتى لا تضيع) -->
+            <!-- الورديات التي تتطلب مراجعة واعتماداً -->
             <div v-if="attentionShifts.length" style="margin-bottom:14px;">
               <strong style="display:block; margin-bottom:8px; color:var(--warn);">
                 يوميات للمراجعة ({{ attentionShifts.length }})
@@ -399,19 +407,19 @@
               <div v-for="s in attentionShifts" :key="s.id" class="card" style="border-right:4px solid var(--warn);">
                 <div class="row" style="margin-bottom:6px;">
                   <div>
-                    <strong class="ltr">{{ s.work_date }}</strong>
+                    <strong class="num-ltr">{{ s.work_date }}</strong>
                     <span v-if="!isOwnerOnly" class="badge badge-info" style="margin-right:6px;">{{ shiftTypeLabel(s.shift_type) }}</span>
                     <span v-if="!isOwnerOnly" class="muted" style="margin-right:6px;">{{ s.worker_name_snapshot }}</span>
                   </div>
                   <span class="badge" :class="shiftStatusBadge(s.status).cls">{{ shiftStatusBadge(s.status).label }}</span>
                 </div>
 
-                <div class="muted num" style="margin-bottom:8px;">
-                  المبيعات: <strong>{{ miToTnd(s.sales_total_mi) }}</strong> د.ت
-                  • المصاريف: <strong>{{ miToTnd(s.expenses_total_mi) }}</strong> د.ت
-                  <span v-if="!isOwnerOnly && !s.is_owner_shift"> • الأجر: <strong>{{ miToTnd(s.wage_mi) }}</strong> د.ت</span>
+                <div class="muted" style="margin-bottom:8px;">
+                  المبيعات: <strong><span class="num-ltr">{{ formatMi(s.sales_total_mi) }}</span></strong> مي
+                  • المصاريف: <strong><span class="num-ltr">{{ formatMi(s.expenses_total_mi) }}</span></strong> مي
+                  <span v-if="!isOwnerOnly && !s.is_owner_shift"> • الأجر: <strong><span class="num-ltr">{{ formatMi(s.wage_mi) }}</span></strong> مي</span>
                   <br />
-                  الصافي: <strong style="color:var(--primary);">{{ miToTnd(shiftNetMi(s)) }} د.ت</strong>
+                  الصافي: <strong style="color:var(--primary);"><span class="num-ltr">{{ formatMi(shiftNetMi(s)) }}</span> مي</strong>
                   <span v-if="s.reopen_reason" style="display:block; color:var(--danger);">سبب الفتح: {{ s.reopen_reason }}</span>
                   <span v-if="s.note" style="display:block;">ملاحظة: {{ s.note }}</span>
                 </div>
@@ -437,18 +445,18 @@
               <p class="muted">لا توجد يوميات مسجّلة في شهر {{ currentMonthLabel }} بعد.</p>
             </div>
 
-            <!-- عرض الأيام: مبسّط للمالك الوحيد، ومجمّع قابل للفتح للفترات عند وجود عمال -->
+            <!-- عرض الأيام -->
             <div v-for="day in groupedMonthShifts" :key="day.work_date" class="cc-day-card">
-              <!-- وضع المالك فقط (يومية واحدة في اليوم -> بطاقة مباشرة بدون فترات) -->
+              <!-- وضع المالك فقط -->
               <template v-if="isOwnerOnly && day.shifts.length === 1">
                 <div style="padding:13px 14px;">
                   <div class="row cc-tap" style="margin-bottom:6px;" @click="openShiftDetail(day.shifts[0])">
-                    <strong class="ltr" style="font-size:0.96rem;">{{ day.work_date }}</strong>
-                    <strong class="num" style="color:var(--primary); font-size:1rem;">{{ miToTnd(day.netMi) }} د.ت</strong>
+                    <strong class="num-ltr" style="font-size:0.96rem;">{{ day.work_date }}</strong>
+                    <strong style="color:var(--primary); font-size:1rem;"><span class="num-ltr">{{ formatMi(day.netMi) }}</span> مي</strong>
                   </div>
-                  <div class="muted num" style="font-size:0.8rem; margin-bottom:8px;">
-                    مبيعات: <strong>{{ miToTnd(day.salesMi) }}</strong>
-                    • مصاريف: <strong>{{ miToTnd(day.expensesMi) }}</strong>
+                  <div class="muted" style="font-size:0.8rem; margin-bottom:8px;">
+                    مبيعات: <strong><span class="num-ltr">{{ formatMi(day.salesMi) }}</span></strong> مي
+                    • مصاريف: <strong><span class="num-ltr">{{ formatMi(day.expensesMi) }}</span></strong> مي
                     <span v-if="day.shifts[0].note" style="display:block;">ملاحظة: {{ day.shifts[0].note }}</span>
                   </div>
                   <div class="row">
@@ -462,26 +470,26 @@
                 </div>
               </template>
 
-              <!-- وضع الفترات (صباحي / مسائي) -->
+              <!-- وضع الفترات -->
               <template v-else>
                 <div class="cc-day-head cc-tap" @click="toggleDayExpand(day.work_date)">
                   <div style="min-width:0;">
                     <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                      <strong class="ltr" style="font-size:0.96rem;">{{ day.work_date }}</strong>
+                      <strong class="num-ltr" style="font-size:0.96rem;">{{ day.work_date }}</strong>
                       <span v-if="!isOwnerOnly" class="badge badge-info">{{ dayShiftTypesLabel(day.shifts) }}</span>
                       <span v-if="day.pendingCount > 0" class="badge badge-warn">{{ day.pendingCount }} للمراجعة</span>
                       <span v-else-if="day.reopenedCount > 0" class="badge badge-danger">مفتوحة</span>
                       <span v-else-if="!isOwnerOnly && day.allSettled" class="badge badge-ok">مُسوّى</span>
                     </div>
-                    <div class="muted num" style="font-size:0.78rem; margin-top:4px;">
-                      مبيعات: <strong>{{ miToTnd(day.salesMi) }}</strong>
-                      • مصاريف: <strong>{{ miToTnd(day.expensesMi) }}</strong>
-                      <span v-if="day.wagesMi > 0"> • أجور: <strong>{{ miToTnd(day.wagesMi) }}</strong></span>
+                    <div class="muted" style="font-size:0.78rem; margin-top:4px;">
+                      مبيعات: <strong><span class="num-ltr">{{ formatMi(day.salesMi) }}</span></strong>
+                      • مصاريف: <strong><span class="num-ltr">{{ formatMi(day.expensesMi) }}</span></strong>
+                      <span v-if="day.wagesMi > 0"> • أجور: <strong><span class="num-ltr">{{ formatMi(day.wagesMi) }}</span></strong></span>
                     </div>
                   </div>
                   <div style="text-align:left; flex-shrink:0;">
-                    <strong class="num" style="color:var(--primary); font-size:1rem; display:block;">
-                      {{ miToTnd(day.netMi) }} د.ت
+                    <strong style="color:var(--primary); font-size:0.98rem; display:block;">
+                      <span class="num-ltr">{{ formatMi(day.netMi) }}</span> مي
                     </strong>
                     <span class="muted" style="font-size:0.76rem; font-weight:700;">
                       {{ expandedDays[day.work_date] ? "إخفاء ▲" : "الفترات ▼" }}
@@ -503,11 +511,11 @@
                       </div>
                     </div>
 
-                    <div class="muted num" style="font-size:0.82rem; margin-bottom:8px;">
-                      مبيعات: <strong>{{ miToTnd(s.sales_total_mi) }}</strong>
-                      • مصاريف: <strong>{{ miToTnd(s.expenses_total_mi) }}</strong>
-                      <span v-if="!isOwnerOnly && !s.is_owner_shift"> • أجر: <strong>{{ miToTnd(s.wage_mi) }}</strong></span>
-                      • صافي: <strong style="color:var(--primary);">{{ miToTnd(shiftNetMi(s)) }} د.ت</strong>
+                    <div class="muted" style="font-size:0.82rem; margin-bottom:8px;">
+                      مبيعات: <strong><span class="num-ltr">{{ formatMi(s.sales_total_mi) }}</span></strong>
+                      • مصاريف: <strong><span class="num-ltr">{{ formatMi(s.expenses_total_mi) }}</span></strong>
+                      <span v-if="!isOwnerOnly && !s.is_owner_shift"> • أجر: <strong><span class="num-ltr">{{ formatMi(s.wage_mi) }}</span></strong></span>
+                      • صافي: <strong style="color:var(--primary);"><span class="num-ltr">{{ formatMi(shiftNetMi(s)) }}</span> مي</strong>
                     </div>
 
                     <div class="row">
@@ -525,7 +533,7 @@
             </div>
           </template>
 
-          <!-- قسم العمال (يظهر فقط عند وجود عمال) -->
+          <!-- قسم العمال -->
           <template v-if="tab === 'workers' && !isOwnerOnly">
             <div v-if="!activeWorkers.length" class="card" style="text-align:center;">
               <p class="muted">لا يوجد عمال نشطون في النمط الحالي.</p>
@@ -538,33 +546,33 @@
                   <span class="badge badge-info ltr" style="margin-right:6px;">{{ w.slot }}</span>
                   <span v-if="!w.user_id" class="badge" style="background:#f3f4f6; color:var(--muted); margin-right:4px;">دون حساب</span>
                 </div>
-                <span class="muted num">الأجر: <strong>{{ miToTnd(w.default_wage_mi) }} د.ت</strong></span>
+                <span class="muted">الأجر: <strong><span class="num-ltr">{{ formatMi(w.default_wage_mi) }}</span> مي</strong></span>
               </div>
 
               <div class="grid-3-inline" style="margin-bottom:10px;">
                 <div class="stat" style="padding:8px 4px;">
-                  <div class="stat-val" style="font-size:1.05rem;">{{ workerSummary(w).shiftsCount }}</div>
+                  <div class="stat-val" style="font-size:1rem;">{{ workerSummary(w).shiftsCount }}</div>
                   <div class="stat-lbl">غير مُسوّاة</div>
                 </div>
                 <div class="stat" style="padding:8px 4px;">
-                  <div class="stat-val" style="font-size:1.05rem;">{{ miToTnd(workerSummary(w).prevCarryMi) }}</div>
-                  <div class="stat-lbl">المرحّل</div>
+                  <div class="stat-val num-ltr" style="font-size:0.95rem;">{{ formatMi(workerSummary(w).prevCarryMi) }}</div>
+                  <div class="stat-lbl">المرحّل (مي)</div>
                 </div>
                 <div class="stat" style="padding:8px 4px;">
-                  <div class="stat-val" style="font-size:1.05rem;" :style="{ color: workerSummary(w).grossDueMi >= 0 ? 'var(--primary)' : 'var(--danger)' }">
-                    {{ miToTnd(workerSummary(w).grossDueMi) }}
+                  <div class="stat-val num-ltr" style="font-size:0.95rem;" :style="{ color: workerSummary(w).grossDueMi >= 0 ? 'var(--primary)' : 'var(--danger)' }">
+                    {{ formatMi(workerSummary(w).grossDueMi) }}
                   </div>
-                  <div class="stat-lbl">الذمّة (د.ت)</div>
+                  <div class="stat-lbl">الذمّة (مي)</div>
                 </div>
               </div>
 
-              <div class="muted num" style="margin-bottom:10px; font-size:0.82rem;">
-                صافي اليوميات: {{ miToTnd(workerSummary(w).shiftsNetMi) }} د.ت
+              <div class="muted" style="margin-bottom:10px; font-size:0.82rem;">
+                صافي اليوميات: <span class="num-ltr">{{ formatMi(workerSummary(w).shiftsNetMi) }}</span> مي
                 <span v-if="workerSummary(w).invsCount > 0">
-                  • فواتير من الكاسة ({{ workerSummary(w).invsCount }}): -{{ miToTnd(workerSummary(w).invsPaidMi) }} د.ت
+                  • فواتير من الكاسة ({{ workerSummary(w).invsCount }}): <span class="num-ltr">-{{ formatMi(workerSummary(w).invsPaidMi) }}</span> مي
                 </span>
                 <span v-if="workerSummary(w).grossDueMi < 0" style="color:var(--danger); display:block;">
-                  المالك مدين للعامل بـ {{ miToTnd(Math.abs(workerSummary(w).grossDueMi)) }} د.ت.
+                  المالك مدين للعامل بـ <span class="num-ltr">{{ formatMi(Math.abs(workerSummary(w).grossDueMi)) }}</span> مي.
                 </span>
               </div>
 
@@ -583,10 +591,10 @@
                   <strong>{{ memberNameById(st.worker_member_id) }}</strong>
                   <span class="muted">{{ formatDate(st.created_at) }} • {{ st.days_count }} يومية</span>
                 </div>
-                <div class="muted num" style="font-size:0.84rem;">
-                  المستحق: <strong>{{ miToTnd(st.gross_due_mi) }}</strong>
-                  • المدفوع: <strong>{{ miToTnd(st.paid_amount_mi) }}</strong>
-                  • المرحّل: <strong :style="{ color: st.carry_over_mi === 0 ? 'var(--ok)' : 'var(--warn)' }">{{ miToTnd(st.carry_over_mi) }} د.ت</strong>
+                <div class="muted" style="font-size:0.84rem;">
+                  المستحق: <strong><span class="num-ltr">{{ formatMi(st.gross_due_mi) }}</span></strong>
+                  • المدفوع: <strong><span class="num-ltr">{{ formatMi(st.paid_amount_mi) }}</span></strong>
+                  • المرحّل: <strong :style="{ color: st.carry_over_mi === 0 ? 'var(--ok)' : 'var(--warn)' }"><span class="num-ltr">{{ formatMi(st.carry_over_mi) }}</span> مي</strong>
                   <span v-if="st.note" style="display:block;">ملاحظة: {{ st.note }}</span>
                 </div>
               </div>
@@ -636,10 +644,10 @@
               </div>
               <div style="display:flex; align-items:center; gap:8px;">
                 <span
-                  class="badge num"
+                  class="badge"
                   :class="(st.low_threshold > 0 && st.current_qty <= st.low_threshold) ? 'badge-danger' : 'badge-ok'"
                 >
-                  {{ st.current_qty }} {{ st.unit }}
+                  <span class="num-ltr">{{ st.current_qty }}</span> {{ st.unit }}
                 </span>
                 <span class="muted" style="font-weight:700;">⬅</span>
               </div>
@@ -652,10 +660,10 @@
               <div v-for="inv in pendingInvoices" :key="inv.id" class="card" style="border-right:4px solid var(--warn);">
                 <div class="row" style="margin-bottom:6px;">
                   <div>
-                    <strong>فاتورة #{{ inv.invoice_number }}</strong> — {{ inv.supplier_name }}
-                    <span class="muted ltr" style="margin-right:6px;">{{ inv.work_date }}</span>
+                    <strong>فاتورة #<span class="num-ltr">{{ inv.invoice_number }}</span></strong> — {{ inv.supplier_name }}
+                    <span class="muted num-ltr" style="margin-right:6px;">{{ inv.work_date }}</span>
                   </div>
-                  <strong class="num" style="color:var(--primary);">{{ miToTnd(inv.total_amount_mi) }} د.ت</strong>
+                  <strong style="color:var(--primary);"><span class="num-ltr">{{ formatMi(inv.total_amount_mi) }}</span> مي</strong>
                 </div>
                 <div class="muted" style="margin-bottom:8px;">
                   الدفع: <strong>{{ paymentSourceLabel(inv.payment_source) }}</strong>
@@ -683,16 +691,16 @@
             <div v-for="inv in monthInvoices" :key="inv.id" class="card">
               <div class="row" style="margin-bottom:6px;">
                 <div>
-                  <strong>#{{ inv.invoice_number }}</strong> {{ inv.supplier_name }}
-                  <span class="muted ltr" style="margin-right:6px;">{{ inv.work_date }}</span>
+                  <strong>#<span class="num-ltr">{{ inv.invoice_number }}</span></strong> {{ inv.supplier_name }}
+                  <span class="muted num-ltr" style="margin-right:6px;">{{ inv.work_date }}</span>
                 </div>
                 <div class="row" style="gap:4px;">
                   <span v-if="!isOwnerOnly && inv.settled" class="badge badge-ok">مُسوّاة</span>
                   <span v-if="!isOwnerOnly || inv.status !== 'approved'" class="badge" :class="invoiceStatusBadge(inv.status).cls">{{ invoiceStatusBadge(inv.status).label }}</span>
                 </div>
               </div>
-              <div class="muted num" style="margin-bottom:8px;">
-                المبلغ: <strong>{{ miToTnd(inv.total_amount_mi) }} د.ت</strong>
+              <div class="muted" style="margin-bottom:8px;">
+                المبلغ: <strong><span class="num-ltr">{{ formatMi(inv.total_amount_mi) }}</span> مي</strong>
                 • {{ paymentSourceLabel(inv.payment_source) }}
                 <span v-if="!isOwnerOnly"> • {{ inv.worker_name_snapshot }}</span>
               </div>
@@ -750,21 +758,21 @@
             <button type="button" class="cc-year-nav cc-tap" @click="changeArchiveYear(1)" :disabled="archiveLoading">السنة التالية</button>
           </div>
 
-          <!-- ملخص السنة -->
+          <!-- ملخص السنة بالمليم -->
           <div class="grid-3-inline" style="margin-bottom:12px;">
             <div class="stat" style="padding:10px 4px;">
-              <div class="stat-val" style="font-size:1rem;" :style="{ color: archiveYearTotals.netMi >= 0 ? 'var(--ok)' : 'var(--danger)' }">
-                {{ miToTnd(archiveYearTotals.netMi) }}
+              <div class="stat-val num-ltr" style="font-size:0.9rem;" :style="{ color: archiveYearTotals.netMi >= 0 ? 'var(--ok)' : 'var(--danger)' }">
+                {{ formatMi(archiveYearTotals.netMi) }}
               </div>
-              <div class="stat-lbl">ربح {{ archiveYear }}</div>
+              <div class="stat-lbl">ربح {{ archiveYear }} (مي)</div>
             </div>
             <div class="stat" style="padding:10px 4px;">
-              <div class="stat-val" style="font-size:1rem; color:var(--primary);">{{ miToTnd(archiveYearTotals.salesMi) }}</div>
-              <div class="stat-lbl">المداخيل</div>
+              <div class="stat-val num-ltr" style="font-size:0.9rem; color:var(--primary);">{{ formatMi(archiveYearTotals.salesMi) }}</div>
+              <div class="stat-lbl">المداخيل (مي)</div>
             </div>
             <div class="stat" style="padding:10px 4px;">
-              <div class="stat-val" style="font-size:1rem; color:var(--danger);">{{ miToTnd(archiveYearTotals.expensesMi) }}</div>
-              <div class="stat-lbl">المصاريف</div>
+              <div class="stat-val num-ltr" style="font-size:0.9rem; color:var(--danger);">{{ formatMi(archiveYearTotals.expensesMi) }}</div>
+              <div class="stat-lbl">المصاريف (مي)</div>
             </div>
           </div>
 
@@ -779,7 +787,6 @@
             <div v-if="archiveLoading" class="muted" style="text-align:center; padding:45px 0;">جارٍ تحميل بيانات {{ archiveYear }}...</div>
             <template v-else>
               <svg viewBox="0 0 360 165" class="cc-chart-svg" role="img" aria-label="رسم بياني للأشهر">
-                <!-- خط الصفر المرجعي -->
                 <line x1="6" :y1="archiveChart.zeroY" x2="354" :y2="archiveChart.zeroY" stroke="#e5e7eb" stroke-width="1.2" />
                 <g
                   v-for="bar in archiveChart.bars"
@@ -787,9 +794,7 @@
                   style="cursor:pointer;"
                   @click="archiveSelectedMonth = bar.monthKey"
                 >
-                  <!-- مساحة لمس شفافة لكل عمود -->
                   <rect :x="bar.slotX" y="4" :width="bar.slotW" height="156" fill="transparent" />
-                  <!-- خلفية خفيفة للشهر المختار -->
                   <rect
                     v-if="archiveSelectedMonth === bar.monthKey"
                     :x="bar.slotX + 1"
@@ -799,7 +804,6 @@
                     rx="6"
                     fill="#f0fdfa"
                   />
-                  <!-- العمود -->
                   <rect
                     :x="bar.x"
                     :y="bar.y"
@@ -809,7 +813,6 @@
                     :fill="bar.color"
                     :opacity="archiveSelectedMonth === bar.monthKey ? 1 : (bar.hasData ? 0.78 : 0.22)"
                   />
-                  <!-- اسم الشهر المختصر -->
                   <text
                     :x="bar.cx"
                     y="153"
@@ -827,13 +830,14 @@
               <div v-if="archiveFocusMonth" class="cc-chart-focus">
                 <div>
                   <strong>{{ archiveFocusMonth.label }}</strong>
-                  <div class="muted num" style="font-size:0.76rem;">
-                    مداخيل: {{ miToTnd(archiveFocusMonth.salesMi) }} • مصاريف: {{ miToTnd(archiveFocusMonth.expensesMi) }}
+                  <div class="muted" style="font-size:0.76rem;">
+                    مداخيل: <span class="num-ltr">{{ formatMi(archiveFocusMonth.salesMi) }}</span>
+                    • مصاريف: <span class="num-ltr">{{ formatMi(archiveFocusMonth.expensesMi) }}</span>
                   </div>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px;">
-                  <strong class="num" :style="{ color: archiveFocusMonth.netMi >= 0 ? 'var(--ok)' : 'var(--danger)' }">
-                    {{ miToTnd(archiveFocusMonth.netMi) }} د.ت
+                  <strong :style="{ color: archiveFocusMonth.netMi >= 0 ? 'var(--ok)' : 'var(--danger)' }">
+                    <span class="num-ltr">{{ formatMi(archiveFocusMonth.netMi) }}</span> مي
                   </strong>
                   <button
                     v-if="archiveFocusMonth.hasData"
@@ -848,7 +852,7 @@
             </template>
           </div>
 
-          <!-- قائمة الأشهر المسجّلة في هذه السنة -->
+          <!-- قائمة الأشهر المسجّلة -->
           <strong style="display:block; margin-bottom:8px;">الأشهر المسجّلة في {{ archiveYear }} ({{ archiveActiveMonths.length }})</strong>
           <div v-if="!archiveLoading && !archiveActiveMonths.length" class="card" style="text-align:center;">
             <p class="muted">لا توجد بيانات مسجّلة في سنة {{ archiveYear }}.</p>
@@ -865,13 +869,14 @@
                 <strong style="font-size:0.95rem;">{{ m.label }}</strong>
                 <span v-if="m.monthKey === currentServerMonth" class="badge badge-info">الشهر الحالي</span>
               </div>
-              <div class="muted num" style="font-size:0.78rem; margin-top:3px;">
-                مداخيل: <strong>{{ miToTnd(m.salesMi) }}</strong> • مصاريف: <strong>{{ miToTnd(m.expensesMi) }}</strong>
+              <div class="muted" style="font-size:0.78rem; margin-top:3px;">
+                مداخيل: <strong><span class="num-ltr">{{ formatMi(m.salesMi) }}</span></strong>
+                • مصاريف: <strong><span class="num-ltr">{{ formatMi(m.expensesMi) }}</span></strong>
               </div>
             </div>
             <div style="text-align:left; flex-shrink:0;">
-              <strong class="num" :style="{ color: m.netMi >= 0 ? 'var(--ok)' : 'var(--danger)', display: 'block' }">
-                {{ miToTnd(m.netMi) }} د.ت
+              <strong :style="{ color: m.netMi >= 0 ? 'var(--ok)' : 'var(--danger)', display: 'block' }">
+                <span class="num-ltr">{{ formatMi(m.netMi) }}</span> مي
               </strong>
               <span class="muted" style="font-size:0.74rem; font-weight:700;">عرض ⬅</span>
             </div>
@@ -894,10 +899,10 @@
                 <strong>{{ p.name }}</strong>
                 <span class="badge badge-info" style="margin-right:6px;">{{ p.category || "عام" }}</span>
                 <span v-if="!p.active" class="badge badge-danger" style="margin-right:4px;">موقوفة</span>
-                <div class="muted num" style="margin-top:3px;">
-                  السعر: <strong>{{ miToTnd(p.price_mi) }} د.ت</strong> / {{ p.sale_unit || "وحدة" }}
+                <div class="muted" style="margin-top:3px;">
+                  السعر: <strong><span class="num-ltr">{{ formatMi(p.price_mi) }}</span> مي</strong> / {{ p.sale_unit || "وحدة" }}
                   <span v-if="p.stock_item_id && p.stock_deduct_qty > 0">
-                    • يخصم {{ p.stock_deduct_qty }} من ({{ stockItemNameById(p.stock_item_id) }})
+                    • يخصم <span class="num-ltr">{{ p.stock_deduct_qty }}</span> من ({{ stockItemNameById(p.stock_item_id) }})
                   </span>
                 </div>
               </div>
@@ -925,36 +930,36 @@
             </div>
             <div class="row" style="margin-bottom:6px;">
               <span>إجمالي المبيعات</span>
-              <strong class="num" style="color:var(--ok);">+ {{ miToTnd(monthStats.salesMi) }} د.ت</strong>
+              <strong style="color:var(--ok);"><span class="num-ltr">+{{ formatMi(monthStats.salesMi) }}</span> مي</strong>
             </div>
             <div class="row" style="margin-bottom:6px;">
               <span>المصاريف اليومية</span>
-              <strong class="num" style="color:var(--danger);">- {{ miToTnd(monthStats.expensesMi) }} د.ت</strong>
+              <strong style="color:var(--danger);"><span class="num-ltr">-{{ formatMi(monthStats.expensesMi) }}</span> مي</strong>
             </div>
             <div v-if="!isOwnerOnly || monthStats.wagesMi > 0" class="row" style="margin-bottom:6px;">
               <span>أجور العمال</span>
-              <strong class="num" style="color:var(--danger);">- {{ miToTnd(monthStats.wagesMi) }} د.ت</strong>
+              <strong style="color:var(--danger);"><span class="num-ltr">-{{ formatMi(monthStats.wagesMi) }}</span> مي</strong>
             </div>
             <div v-if="hasFeature('stock')" class="row" style="margin-bottom:6px;">
               <span>فواتير المخزن المعتمدة</span>
-              <strong class="num" style="color:var(--danger);">- {{ miToTnd(monthStats.invoicesMi) }} د.ت</strong>
+              <strong style="color:var(--danger);"><span class="num-ltr">-{{ formatMi(monthStats.invoicesMi) }}</span> مي</strong>
             </div>
-            <div v-if="hasFeature('stock') && monthStats.supplierCreditMi > 0" class="muted num" style="margin-bottom:6px; font-size:0.82rem;">
-              (منها {{ miToTnd(monthStats.supplierCreditMi) }} د.ت كريدي مزوّد غير مدفوع نقداً بعد)
+            <div v-if="hasFeature('stock') && monthStats.supplierCreditMi > 0" class="muted" style="margin-bottom:6px; font-size:0.82rem;">
+              (منها <span class="num-ltr">{{ formatMi(monthStats.supplierCreditMi) }}</span> مي كريدي مزوّد غير مدفوع نقداً بعد)
             </div>
             <div class="row" style="margin-bottom:6px;">
               <span>المصاريف الثابتة المدفوعة</span>
-              <strong class="num" style="color:var(--danger);">- {{ miToTnd(monthStats.fixedPaidMi) }} د.ت</strong>
+              <strong style="color:var(--danger);"><span class="num-ltr">-{{ formatMi(monthStats.fixedPaidMi) }}</span> مي</strong>
             </div>
             <hr class="divider" />
             <div class="row" style="font-size:1.05rem;">
               <strong>ربح الشهر</strong>
-              <strong class="num" :style="{ color: monthStats.netMi >= 0 ? 'var(--ok)' : 'var(--danger)' }">
-                {{ miToTnd(monthStats.netMi) }} د.ت
+              <strong :style="{ color: monthStats.netMi >= 0 ? 'var(--ok)' : 'var(--danger)' }">
+                <span class="num-ltr">{{ formatMi(monthStats.netMi) }}</span> مي
               </strong>
             </div>
-            <div v-if="monthStats.fixedUnpaidMi > 0" class="muted num" style="margin-top:6px;">
-              مصاريف ثابتة غير مدفوعة بعد: {{ miToTnd(monthStats.fixedUnpaidMi) }} د.ت
+            <div v-if="monthStats.fixedUnpaidMi > 0" class="muted" style="margin-top:6px;">
+              مصاريف ثابتة غير مدفوعة بعد: <span class="num-ltr">{{ formatMi(monthStats.fixedUnpaidMi) }}</span> مي
             </div>
           </div>
 
@@ -967,14 +972,14 @@
             <div class="row" style="margin-bottom:6px;">
               <div>
                 <strong>{{ fe.title }}</strong>
-                <span v-if="fe.due_date" class="muted ltr" style="margin-right:6px;">{{ fe.due_date }}</span>
+                <span v-if="fe.due_date" class="muted num-ltr" style="margin-right:6px;">{{ fe.due_date }}</span>
               </div>
               <span class="badge" :class="fe.paid_at ? 'badge-ok' : 'badge-warn'">
                 {{ fe.paid_at ? "مدفوع" : "غير مدفوع" }}
               </span>
             </div>
             <div class="row">
-              <strong class="num">{{ miToTnd(fe.amount_mi) }} د.ت</strong>
+              <strong><span class="num-ltr">{{ formatMi(fe.amount_mi) }}</span> مي</strong>
               <div class="row" v-if="canWrite">
                 <button v-if="!fe.paid_at" class="btn btn-sm btn-primary" @click="markFixedPaid(fe)" :disabled="busy">تم الدفع</button>
                 <button v-else class="btn btn-sm btn-outline" @click="markFixedUnpaid(fe)" :disabled="busy">إلغاء الدفع</button>
@@ -988,12 +993,16 @@
         <section v-if="tab === 'settings'">
           <div class="card">
             <h3 style="margin:0 0 10px;">معلومات المقهى</h3>
-            <div class="muted" style="line-height:1.9;">
+            <div class="muted" style="line-height:1.95;">
               الاسم: <strong>{{ cafeDisplayTitle }}</strong><br />
               <template v-if="!isOwnerOnly">
                 رمز الدخول للعمال: <strong class="ltr">{{ cafe.code }}</strong><br />
               </template>
               نمط العمل: <strong>{{ WORK_PATTERNS[cafe.work_pattern] || cafe.work_pattern }}</strong><br />
+              <template v-if="!isOwnerOnly && hasFeature('stock')">
+                فواتير المخزن للعمال:
+                <strong>{{ cafe.settings?.worker_invoices_enabled ? "مفعّلة (من المشرف)" : "غير مفعّلة" }}</strong><br />
+              </template>
               نهاية الاشتراك: <strong>{{ formatDate(cafe.subscription_until) }}</strong>
               ({{ subDaysLeft > 0 ? `متبقي ${subDaysLeft} يوم` : "منتهي" }})
             </div>
@@ -1070,36 +1079,36 @@
         <div v-if="archiveDetail.loading" class="muted" style="text-align:center; padding:24px 0;">جارٍ تحميل سجل الشهر...</div>
 
         <!-- ملخص الشهر المؤرشف -->
-        <div v-else-if="archiveDetail.subTab === 'summary'" class="num">
+        <div v-else-if="archiveDetail.subTab === 'summary'">
           <div class="row" style="margin-bottom:6px;">
             <span>إجمالي المبيعات</span>
-            <strong style="color:var(--ok);">+ {{ miToTnd(archiveDetail.month.salesMi) }} د.ت</strong>
+            <strong style="color:var(--ok);"><span class="num-ltr">+{{ formatMi(archiveDetail.month.salesMi) }}</span> مي</strong>
           </div>
           <div class="row" style="margin-bottom:6px;">
             <span>المصاريف اليومية</span>
-            <strong style="color:var(--danger);">- {{ miToTnd(archiveDetail.month.dailyExpensesMi) }} د.ت</strong>
+            <strong style="color:var(--danger);"><span class="num-ltr">-{{ formatMi(archiveDetail.month.dailyExpensesMi) }}</span> مي</strong>
           </div>
           <div v-if="!isOwnerOnly || archiveDetail.month.wagesMi > 0" class="row" style="margin-bottom:6px;">
             <span>أجور العمال</span>
-            <strong style="color:var(--danger);">- {{ miToTnd(archiveDetail.month.wagesMi) }} د.ت</strong>
+            <strong style="color:var(--danger);"><span class="num-ltr">-{{ formatMi(archiveDetail.month.wagesMi) }}</span> مي</strong>
           </div>
           <div v-if="hasFeature('stock')" class="row" style="margin-bottom:6px;">
             <span>فواتير المخزن</span>
-            <strong style="color:var(--danger);">- {{ miToTnd(archiveDetail.month.invoicesMi) }} د.ت</strong>
+            <strong style="color:var(--danger);"><span class="num-ltr">-{{ formatMi(archiveDetail.month.invoicesMi) }}</span> مي</strong>
           </div>
           <div class="row" style="margin-bottom:6px;">
             <span>المصاريف الثابتة المدفوعة</span>
-            <strong style="color:var(--danger);">- {{ miToTnd(archiveDetail.month.fixedPaidMi) }} د.ت</strong>
+            <strong style="color:var(--danger);"><span class="num-ltr">-{{ formatMi(archiveDetail.month.fixedPaidMi) }}</span> مي</strong>
           </div>
           <hr class="divider" />
           <div class="row" style="font-size:1.05rem;">
             <strong>صافي ربح الشهر</strong>
             <strong :style="{ color: archiveDetail.month.netMi >= 0 ? 'var(--ok)' : 'var(--danger)' }">
-              {{ miToTnd(archiveDetail.month.netMi) }} د.ت
+              <span class="num-ltr">{{ formatMi(archiveDetail.month.netMi) }}</span> مي
             </strong>
           </div>
           <div v-if="archiveDetail.month.fixedUnpaidMi > 0" class="muted" style="margin-top:6px;">
-            مصاريف ثابتة غير مدفوعة: {{ miToTnd(archiveDetail.month.fixedUnpaidMi) }} د.ت
+            مصاريف ثابتة غير مدفوعة: <span class="num-ltr">{{ formatMi(archiveDetail.month.fixedUnpaidMi) }}</span> مي
           </div>
         </div>
 
@@ -1109,14 +1118,17 @@
           <div v-for="s in archiveDetail.shifts" :key="s.id" class="card" style="padding:10px; margin-bottom:8px;">
             <div class="row" style="margin-bottom:4px;">
               <div>
-                <strong class="ltr">{{ s.work_date }}</strong>
+                <strong class="num-ltr">{{ s.work_date }}</strong>
                 <span v-if="!isOwnerOnly" class="badge badge-info" style="margin-right:6px;">{{ shiftTypeLabel(s.shift_type) }}</span>
                 <span v-if="!isOwnerOnly" class="muted" style="margin-right:6px;">{{ s.worker_name_snapshot }}</span>
               </div>
-              <strong class="num" style="color:var(--primary);">{{ miToTnd(shiftNetMi(s)) }} د.ت</strong>
+              <strong style="color:var(--primary);"><span class="num-ltr">{{ formatMi(shiftNetMi(s)) }}</span> مي</strong>
             </div>
             <div class="row">
-              <span class="muted num" style="font-size:0.78rem;">مبيعات: {{ miToTnd(s.sales_total_mi) }} • مصاريف: {{ miToTnd(s.expenses_total_mi) }}</span>
+              <span class="muted" style="font-size:0.78rem;">
+                مبيعات: <span class="num-ltr">{{ formatMi(s.sales_total_mi) }}</span>
+                • مصاريف: <span class="num-ltr">{{ formatMi(s.expenses_total_mi) }}</span>
+              </span>
               <button class="btn btn-sm btn-outline" @click="openShiftDetail(s)">التفاصيل</button>
             </div>
           </div>
@@ -1129,8 +1141,8 @@
             <div v-if="!archiveDetail.invoices.length" class="muted" style="margin-bottom:12px;">لا توجد فواتير مخزن.</div>
             <div v-for="inv in archiveDetail.invoices" :key="inv.id" class="card" style="padding:10px; margin-bottom:8px;">
               <div class="row" style="margin-bottom:4px;">
-                <div><strong>#{{ inv.invoice_number }}</strong> {{ inv.supplier_name }} <span class="muted ltr">{{ inv.work_date }}</span></div>
-                <strong class="num" style="color:var(--primary);">{{ miToTnd(inv.total_amount_mi) }} د.ت</strong>
+                <div><strong>#<span class="num-ltr">{{ inv.invoice_number }}</span></strong> {{ inv.supplier_name }} <span class="muted num-ltr">{{ inv.work_date }}</span></div>
+                <strong style="color:var(--primary);"><span class="num-ltr">{{ formatMi(inv.total_amount_mi) }}</span> مي</strong>
               </div>
               <div class="row">
                 <span class="muted" style="font-size:0.78rem;">{{ paymentSourceLabel(inv.payment_source) }}</span>
@@ -1141,12 +1153,12 @@
 
           <strong style="display:block; margin:10px 0 6px; font-size:0.86rem; color:var(--muted);">المصاريف الثابتة ({{ archiveDetail.fixed.length }})</strong>
           <div v-if="!archiveDetail.fixed.length" class="muted">لا توجد مصاريف ثابتة مسجّلة.</div>
-          <div v-for="fe in archiveDetail.fixed" :key="fe.id" class="row num" style="padding:7px 0; border-bottom:1px solid var(--border); font-size:0.88rem;">
+          <div v-for="fe in archiveDetail.fixed" :key="fe.id" class="row" style="padding:7px 0; border-bottom:1px solid var(--border); font-size:0.88rem;">
             <div>
               <strong>{{ fe.title }}</strong>
               <span class="badge" :class="fe.paid_at ? 'badge-ok' : 'badge-warn'" style="margin-right:6px;">{{ fe.paid_at ? "مدفوع" : "غير مدفوع" }}</span>
             </div>
-            <strong>{{ miToTnd(fe.amount_mi) }} د.ت</strong>
+            <strong><span class="num-ltr">{{ formatMi(fe.amount_mi) }}</span> مي</strong>
           </div>
         </div>
       </div>
@@ -1159,9 +1171,9 @@
         <div class="row" style="margin-bottom:8px;">
           <div>
             <h3 style="margin:0;">{{ stockDetail.item.name }}</h3>
-            <div class="muted num" style="font-size:0.8rem;">
-              {{ stockDetail.item.pack_label || "صندوق" }} = {{ stockDetail.item.pack_size }} {{ stockDetail.item.unit }}
-              • التكلفة: {{ miToTnd(stockDetail.item.unit_cost_mi) }} د.ت
+            <div class="muted" style="font-size:0.8rem;">
+              {{ stockDetail.item.pack_label || "صندوق" }} = <span class="num-ltr">{{ stockDetail.item.pack_size }}</span> {{ stockDetail.item.unit }}
+              • التكلفة: <span class="num-ltr">{{ formatMi(stockDetail.item.unit_cost_mi) }}</span> مي
             </div>
           </div>
           <button class="btn btn-sm btn-outline" @click="stockDetail.item = null">إغلاق</button>
@@ -1169,20 +1181,20 @@
 
         <div class="grid-3-inline" style="margin-bottom:10px;">
           <div class="stat" style="padding:8px 4px;">
-            <div class="stat-val" style="font-size:1.1rem;" :style="{ color: stockDetail.item.current_qty <= stockDetail.item.low_threshold ? 'var(--danger)' : 'var(--primary)' }">
+            <div class="stat-val num-ltr" style="font-size:1.05rem;" :style="{ color: stockDetail.item.current_qty <= stockDetail.item.low_threshold ? 'var(--danger)' : 'var(--primary)' }">
               {{ stockDetail.item.current_qty }}
             </div>
             <div class="stat-lbl">الرصيد ({{ stockDetail.item.unit }})</div>
           </div>
           <div class="stat" style="padding:8px 4px;">
-            <div class="stat-val" style="font-size:1.1rem;">{{ stockDetail.item.low_threshold }}</div>
+            <div class="stat-val num-ltr" style="font-size:1.05rem;">{{ stockDetail.item.low_threshold }}</div>
             <div class="stat-lbl">حد النقص</div>
           </div>
           <div class="stat" style="padding:8px 4px;">
-            <div class="stat-val" style="font-size:1rem;">
-              {{ miToTnd(Math.max(0, Number(stockDetail.item.current_qty || 0)) * Number(stockDetail.item.unit_cost_mi || 0)) }}
+            <div class="stat-val num-ltr" style="font-size:0.92rem;">
+              {{ formatMi(Math.max(0, Number(stockDetail.item.current_qty || 0)) * Number(stockDetail.item.unit_cost_mi || 0)) }}
             </div>
-            <div class="stat-lbl">القيمة (د.ت)</div>
+            <div class="stat-lbl">القيمة (مي)</div>
           </div>
         </div>
 
@@ -1206,19 +1218,19 @@
         >
           <div class="stat" style="padding:6px 4px; background:var(--bg); border:none;">
             <div class="stat-lbl">دخول</div>
-            <strong class="num ltr" style="color:var(--ok); font-size:0.9rem;">+{{ stockDetailSummary.inQty }}</strong>
+            <strong class="num-ltr" style="color:var(--ok); font-size:0.9rem;">+{{ stockDetailSummary.inQty }}</strong>
           </div>
           <div class="stat" style="padding:6px 4px; background:var(--bg); border:none;">
             <div class="stat-lbl">بيع</div>
-            <strong class="num ltr" style="color:var(--text); font-size:0.9rem;">-{{ stockDetailSummary.saleQty }}</strong>
+            <strong class="num-ltr" style="color:var(--text); font-size:0.9rem;">-{{ stockDetailSummary.saleQty }}</strong>
           </div>
           <div class="stat" style="padding:6px 4px; background:var(--bg); border:none;">
             <div class="stat-lbl">تالف</div>
-            <strong class="num ltr" style="color:var(--danger); font-size:0.9rem;">-{{ stockDetailSummary.wasteQty }}</strong>
+            <strong class="num-ltr" style="color:var(--danger); font-size:0.9rem;">-{{ stockDetailSummary.wasteQty }}</strong>
           </div>
           <div class="stat" style="padding:6px 4px; background:var(--bg); border:none;">
             <div class="stat-lbl">أخرى</div>
-            <strong class="num ltr" style="color:var(--warn); font-size:0.9rem;">-{{ stockDetailSummary.otherOutQty }}</strong>
+            <strong class="num-ltr" style="color:var(--warn); font-size:0.9rem;">-{{ stockDetailSummary.otherOutQty }}</strong>
           </div>
         </div>
 
@@ -1234,23 +1246,23 @@
             <div style="min-width:0;">
               <strong>{{ moveTypeLabel(mv.move_type, mv.ref_type) }}</strong>
               <div class="muted" style="font-size:0.75rem;">
-                <span class="ltr">{{ formatDateTime(mv.created_at) }}</span>
+                <span class="num-ltr">{{ formatDateTime(mv.created_at) }}</span>
                 <span v-if="actorNameByUserId(mv.created_by)"> • {{ actorNameByUserId(mv.created_by) }}</span>
               </div>
               <div v-if="mv.note" class="muted" style="font-size:0.75rem;">{{ mv.note }}</div>
             </div>
             <div style="text-align:left; flex-shrink:0;">
-              <strong class="num ltr" :style="{ color: Number(mv.qty_delta) >= 0 ? 'var(--ok)' : 'var(--danger)' }">
-                {{ Number(mv.qty_delta) > 0 ? `+${mv.qty_delta}` : mv.qty_delta }} {{ stockDetail.item.unit }}
+              <strong :style="{ color: Number(mv.qty_delta) >= 0 ? 'var(--ok)' : 'var(--danger)' }">
+                <span class="num-ltr">{{ Number(mv.qty_delta) > 0 ? `+${mv.qty_delta}` : mv.qty_delta }}</span> {{ stockDetail.item.unit }}
               </strong>
-              <div class="muted num" style="font-size:0.72rem;">الرصيد: {{ mv.qty_after }}</div>
+              <div class="muted" style="font-size:0.72rem;">الرصيد: <span class="num-ltr">{{ mv.qty_after }}</span></div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 1. نافذة تسجيل / تعديل يومية (تتكيف تلقائياً مع وضع المالك فقط) -->
+    <!-- 1. نافذة تسجيل / تعديل يومية -->
     <div v-if="shiftModal.open" class="modal-backdrop" style="z-index:50;" @click.self="shiftModal.open = false">
       <div class="modal">
         <div class="cc-sheet-handle"></div>
@@ -1293,7 +1305,7 @@
                 :class="{ active: shiftModal.worker_member_id === w.id }"
                 @click="shiftModal.worker_member_id = w.id; resetShiftTxId()"
               >
-                {{ w.display_name }} ({{ miToTnd(w.default_wage_mi) }})
+                {{ w.display_name }} (<span class="num-ltr">{{ formatMi(w.default_wage_mi) }}</span> مي)
               </button>
             </div>
           </div>
@@ -1304,7 +1316,7 @@
             <div v-for="p in shiftModalProducts" :key="p.id" class="row" style="padding:7px 0; border-bottom:1px solid var(--border); flex-wrap:nowrap; gap:6px;">
               <div style="flex:1; min-width:0;">
                 <strong style="font-size:0.9rem;">{{ p.name }}</strong>
-                <div class="muted num" style="font-size:0.76rem;">{{ miToTnd(p.price_mi) }} د.ت</div>
+                <div class="muted" style="font-size:0.76rem;"><span class="num-ltr">{{ formatMi(p.price_mi) }}</span> مي</div>
               </div>
               <div class="cc-stepper">
                 <button type="button" class="cc-step-btn cc-tap" @click="changeShiftProductQty(p.id, -1)">-</button>
@@ -1327,7 +1339,7 @@
 
           <div class="field">
             <div class="row" style="margin-bottom:6px;">
-              <label style="margin:0;">المصاريف اليومية</label>
+              <label style="margin:0;">المصاريف اليومية (بالمليم)</label>
               <button type="button" class="btn btn-sm btn-outline" @click="addShiftExpenseRow">+ سطر</button>
             </div>
             <div class="cc-chips">
@@ -1344,12 +1356,27 @@
             <div v-for="(ex, idx) in shiftModal.expenses" :key="idx" style="margin-bottom:8px; background:#f9fafb; padding:8px; border-radius:10px; border:1px solid var(--border);">
               <div class="row" style="margin-bottom:6px; flex-wrap:nowrap;">
                 <input type="text" v-model.trim="ex.label" placeholder="البيان" maxlength="120" style="flex:2;" @input="resetShiftTxId" />
-                <input type="text" inputmode="decimal" v-model.trim="ex.amount_tnd" placeholder="د.ت" class="ltr" style="flex:1;" @input="resetShiftTxId" />
+                <input
+                  type="tel"
+                  inputmode="numeric"
+                  :value="ex.amount_mi_text"
+                  @input="ex.amount_mi_text = formatSpacedIntInput($event.target.value); resetShiftTxId()"
+                  placeholder="مي"
+                  class="ltr"
+                  style="flex:1; text-align:center; font-weight:700;"
+                />
                 <button type="button" class="btn btn-sm btn-danger-soft" @click="removeShiftExpenseRow(idx)">×</button>
               </div>
               <div class="cc-chips" style="margin-bottom:0;">
-                <button type="button" v-for="amt in [1, 2, 5, 10, 20]" :key="amt" class="cc-chip cc-tap" style="padding:4px 8px; font-size:0.75rem;" @click="bumpExpenseAmount(ex, amt)">
-                  +{{ amt }}
+                <button
+                  type="button"
+                  v-for="amt in QUICK_EXPENSE_BUMPS"
+                  :key="amt"
+                  class="cc-chip cc-tap num-ltr"
+                  style="padding:4px 8px; font-size:0.75rem;"
+                  @click="bumpExpenseAmount(ex, amt)"
+                >
+                  +{{ formatMi(amt) }}
                 </button>
               </div>
             </div>
@@ -1366,9 +1393,12 @@
           </label>
 
           <div class="cc-sticky-footer">
-            <div class="row num" style="margin-bottom:8px; font-size:0.88rem;">
-              <span>مبيعات: <strong>{{ miToTnd(shiftFormTotals.salesMi) }}</strong> • مصاريف: <strong>{{ miToTnd(shiftFormTotals.expensesMi) }}</strong></span>
-              <strong style="color:var(--primary);">{{ miToTnd(shiftFormTotals.salesMi - shiftFormTotals.expensesMi) }} د.ت</strong>
+            <div class="row" style="margin-bottom:8px; font-size:0.86rem;">
+              <span>
+                مبيعات: <strong><span class="num-ltr">{{ formatMi(shiftFormTotals.salesMi) }}</span></strong>
+                • مصاريف: <strong><span class="num-ltr">{{ formatMi(shiftFormTotals.expensesMi) }}</span></strong>
+              </span>
+              <strong style="color:var(--primary);"><span class="num-ltr">{{ formatMi(shiftFormTotals.salesMi - shiftFormTotals.expensesMi) }}</span> مي</strong>
             </div>
             <button type="submit" class="btn btn-primary btn-block" :disabled="busy">
               {{ busy ? "جارٍ الحفظ..." : "حفظ اليومية" }}
@@ -1383,7 +1413,7 @@
       <div class="modal">
         <div class="cc-sheet-handle"></div>
         <div class="row" style="margin-bottom:10px;">
-          <h3 style="margin:0;">تفاصيل يومية {{ detailShift.shift.work_date }}</h3>
+          <h3 style="margin:0;">تفاصيل يومية <span class="num-ltr">{{ detailShift.shift.work_date }}</span></h3>
           <button class="btn btn-sm btn-outline" @click="detailShift.shift = null">إغلاق</button>
         </div>
         <div v-if="detailShift.loading" class="muted">جارٍ التحميل...</div>
@@ -1398,24 +1428,24 @@
 
           <strong style="display:block; margin-bottom:6px;">المبيعات ({{ detailShift.sales.length }})</strong>
           <div v-if="!detailShift.sales.length" class="muted" style="margin-bottom:10px;">لا توجد مبيعات مسجّلة.</div>
-          <div v-for="ln in detailShift.sales" :key="ln.id" class="row num" style="padding:5px 0; border-bottom:1px solid var(--border); font-size:0.9rem;">
-            <span>{{ ln.product_name_snapshot }} × {{ ln.qty }}</span>
-            <strong>{{ miToTnd(ln.line_total_mi) }} د.ت</strong>
+          <div v-for="ln in detailShift.sales" :key="ln.id" class="row" style="padding:5px 0; border-bottom:1px solid var(--border); font-size:0.9rem;">
+            <span>{{ ln.product_name_snapshot }} × <span class="num-ltr">{{ ln.qty }}</span></span>
+            <strong><span class="num-ltr">{{ formatMi(ln.line_total_mi) }}</span> مي</strong>
           </div>
 
           <strong style="display:block; margin:12px 0 6px;">المصاريف ({{ detailShift.expenses.length }})</strong>
           <div v-if="!detailShift.expenses.length" class="muted">لا توجد مصاريف مسجّلة.</div>
-          <div v-for="ex in detailShift.expenses" :key="ex.id" class="row num" style="padding:5px 0; border-bottom:1px solid var(--border); font-size:0.9rem;">
-            <span>{{ ex.label }} <span v-if="ex.expense_time" class="muted">({{ ex.expense_time }})</span></span>
-            <strong style="color:var(--danger);">- {{ miToTnd(ex.amount_mi) }} د.ت</strong>
+          <div v-for="ex in detailShift.expenses" :key="ex.id" class="row" style="padding:5px 0; border-bottom:1px solid var(--border); font-size:0.9rem;">
+            <span>{{ ex.label }} <span v-if="ex.expense_time" class="muted num-ltr">({{ ex.expense_time }})</span></span>
+            <strong style="color:var(--danger);"><span class="num-ltr">-{{ formatMi(ex.amount_mi) }}</span> مي</strong>
           </div>
 
           <hr class="divider" />
-          <div class="num" style="line-height:1.8;">
-            <div class="row"><span>إجمالي المبيعات</span><strong>{{ miToTnd(detailShift.shift.sales_total_mi) }} د.ت</strong></div>
-            <div class="row"><span>إجمالي المصاريف</span><strong>{{ miToTnd(detailShift.shift.expenses_total_mi) }} د.ت</strong></div>
-            <div class="row" v-if="!isOwnerOnly && !detailShift.shift.is_owner_shift"><span>أجر العامل</span><strong>{{ miToTnd(detailShift.shift.wage_mi) }} د.ت</strong></div>
-            <div class="row"><strong>الصافي</strong><strong style="color:var(--primary);">{{ miToTnd(shiftNetMi(detailShift.shift)) }} د.ت</strong></div>
+          <div style="line-height:1.85;">
+            <div class="row"><span>إجمالي المبيعات</span><strong><span class="num-ltr">{{ formatMi(detailShift.shift.sales_total_mi) }}</span> مي</strong></div>
+            <div class="row"><span>إجمالي المصاريف</span><strong><span class="num-ltr">{{ formatMi(detailShift.shift.expenses_total_mi) }}</span> مي</strong></div>
+            <div class="row" v-if="!isOwnerOnly && !detailShift.shift.is_owner_shift"><span>أجر العامل</span><strong><span class="num-ltr">{{ formatMi(detailShift.shift.wage_mi) }}</span> مي</strong></div>
+            <div class="row"><strong>الصافي</strong><strong style="color:var(--primary);"><span class="num-ltr">{{ formatMi(shiftNetMi(detailShift.shift)) }}</span> مي</strong></div>
           </div>
         </template>
       </div>
@@ -1426,17 +1456,26 @@
       <div class="modal">
         <div class="cc-sheet-handle"></div>
         <div class="row" style="margin-bottom:10px;">
-          <h3 style="margin:0;">اعتماد يومية {{ approveShiftModal.shift.work_date }}</h3>
+          <h3 style="margin:0;">اعتماد يومية <span class="num-ltr">{{ approveShiftModal.shift.work_date }}</span></h3>
           <button class="btn btn-sm btn-outline" @click="approveShiftModal.shift = null">إلغاء</button>
         </div>
         <form @submit.prevent="confirmApproveShift">
-          <div class="muted num" style="margin-bottom:10px;">
-            {{ approveShiftModal.shift.worker_name_snapshot }} • مبيعات: {{ miToTnd(approveShiftModal.shift.sales_total_mi) }} د.ت
-            • مصاريف: {{ miToTnd(approveShiftModal.shift.expenses_total_mi) }} د.ت
+          <div class="muted" style="margin-bottom:10px;">
+            {{ approveShiftModal.shift.worker_name_snapshot }} • مبيعات: <span class="num-ltr">{{ formatMi(approveShiftModal.shift.sales_total_mi) }}</span> مي
+            • مصاريف: <span class="num-ltr">{{ formatMi(approveShiftModal.shift.expenses_total_mi) }}</span> مي
           </div>
           <div class="field" v-if="!approveShiftModal.shift.is_owner_shift">
-            <label>أجر العامل لهذه الحصة (د.ت)</label>
-            <input type="text" inputmode="decimal" v-model.trim="approveShiftModal.wage_tnd" required class="ltr" />
+            <label>أجر العامل لهذه الحصة (مي)</label>
+            <input
+              type="tel"
+              inputmode="numeric"
+              :value="approveShiftModal.wage_mi_text"
+              @input="approveShiftModal.wage_mi_text = formatSpacedIntInput($event.target.value)"
+              required
+              class="ltr"
+              style="text-align:center; font-weight:800;"
+              placeholder="25 000"
+            />
           </div>
           <button type="submit" class="btn btn-primary btn-block" :disabled="busy">
             {{ busy ? "جارٍ الاعتماد..." : "تأكيد الاعتماد وخصم المخزون" }}
@@ -1455,19 +1494,19 @@
         </div>
 
         <form @submit.prevent="submitSettleWorker">
-          <div class="muted num" style="margin-bottom:10px;">
-            الباقي المرحّل من التسوية السابقة: <strong>{{ miToTnd(settleModal.prevCarryMi) }} د.ت</strong>
+          <div class="muted" style="margin-bottom:10px;">
+            الباقي المرحّل من التسوية السابقة: <strong><span class="num-ltr">{{ formatMi(settleModal.prevCarryMi) }}</span> مي</strong>
           </div>
 
           <div class="field" v-if="settleModal.shifts.length">
             <label>اليوميات غير المُسوّاة ({{ settleModal.selectedShiftIds.length }}/{{ settleModal.shifts.length }})</label>
             <div style="max-height:170px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; padding:6px;">
-              <label v-for="s in settleModal.shifts" :key="s.id" class="row num" style="padding:5px 4px; border-bottom:1px solid var(--border); cursor:pointer;">
+              <label v-for="s in settleModal.shifts" :key="s.id" class="row" style="padding:5px 4px; border-bottom:1px solid var(--border); cursor:pointer;">
                 <span style="display:flex; align-items:center; gap:6px;">
                   <input type="checkbox" :value="s.id" v-model="settleModal.selectedShiftIds" @change="onSettleSelectionChange" />
-                  <span class="ltr">{{ s.work_date }}</span> ({{ shiftTypeLabel(s.shift_type) }})
+                  <span class="num-ltr">{{ s.work_date }}</span> ({{ shiftTypeLabel(s.shift_type) }})
                 </span>
-                <strong>{{ miToTnd(shiftNetMi(s)) }} د.ت</strong>
+                <strong><span class="num-ltr">{{ formatMi(shiftNetMi(s)) }}</span> مي</strong>
               </label>
             </div>
           </div>
@@ -1475,44 +1514,53 @@
           <div class="field" v-if="settleModal.invoices.length">
             <label>فواتير المخزن من كاسة العامل ({{ settleModal.selectedInvoiceIds.length }}/{{ settleModal.invoices.length }})</label>
             <div style="max-height:130px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; padding:6px;">
-              <label v-for="inv in settleModal.invoices" :key="inv.id" class="row num" style="padding:5px 4px; border-bottom:1px solid var(--border); cursor:pointer;">
+              <label v-for="inv in settleModal.invoices" :key="inv.id" class="row" style="padding:5px 4px; border-bottom:1px solid var(--border); cursor:pointer;">
                 <span style="display:flex; align-items:center; gap:6px;">
                   <input type="checkbox" :value="inv.id" v-model="settleModal.selectedInvoiceIds" @change="onSettleSelectionChange" />
-                  #{{ inv.invoice_number }} {{ inv.supplier_name }}
+                  #<span class="num-ltr">{{ inv.invoice_number }}</span> {{ inv.supplier_name }}
                 </span>
-                <strong style="color:var(--danger);">- {{ miToTnd(inv.total_amount_mi) }} د.ت</strong>
+                <strong style="color:var(--danger);"><span class="num-ltr">-{{ formatMi(inv.total_amount_mi) }}</span> مي</strong>
               </label>
             </div>
           </div>
 
-          <div class="card num" style="background:#f9fafb; padding:10px; margin-bottom:10px;">
+          <div class="card" style="background:#f9fafb; padding:10px; margin-bottom:10px;">
             <div class="row">
               <span>{{ settleComputed.grossDueMi >= 0 ? "إجمالي المطلوب من العامل:" : "إجمالي المطلوب للعامل:" }}</span>
               <strong :style="{ color: settleComputed.grossDueMi >= 0 ? 'var(--primary)' : 'var(--danger)' }">
-                {{ miToTnd(Math.abs(settleComputed.grossDueMi)) }} د.ت
+                <span class="num-ltr">{{ formatMi(Math.abs(settleComputed.grossDueMi)) }}</span> مي
               </strong>
             </div>
             <div class="row" style="margin-top:4px;">
               <span>الباقي المرحّل بعد التسوية:</span>
-              <strong>{{ miToTnd(settleComputed.nextCarryMi) }} د.ت</strong>
+              <strong><span class="num-ltr">{{ formatMi(settleComputed.nextCarryMi) }}</span> مي</strong>
             </div>
           </div>
 
           <div class="field">
             <div class="row" style="margin-bottom:4px;">
               <label style="margin:0;">
-                {{ settleComputed.grossDueMi >= 0 ? "المبلغ الذي سلّمه العامل نقداً (د.ت)" : "المبلغ الذي دفعه المالك للعامل (د.ت)" }}
+                {{ settleComputed.grossDueMi >= 0 ? "المبلغ الذي سلّمه العامل نقداً (مي)" : "المبلغ الذي دفعه المالك للعامل (مي)" }}
               </label>
               <button
                 type="button"
                 class="cc-chip cc-tap"
                 style="padding:3px 8px; font-size:0.74rem;"
-                @click="settleModal.paid_tnd = miToTnd(Math.abs(settleComputed.grossDueMi)); resetSettleTxId()"
+                @click="settleModal.paid_mi_text = formatMi(Math.abs(settleComputed.grossDueMi)); resetSettleTxId()"
               >
                 المبلغ كامل
               </button>
             </div>
-            <input type="text" inputmode="decimal" v-model.trim="settleModal.paid_tnd" required class="ltr" @input="resetSettleTxId" />
+            <input
+              type="tel"
+              inputmode="numeric"
+              :value="settleModal.paid_mi_text"
+              @input="settleModal.paid_mi_text = formatSpacedIntInput($event.target.value); resetSettleTxId()"
+              required
+              class="ltr"
+              style="text-align:center; font-weight:800;"
+              placeholder="0"
+            />
           </div>
 
           <div class="field">
@@ -1545,8 +1593,17 @@
             <input type="text" v-model.trim="workerEditModal.display_name" required minlength="2" maxlength="60" />
           </div>
           <div class="field">
-            <label>الأجر اليومي الافتراضي (د.ت)</label>
-            <input type="text" inputmode="decimal" v-model.trim="workerEditModal.wage_tnd" required class="ltr" />
+            <label>الأجر اليومي الافتراضي (مي)</label>
+            <input
+              type="tel"
+              inputmode="numeric"
+              :value="workerEditModal.wage_mi_text"
+              @input="workerEditModal.wage_mi_text = formatSpacedIntInput($event.target.value)"
+              required
+              class="ltr"
+              style="text-align:center; font-weight:800;"
+              placeholder="25 000"
+            />
           </div>
           <button type="submit" class="btn btn-primary btn-block" :disabled="busy">حفظ</button>
         </form>
@@ -1589,8 +1646,17 @@
             <input type="text" v-model.trim="resetModal.new_name" minlength="2" maxlength="60" placeholder="اتركه فارغاً ليكتبه عند الدخول" />
           </div>
           <div class="field">
-            <label>الأجر اليومي الجديد (د.ت)</label>
-            <input type="text" inputmode="decimal" v-model.trim="resetModal.new_wage_tnd" required class="ltr" />
+            <label>الأجر اليومي الجديد (مي)</label>
+            <input
+              type="tel"
+              inputmode="numeric"
+              :value="resetModal.new_wage_mi_text"
+              @input="resetModal.new_wage_mi_text = formatSpacedIntInput($event.target.value)"
+              required
+              class="ltr"
+              style="text-align:center; font-weight:800;"
+              placeholder="25 000"
+            />
           </div>
           <div class="field" v-if="resetModal.worker.user_id">
             <label>رمز PIN الجديد (6-8 أرقام) *</label>
@@ -1617,7 +1683,7 @@
       </div>
     </div>
 
-    <!-- 8. نافذة إضافة / تعديل سلعة (مكتبة أمثلة تاكتيل + إدخال يدوي) -->
+    <!-- 8. نافذة إضافة / تعديل سلعة -->
     <div v-if="productModal.open" class="modal-backdrop" style="z-index:50;" @click.self="productModal.open = false">
       <div class="modal">
         <div class="cc-sheet-handle"></div>
@@ -1710,32 +1776,33 @@
           </div>
 
           <div class="field">
-            <label>3. سعر البيع (د.ت) *</label>
+            <label>3. سعر البيع (مي) *</label>
             <div class="cc-chips">
               <button
                 type="button"
-                v-for="pr in QUICK_PRICES"
+                v-for="pr in QUICK_PRICES_MI"
                 :key="pr"
-                class="cc-chip cc-tap num ltr"
-                :class="{ active: productModal.price_tnd === pr }"
+                class="cc-chip cc-tap num-ltr"
+                :class="{ active: inputToMi(productModal.price_mi_text) === pr }"
                 @click="setQuickPrice(pr)"
               >
-                {{ pr }}
+                {{ formatMi(pr) }}
               </button>
             </div>
             <div class="cc-stepper" style="width:100%;">
-              <button type="button" class="cc-step-btn cc-tap ltr" @click="bumpProductPrice(-100)">-0.1</button>
+              <button type="button" class="cc-step-btn cc-tap ltr" @click="bumpProductPrice(-100)">-100</button>
               <input
-                type="text"
-                inputmode="decimal"
-                v-model.trim="productModal.price_tnd"
+                type="tel"
+                inputmode="numeric"
+                :value="productModal.price_mi_text"
+                @input="productModal.price_mi_text = formatSpacedIntInput($event.target.value)"
                 required
                 class="ltr"
                 style="flex:1; text-align:center; font-weight:800;"
-                placeholder="2.000"
+                placeholder="2 000"
               />
-              <button type="button" class="cc-step-btn plus cc-tap ltr" @click="bumpProductPrice(100)">+0.1</button>
-              <button type="button" class="cc-step-btn plus cc-tap ltr" @click="bumpProductPrice(500)">+0.5</button>
+              <button type="button" class="cc-step-btn plus cc-tap ltr" @click="bumpProductPrice(100)">+100</button>
+              <button type="button" class="cc-step-btn plus cc-tap ltr" @click="bumpProductPrice(500)">+500</button>
             </div>
           </div>
 
@@ -1789,7 +1856,7 @@
       </div>
     </div>
 
-    <!-- 9. نافذة إضافة / تعديل مادة مخزن (مع أمثلة جاهزة عند الإضافة) -->
+    <!-- 9. نافذة إضافة / تعديل مادة مخزن -->
     <div v-if="stockItemModal.open" class="modal-backdrop" style="z-index:60;" @click.self="stockItemModal.open = false">
       <div class="modal">
         <div class="cc-sheet-handle"></div>
@@ -1835,8 +1902,16 @@
           </div>
           <div class="grid-2">
             <div class="field">
-              <label>تكلفة الوحدة (د.ت)</label>
-              <input type="text" inputmode="decimal" v-model.trim="stockItemModal.unit_cost_tnd" class="ltr" />
+              <label>تكلفة الوحدة (مي)</label>
+              <input
+                type="tel"
+                inputmode="numeric"
+                :value="stockItemModal.unit_cost_mi_text"
+                @input="stockItemModal.unit_cost_mi_text = formatSpacedIntInput($event.target.value)"
+                class="ltr"
+                style="text-align:center; font-weight:700;"
+                placeholder="0"
+              />
             </div>
             <div class="field">
               <label>حد التنبيه المنخفض</label>
@@ -1860,7 +1935,7 @@
           <h3 style="margin:0;">تعديل مخزون: {{ adjustModal.item.name }}</h3>
           <button class="btn btn-sm btn-outline" @click="adjustModal.item = null">إغلاق</button>
         </div>
-        <p class="muted num" style="margin-top:0;">الكمية الحالية: <strong>{{ adjustModal.item.current_qty }} {{ adjustModal.item.unit }}</strong></p>
+        <p class="muted" style="margin-top:0;">الكمية الحالية: <strong><span class="num-ltr">{{ adjustModal.item.current_qty }}</span> {{ adjustModal.item.unit }}</strong></p>
         <form @submit.prevent="submitAdjustStock">
           <div class="field">
             <label>نوع الحركة</label>
@@ -1888,7 +1963,7 @@
       </div>
     </div>
 
-    <!-- 11. نافذة تسجيل فاتورة مخزن (معاد تصميمها بالكامل للوضوح والسرعة) -->
+    <!-- 11. نافذة تسجيل فاتورة مخزن -->
     <div v-if="invoiceModal.open" class="modal-backdrop" style="z-index:50;" @click.self="invoiceModal.open = false">
       <div class="modal">
         <div class="cc-sheet-handle"></div>
@@ -1898,7 +1973,6 @@
         </div>
 
         <form @submit.prevent="submitInvoiceForm">
-          <!-- التاريخ والمزوّد في سطر واحد -->
           <div class="cc-inv-top-grid">
             <div class="field" style="margin:0;">
               <label>التاريخ *</label>
@@ -1910,7 +1984,6 @@
             </div>
           </div>
 
-          <!-- أزرار آخر المزوّدين للاختيار بضغطة -->
           <div class="cc-chips" v-if="recentSuppliers.length" style="margin-bottom:10px;">
             <button
               type="button"
@@ -1925,7 +1998,6 @@
             </button>
           </div>
 
-          <!-- مصدر الدفع -->
           <div class="field">
             <label>طريقة الدفع</label>
             <div class="cc-chips" style="margin-bottom:0;">
@@ -1973,7 +2045,6 @@
             </div>
           </div>
 
-          <!-- قسم السلع المشتراة -->
           <div class="field">
             <div class="row" style="margin-bottom:6px;">
               <label style="margin:0;">السلع المشتراة ({{ invoiceModal.items.length }})</label>
@@ -1987,7 +2058,6 @@
               </button>
             </div>
 
-            <!-- مواد المخزن المعرّفة مسبقاً (اضغط لإضافتها فوراً للفاتورة) -->
             <div v-if="activeStockItems.length" class="cc-chips" style="margin-bottom:8px;">
               <button
                 type="button"
@@ -2001,7 +2071,6 @@
               </button>
             </div>
 
-            <!-- صندوق إضافة مادة جديدة مباشرة من داخل الفاتورة (يفتح تلقائياً إذا كان المخزن فارغاً) -->
             <div v-if="invoiceQuickAdd.open || !activeStockItems.length" class="cc-quick-add-box">
               <div style="font-size:0.82rem; font-weight:700; color:var(--primary-dark); margin-bottom:6px;">
                 {{ activeStockItems.length ? "إضافة مادة جديدة للمخزن وللفاتورة مباشرة:" : "مخزنك فارغ — اضغط على أي مادة اشتريتها لإضافتها فوراً:" }}
@@ -2028,7 +2097,6 @@
                 </button>
               </div>
 
-              <!-- إدخال مادة جديدة يدوياً داخل الفاتورة -->
               <div v-if="invoiceQuickAdd.manual" style="background:#fff; padding:8px; border-radius:10px; border:1px solid var(--border);">
                 <div class="grid-2" style="gap:6px; margin-bottom:6px;">
                   <input type="text" v-model.trim="invoiceQuickAdd.name" placeholder="اسم المادة (مثلاً: عسل)" maxlength="80" />
@@ -2049,7 +2117,6 @@
               </div>
             </div>
 
-            <!-- قائمة السلع المضافة للفاتورة بشكل مضغوط -->
             <div v-if="!invoiceModal.items.length" class="card" style="text-align:center; padding:12px; background:#f9fafb;">
               <span class="muted" style="font-size:0.84rem;">اضغط على السلع بالأعلى لإضافتها إلى هذه الفاتورة.</span>
             </div>
@@ -2059,7 +2126,7 @@
                 <div style="min-width:0;">
                   <strong style="font-size:0.92rem;">{{ stockItemById(ln.stock_item_id)?.name || "مادة" }}</strong>
                   <div class="muted" style="font-size:0.74rem;">
-                    {{ stockItemById(ln.stock_item_id)?.pack_label || "عبوة" }} = {{ stockItemById(ln.stock_item_id)?.pack_size || 1 }} {{ stockItemById(ln.stock_item_id)?.unit || "وحدة" }}
+                    {{ stockItemById(ln.stock_item_id)?.pack_label || "عبوة" }} = <span class="num-ltr">{{ stockItemById(ln.stock_item_id)?.pack_size || 1 }}</span> {{ stockItemById(ln.stock_item_id)?.unit || "وحدة" }}
                   </div>
                 </div>
                 <button type="button" class="btn btn-sm btn-danger-soft" @click="removeInvoiceLine(idx)">×</button>
@@ -2102,16 +2169,16 @@
               </div>
 
               <div class="row" style="flex-wrap:nowrap; gap:8px;">
-                <span class="muted" style="font-size:0.8rem; white-space:nowrap;">التكلفة الإجمالية (د.ت):</span>
+                <span class="muted" style="font-size:0.8rem; white-space:nowrap;">التكلفة الإجمالية (مي):</span>
                 <input
-                  type="text"
-                  inputmode="decimal"
-                  v-model.trim="ln.line_cost_tnd"
+                  type="tel"
+                  inputmode="numeric"
+                  :value="ln.line_cost_mi_text"
+                  @input="ln.line_cost_mi_text = formatSpacedIntInput($event.target.value); resetInvoiceTxId()"
                   required
                   class="ltr"
-                  style="max-width:140px; text-align:center; font-weight:800; padding:7px 8px;"
-                  placeholder="0.000"
-                  @input="resetInvoiceTxId"
+                  style="max-width:145px; text-align:center; font-weight:800; padding:7px 8px;"
+                  placeholder="25 000"
                 />
               </div>
             </div>
@@ -2127,11 +2194,10 @@
             اعتماد الفاتورة وإضافتها للمخزون فوراً
           </label>
 
-          <!-- شريط الحفظ والإجمالي المثبت أسفل النافذة -->
           <div class="cc-sticky-footer">
-            <div class="row num" style="margin-bottom:8px;">
+            <div class="row" style="margin-bottom:8px;">
               <span>إجمالي الفاتورة ({{ invoiceModal.items.length }} سلعة):</span>
-              <strong style="font-size:1.1rem; color:var(--primary);">{{ miToTnd(invoiceFormTotalMi) }} د.ت</strong>
+              <strong style="font-size:1.1rem; color:var(--primary);"><span class="num-ltr">{{ formatMi(invoiceFormTotalMi) }}</span> مي</strong>
             </div>
             <button type="submit" class="btn btn-primary btn-block" :disabled="busy || !invoiceModal.items.length">
               {{ busy ? "جارٍ الحفظ..." : "حفظ الفاتورة" }}
@@ -2146,24 +2212,24 @@
       <div class="modal">
         <div class="cc-sheet-handle"></div>
         <div class="row" style="margin-bottom:10px;">
-          <h3 style="margin:0;">فاتورة #{{ detailInvoice.inv.invoice_number }}</h3>
+          <h3 style="margin:0;">فاتورة #<span class="num-ltr">{{ detailInvoice.inv.invoice_number }}</span></h3>
           <button class="btn btn-sm btn-outline" @click="detailInvoice.inv = null">إغلاق</button>
         </div>
         <div v-if="detailInvoice.loading" class="muted">جارٍ التحميل...</div>
         <template v-else>
           <div class="muted" style="margin-bottom:10px;">
-            المزوّد: <strong>{{ detailInvoice.inv.supplier_name }}</strong> • {{ detailInvoice.inv.work_date }}<br />
+            المزوّد: <strong>{{ detailInvoice.inv.supplier_name }}</strong> • <span class="num-ltr">{{ detailInvoice.inv.work_date }}</span><br />
             الدفع: {{ paymentSourceLabel(detailInvoice.inv.payment_source) }}
             <span v-if="!isOwnerOnly"> • {{ detailInvoice.inv.worker_name_snapshot }}</span>
           </div>
-          <div v-for="it in detailInvoice.items" :key="it.id" class="row num" style="padding:6px 0; border-bottom:1px solid var(--border); font-size:0.9rem;">
-            <span>{{ it.item_name_snapshot }} — {{ it.pack_qty }} {{ it.pack_unit }} ({{ it.converted_qty }} {{ it.unit_snapshot }})</span>
-            <strong>{{ miToTnd(it.line_cost_mi) }} د.ت</strong>
+          <div v-for="it in detailInvoice.items" :key="it.id" class="row" style="padding:6px 0; border-bottom:1px solid var(--border); font-size:0.9rem;">
+            <span>{{ it.item_name_snapshot }} — <span class="num-ltr">{{ it.pack_qty }}</span> {{ it.pack_unit }} (<span class="num-ltr">{{ it.converted_qty }}</span> {{ it.unit_snapshot }})</span>
+            <strong><span class="num-ltr">{{ formatMi(it.line_cost_mi) }}</span> مي</strong>
           </div>
           <hr class="divider" />
-          <div class="row num">
+          <div class="row">
             <strong>الإجمالي</strong>
-            <strong style="color:var(--primary);">{{ miToTnd(detailInvoice.inv.total_amount_mi) }} د.ت</strong>
+            <strong style="color:var(--primary);"><span class="num-ltr">{{ formatMi(detailInvoice.inv.total_amount_mi) }}</span> مي</strong>
           </div>
         </template>
       </div>
@@ -2196,8 +2262,17 @@
           </div>
           <div class="grid-2">
             <div class="field">
-              <label>المبلغ (د.ت) *</label>
-              <input type="text" inputmode="decimal" v-model.trim="fixedModal.amount_tnd" required class="ltr" />
+              <label>المبلغ (مي) *</label>
+              <input
+                type="tel"
+                inputmode="numeric"
+                :value="fixedModal.amount_mi_text"
+                @input="fixedModal.amount_mi_text = formatSpacedIntInput($event.target.value)"
+                required
+                class="ltr"
+                style="text-align:center; font-weight:800;"
+                placeholder="150 000"
+              />
             </div>
             <div class="field">
               <label>تاريخ الاستحقاق (للتذكير)</label>
@@ -2256,8 +2331,9 @@
       supabase,
       callManageAccounts,
       getServerTime,
-      miToTnd,
-      tndToMi,
+      formatMi,
+      inputToMi,
+      formatSpacedIntInput,
       daysRemaining,
       formatDate,
       translateError,
@@ -2266,7 +2342,7 @@
       generateRandomPin,
       WORK_PATTERNS,
       FEATURE_LABELS,
-    } from "./core/supabase.js?v=1.2.7";
+    } from "./core/supabase.js?v=1.3.1";
 
     createApp({
       setup() {
@@ -2280,8 +2356,9 @@
         ];
 
         const QUICK_EXPENSE_LABELS = ["ثلج", "ماء", "حليب", "تنظيف", "غاز", "خبز", "نقل"];
+        const QUICK_EXPENSE_BUMPS = [1000, 2000, 5000, 10000, 20000];
         const QUICK_FIXED_LABELS = ["كراء", "كهرباء STEG", "ماء SONEDE", "أنترنت", "beIN Sports", "صيانة"];
-        const QUICK_PRICES = ["1.000", "1.500", "2.000", "2.500", "3.000", "4.000", "5.000", "7.000", "10.000"];
+        const QUICK_PRICES_MI = [1000, 1500, 2000, 2500, 3000, 4000, 5000, 7000, 10000];
         const QUICK_UNITS = ["كأس", "قارورة", "رأس", "قطعة", "حصة", "وحدة"];
 
         const PRODUCT_CATALOG = [
@@ -3241,7 +3318,7 @@
           }
           let expensesMi = 0;
           for (const ex of shiftModal.expenses) {
-            expensesMi += tndToMi(ex.amount_tnd || "0");
+            expensesMi += inputToMi(ex.amount_mi_text);
           }
           return { salesMi, expensesMi };
         });
@@ -3253,13 +3330,13 @@
         };
 
         const addQuickShiftExpense = (label) => {
-          shiftModal.expenses.push({ label, amount_tnd: "", time: "" });
+          shiftModal.expenses.push({ label, amount_mi_text: "", time: "" });
           resetShiftTxId();
         };
 
-        const bumpExpenseAmount = (ex, addTnd) => {
-          const nextMi = Math.max(0, tndToMi(ex.amount_tnd || "0") + Math.round(addTnd * 1000));
-          ex.amount_tnd = miToTnd(nextMi);
+        const bumpExpenseAmount = (ex, addMi) => {
+          const nextMi = Math.max(0, inputToMi(ex.amount_mi_text) + addMi);
+          ex.amount_mi_text = nextMi > 0 ? formatMi(nextMi) : "";
           resetShiftTxId();
         };
 
@@ -3290,7 +3367,7 @@
               }
               shiftModal.expenses = (eRes.data || []).map((ex) => ({
                 label: ex.label || "",
-                amount_tnd: miToTnd(ex.amount_mi),
+                amount_mi_text: formatMi(ex.amount_mi),
                 time: ex.expense_time || "",
               }));
               shiftModal.open = true;
@@ -3312,7 +3389,7 @@
         };
 
         const addShiftExpenseRow = () => {
-          shiftModal.expenses.push({ label: "", amount_tnd: "", time: "" });
+          shiftModal.expenses.push({ label: "", amount_mi_text: "", time: "" });
           resetShiftTxId();
         };
         const removeShiftExpenseRow = (idx) => {
@@ -3328,7 +3405,7 @@
           }
           const expenses = [];
           for (const ex of shiftModal.expenses) {
-            const amt = tndToMi(ex.amount_tnd || "0");
+            const amt = inputToMi(ex.amount_mi_text);
             if (amt > 0) expenses.push({ label: ex.label || "مصروف يومي", amount_mi: amt, time: ex.time || "" });
           }
           if (!sales.length && !expenses.length) {
@@ -3381,16 +3458,16 @@
           }
         };
 
-        const approveShiftModal = reactive({ shift: null, wage_tnd: "0" });
+        const approveShiftModal = reactive({ shift: null, wage_mi_text: "0" });
         const openApproveShiftModal = (s) => {
           approveShiftModal.shift = s;
-          approveShiftModal.wage_tnd = miToTnd(s.wage_mi);
+          approveShiftModal.wage_mi_text = formatMi(s.wage_mi);
         };
         const confirmApproveShift = async () => {
           if (!approveShiftModal.shift) return;
           busy.value = true;
           try {
-            const wageMi = approveShiftModal.shift.is_owner_shift ? 0 : tndToMi(approveShiftModal.wage_tnd);
+            const wageMi = approveShiftModal.shift.is_owner_shift ? 0 : inputToMi(approveShiftModal.wage_mi_text);
             const { error } = await supabase.rpc("approve_shift", {
               p_shift_id: approveShiftModal.shift.id,
               p_wage_mi: wageMi,
@@ -3450,7 +3527,7 @@
           selectedShiftIds: [],
           selectedInvoiceIds: [],
           prevCarryMi: 0,
-          paid_tnd: "0",
+          paid_mi_text: "0",
           note: "",
         });
 
@@ -3464,7 +3541,7 @@
             .filter((i) => settleModal.selectedInvoiceIds.includes(i.id))
             .reduce((a, i) => a + Number(i.total_amount_mi || 0), 0);
           const grossDueMi = shiftsNetMi - invsPaidMi + Number(settleModal.prevCarryMi || 0);
-          const absPaidMi = tndToMi(settleModal.paid_tnd || "0");
+          const absPaidMi = inputToMi(settleModal.paid_mi_text);
           const signedPaidMi = grossDueMi < 0 ? -absPaidMi : absPaidMi;
           const nextCarryMi = grossDueMi - signedPaidMi;
           return { grossDueMi, signedPaidMi, nextCarryMi };
@@ -3472,7 +3549,7 @@
 
         const onSettleSelectionChange = () => {
           resetSettleTxId();
-          settleModal.paid_tnd = miToTnd(Math.abs(settleComputed.value.grossDueMi));
+          settleModal.paid_mi_text = formatMi(Math.abs(settleComputed.value.grossDueMi));
         };
 
         const openSettleModal = async (w) => {
@@ -3498,7 +3575,7 @@
             settleModal.selectedInvoiceIds = sum.invoices.map((i) => i.id);
             settleModal.prevCarryMi = Number(latestRow?.carry_over_mi ?? sum.prevCarryMi ?? 0);
             settleModal.note = "";
-            settleModal.paid_tnd = miToTnd(Math.abs(settleComputed.value.grossDueMi));
+            settleModal.paid_mi_text = formatMi(Math.abs(settleComputed.value.grossDueMi));
           } catch (e) {
             notify(translateError(e), "err");
           } finally {
@@ -3530,11 +3607,11 @@
           }
         };
 
-        const workerEditModal = reactive({ worker: null, display_name: "", wage_tnd: "0" });
+        const workerEditModal = reactive({ worker: null, display_name: "", wage_mi_text: "0" });
         const openEditWorkerModal = (w) => {
           workerEditModal.worker = w;
           workerEditModal.display_name = w.display_name || "";
-          workerEditModal.wage_tnd = miToTnd(w.default_wage_mi);
+          workerEditModal.wage_mi_text = formatMi(w.default_wage_mi);
         };
         const submitEditWorker = async () => {
           if (!workerEditModal.worker) return;
@@ -3543,7 +3620,7 @@
             const { error } = await supabase.rpc("update_worker_wage_name", {
               p_member_id: workerEditModal.worker.id,
               p_display_name: workerEditModal.display_name,
-              p_default_wage_mi: tndToMi(workerEditModal.wage_tnd),
+              p_default_wage_mi: inputToMi(workerEditModal.wage_mi_text),
             });
             if (error) throw error;
             workerEditModal.worker = null;
@@ -3593,7 +3670,7 @@
         const resetModal = reactive({
           worker: null,
           new_name: "",
-          new_wage_tnd: "0",
+          new_wage_mi_text: "0",
           new_pin: "",
           force: false,
           canForce: false,
@@ -3602,7 +3679,7 @@
         const openResetModal = (w) => {
           resetModal.worker = w;
           resetModal.new_name = "";
-          resetModal.new_wage_tnd = miToTnd(w.default_wage_mi);
+          resetModal.new_wage_mi_text = formatMi(w.default_wage_mi);
           resetModal.new_pin = w.user_id ? generateRandomPin() : "";
           resetModal.force = false;
           resetModal.canForce = false;
@@ -3622,7 +3699,7 @@
               cafe_id: cafe.value.id,
               slot: w.slot,
               new_name: resetModal.new_name,
-              new_wage_mi: tndToMi(resetModal.new_wage_tnd),
+              new_wage_mi: inputToMi(resetModal.new_wage_mi_text),
               new_pin: pin || undefined,
               force: resetModal.force,
             });
@@ -3644,7 +3721,7 @@
               resetModal.warning = `يوجد ${e.details?.pending_shifts || 0} يومية و ${e.details?.pending_invoices || 0} فاتورة غير مُسوّاة. سوّها أولاً قبل التصفير.`;
             } else if (e?.message === "WORKER_HAS_CARRY_OVER") {
               resetModal.canForce = true;
-              resetModal.warning = `يوجد رصيد مرحّل بقيمة ${miToTnd(e.details?.carry_over_mi || 0)} د.ت بذمّة العامل السابق.`;
+              resetModal.warning = `يوجد رصيد مرحّل بقيمة ${formatMi(e.details?.carry_over_mi || 0)} مي بذمّة العامل السابق.`;
             }
             notify(translateError(e), "err");
           } finally {
@@ -3658,7 +3735,7 @@
           id: null,
           name: "",
           category: "",
-          price_tnd: "",
+          price_mi_text: "",
           sale_unit: "كأس",
           stock_item_id: "",
           stock_deduct_qty: 1,
@@ -3720,11 +3797,13 @@
           productModal.name = "";
         };
 
-        const setQuickPrice = (priceStr) => { productModal.price_tnd = priceStr; };
+        const setQuickPrice = (priceMi) => {
+          productModal.price_mi_text = formatMi(priceMi);
+        };
 
         const bumpProductPrice = (deltaMi) => {
-          const next = Math.max(0, tndToMi(productModal.price_tnd || "0") + deltaMi);
-          productModal.price_tnd = miToTnd(next);
+          const next = Math.max(0, inputToMi(productModal.price_mi_text) + deltaMi);
+          productModal.price_mi_text = next > 0 ? formatMi(next) : "";
         };
 
         const openProductModal = (p) => {
@@ -3733,7 +3812,7 @@
           if (p) {
             productModal.name = p.name || "";
             productModal.category = p.category || PRODUCT_CATALOG[0].category;
-            productModal.price_tnd = miToTnd(p.price_mi);
+            productModal.price_mi_text = formatMi(p.price_mi);
             productModal.sale_unit = p.sale_unit || "كأس";
             productModal.stock_item_id = p.stock_item_id || "";
             productModal.stock_deduct_qty = Number(p.stock_deduct_qty || 1);
@@ -3742,7 +3821,7 @@
           } else {
             productModal.name = "";
             productModal.category = PRODUCT_CATALOG[0].category;
-            productModal.price_tnd = "";
+            productModal.price_mi_text = "";
             productModal.sale_unit = PRODUCT_CATALOG[0].defaultUnit;
             productModal.stock_item_id = "";
             productModal.stock_deduct_qty = 1;
@@ -3753,7 +3832,7 @@
 
         const saveProduct = async (keepOpen = false) => {
           if (!productModal.name.trim()) return notify("اختر سلعة أو اكتب اسمها.", "err");
-          const priceMi = tndToMi(productModal.price_tnd || "0");
+          const priceMi = inputToMi(productModal.price_mi_text);
           if (priceMi <= 0) return notify("أدخل سعراً أكبر من صفر.", "err");
           const linkedStock = hasFeature("stock") && productModal.stock_item_id ? productModal.stock_item_id : null;
           const catName = productModal.category.trim() || "عام";
@@ -3778,7 +3857,7 @@
             if (keepOpen === true && !productModal.id) {
               notify(`تمت إضافة «${payload.name}» — اختر السلعة التالية.`);
               productModal.name = "";
-              productModal.price_tnd = "";
+              productModal.price_mi_text = "";
               productModal.stock_item_id = "";
               productModal.stock_deduct_qty = 1;
               productModal.customCategoryMode = false;
@@ -3821,7 +3900,7 @@
           unit: "قارورة",
           pack_label: "ستيكة",
           pack_size: 12,
-          unit_cost_tnd: "0",
+          unit_cost_mi_text: "0",
           low_threshold: 5,
           current_qty: 0,
         });
@@ -3839,7 +3918,7 @@
           stockItemModal.unit = st?.unit || "قارورة";
           stockItemModal.pack_label = st?.pack_label || "ستيكة";
           stockItemModal.pack_size = Number(st?.pack_size || 12);
-          stockItemModal.unit_cost_tnd = st ? miToTnd(st.unit_cost_mi) : "0";
+          stockItemModal.unit_cost_mi_text = st ? formatMi(st.unit_cost_mi) : "";
           stockItemModal.low_threshold = Number(st?.low_threshold || 5);
           stockItemModal.current_qty = Number(st?.current_qty || 0);
         };
@@ -3849,7 +3928,7 @@
             unit: stockItemModal.unit || "وحدة",
             pack_label: stockItemModal.pack_label || stockItemModal.unit,
             pack_size: Math.max(1, Math.round(Number(stockItemModal.pack_size || 1))),
-            unit_cost_mi: tndToMi(stockItemModal.unit_cost_tnd || "0"),
+            unit_cost_mi: inputToMi(stockItemModal.unit_cost_mi_text),
             low_threshold: Math.max(0, Math.round(Number(stockItemModal.low_threshold || 0))),
             updated_at: new Date().toISOString(),
           };
@@ -3922,7 +4001,7 @@
           }
         };
 
-        // --- الفاتورة المعاد تصميمها ---
+        // --- الفاتورة ---
         const invoiceModal = reactive({
           open: false,
           client_tx_id: "",
@@ -3961,7 +4040,7 @@
 
         const resetInvoiceTxId = () => { invoiceModal.client_tx_id = generateTxId("inv"); };
         const invoiceFormTotalMi = computed(() =>
-          invoiceModal.items.reduce((a, ln) => a + tndToMi(ln.line_cost_tnd || "0"), 0)
+          invoiceModal.items.reduce((a, ln) => a + inputToMi(ln.line_cost_mi_text), 0)
         );
 
         const removeInvoiceLine = (idx) => {
@@ -3973,7 +4052,7 @@
           const st = stockItemById(ln.stock_item_id);
           if (!st || !st.unit_cost_mi) return;
           const units = ln.by_unit ? Number(ln.pack_qty || 0) : Number(ln.pack_qty || 0) * Number(st.pack_size || 1);
-          ln.line_cost_tnd = miToTnd(units * Number(st.unit_cost_mi));
+          ln.line_cost_mi_text = formatMi(units * Number(st.unit_cost_mi));
         };
 
         const onInvoiceQtyChange = (ln) => { recalcInvoiceLineCost(ln); resetInvoiceTxId(); };
@@ -3988,7 +4067,7 @@
             bumpInvoiceQty(existing, 1);
             return;
           }
-          const ln = { stock_item_id: st.id, pack_qty: 1, by_unit: false, line_cost_tnd: "" };
+          const ln = { stock_item_id: st.id, pack_qty: 1, by_unit: false, line_cost_mi_text: "" };
           invoiceModal.items.push(ln);
           recalcInvoiceLineCost(ln);
           resetInvoiceTxId();
@@ -4079,7 +4158,7 @@
               stock_item_id: ln.stock_item_id,
               pack_qty: Math.round(Number(ln.pack_qty)),
               by_unit: Boolean(ln.by_unit),
-              line_cost_mi: tndToMi(ln.line_cost_tnd || "0"),
+              line_cost_mi: inputToMi(ln.line_cost_mi_text),
             }));
           if (!items.length) return notify(translateError("EMPTY_INVOICE"), "err");
 
@@ -4176,7 +4255,7 @@
         const fixedModal = reactive({
           open: false,
           title: "",
-          amount_tnd: "",
+          amount_mi_text: "",
           due_date: "",
           reminder_enabled: true,
           is_paid: false,
@@ -4184,13 +4263,13 @@
         const openFixedModal = () => {
           fixedModal.open = true;
           fixedModal.title = "";
-          fixedModal.amount_tnd = "";
+          fixedModal.amount_mi_text = "";
           fixedModal.due_date = `${currentServerMonth.value}-01`;
           fixedModal.reminder_enabled = true;
           fixedModal.is_paid = false;
         };
         const saveFixedExpense = async () => {
-          const amountMi = tndToMi(fixedModal.amount_tnd);
+          const amountMi = inputToMi(fixedModal.amount_mi_text);
           if (amountMi <= 0) return notify("أدخل مبلغاً أكبر من صفر.", "err");
           busy.value = true;
           try {
@@ -4290,7 +4369,7 @@
         onMounted(() => checkSession(false));
 
         return {
-          QUICK_EXPENSE_LABELS, QUICK_FIXED_LABELS, QUICK_PRICES, QUICK_UNITS, STOCK_CATALOG,
+          QUICK_EXPENSE_LABELS, QUICK_EXPENSE_BUMPS, QUICK_FIXED_LABELS, QUICK_PRICES_MI, QUICK_UNITS, STOCK_CATALOG,
           booting, busy, refreshing, currentUserId, isSuperAdmin, availableCafes, cafe,
           formatCafeTitle, cafeDisplayTitle,
           serverToday, currentServerMonth, currentMonthLabel,
@@ -4313,7 +4392,7 @@
           productModal, stockItemModal, applyStockPresetToModal, adjustModal,
           invoiceModal, invoiceQuickAdd, recentSuppliers, availableStockCatalogPresets, invoiceFormTotalMi, detailInvoice, fixedModal,
           WORK_PATTERNS, FEATURE_LABELS,
-          hasFeature, miToTnd, formatDate, formatDateTime, shiftNetMi, shiftTypeLabel, shiftStatusBadge,
+          hasFeature, formatMi, inputToMi, formatSpacedIntInput, formatDate, formatDateTime, shiftNetMi, shiftTypeLabel, shiftStatusBadge,
           paymentSourceLabel, invoiceStatusBadge, moveTypeLabel, stockItemById, stockItemNameById, memberNameById, actorNameByUserId, workerSummary, generateRandomPin,
           login, logout, selectCafe, refreshAll, refreshMonthData, copyShareCard,
           openStockDetail,
