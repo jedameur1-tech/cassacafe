@@ -5,514 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0f766e" />
   <title>CassaCafe — لوحة المالك</title>
-  <link rel="stylesheet" href="./core/styles.css?v=1.2.7" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --cc-bg: #f4f6f8;
-      --cc-card: #ffffff;
-      --cc-primary: #0f766e;
-      --cc-primary-dark: #0a544e;
-      --cc-primary-soft: #ccfbf1;
-      --cc-text: #111827;
-      --cc-muted: #6b7280;
-      --cc-border: #e5e7eb;
-      --cc-warn-bg: #fef3c7;
-      --cc-warn-text: #92400e;
-      --cc-danger: #dc2626;
-      --cc-danger-bg: #fee2e2;
-      --cc-radius: 16px;
-    }
-
-    [v-cloak] { display: none !important; }
-
-    body {
-      background: var(--cc-bg);
-      color: var(--cc-text);
-      font-family: "Cairo", system-ui, -apple-system, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .cc-shell {
-      padding-bottom: calc(82px + env(safe-area-inset-bottom));
-    }
-
-    .cc-tap {
-      transition: transform 0.12s ease, opacity 0.12s ease;
-      cursor: pointer;
-    }
-    .cc-tap:active {
-      transform: scale(0.97);
-      opacity: 0.9;
-    }
-
-    /* الشريط العلوي الخفيف المتكيف */
-    .cc-topbar {
-      background: var(--cc-card);
-      color: var(--cc-text);
-      border-bottom: 1px solid var(--cc-border);
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      position: sticky;
-      top: 0;
-      z-index: 25;
-      min-height: 60px;
-    }
-    .cc-brand h1 {
-      margin: 0;
-      font-size: 1.08rem;
-      font-weight: 800;
-      color: var(--cc-primary-dark);
-      line-height: 1.25;
-    }
-    .cc-brand-sub {
-      font-size: 0.74rem;
-      color: var(--cc-muted);
-      font-variant-numeric: tabular-nums;
-    }
-    .cc-top-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-    .cc-icon-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      border: 1px solid var(--cc-border);
-      background: var(--cc-bg);
-      color: var(--cc-text);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      padding: 0;
-    }
-    .cc-pill-btn {
-      border: none;
-      border-radius: 11px;
-      padding: 8px 12px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      background: var(--cc-primary);
-      color: #fff;
-      font-family: inherit;
-    }
-    .cc-back-btn {
-      border: 1px solid var(--cc-border);
-      border-radius: 11px;
-      padding: 7px 11px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      background: var(--cc-bg);
-      color: var(--cc-text);
-      font-family: inherit;
-    }
-
-    .cc-main {
-      max-width: 560px;
-      margin: 0 auto;
-      padding: 14px 14px 20px;
-    }
-
-    /* شريط اختيار الشهر المدمج في الرئيسية */
-    .cc-month-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      background: var(--cc-card);
-      border: 1px solid var(--cc-border);
-      border-radius: 14px;
-      padding: 8px 12px;
-      margin-bottom: 12px;
-    }
-    .cc-month-bar label {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--cc-muted);
-      margin: 0;
-    }
-    .cc-month-bar input[type="month"] {
-      width: auto;
-      border: 1px solid var(--cc-border);
-      border-radius: 10px;
-      padding: 6px 10px;
-      background: var(--cc-bg);
-      font-weight: 700;
-      font-family: inherit;
-    }
-
-    /* شريط التنبيهات الذكي */
-    .cc-alert {
-      background: var(--cc-warn-bg);
-      color: var(--cc-warn-text);
-      border: 1px solid #fcd34d;
-      border-radius: 14px;
-      padding: 10px 14px;
-      margin-bottom: 10px;
-      font-size: 0.86rem;
-    }
-    .cc-alert.danger {
-      background: var(--cc-danger-bg);
-      color: var(--cc-danger);
-      border-color: #fca5a5;
-    }
-    .cc-alert-click {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-weight: 700;
-    }
-
-    /* بطاقة الربح الرئيسية (الرئيسية فقط) */
-    .cc-hero {
-      background: linear-gradient(135deg, var(--cc-primary) 0%, var(--cc-primary-dark) 100%);
-      color: #fff;
-      border-radius: var(--cc-radius);
-      padding: 18px 16px 14px;
-      box-shadow: 0 8px 22px rgba(15, 118, 110, 0.22);
-      margin-bottom: 12px;
-    }
-    .cc-hero-lbl {
-      text-align: center;
-      font-size: 0.85rem;
-      opacity: 0.92;
-    }
-    .cc-hero-val {
-      text-align: center;
-      font-size: 2rem;
-      font-weight: 800;
-      margin: 4px 0 14px;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0.3px;
-    }
-    .cc-hero-val small {
-      font-size: 0.9rem;
-      font-weight: 600;
-      opacity: 0.88;
-    }
-    .cc-hero-split {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-      padding-top: 10px;
-    }
-    .cc-hero-cell {
-      text-align: center;
-      padding: 2px 6px;
-    }
-    .cc-hero-cell:first-child {
-      border-left: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    .cc-hero-cell span {
-      display: block;
-      font-size: 0.76rem;
-      opacity: 0.88;
-    }
-    .cc-hero-cell strong {
-      font-size: 1rem;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* أزرار الإجراء السريع 50/50 */
-    .cc-quick-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .cc-quick-grid.one-col {
-      grid-template-columns: 1fr;
-    }
-    .cc-quick-btn {
-      border-radius: 14px;
-      padding: 13px 10px;
-      font-size: 0.92rem;
-      font-weight: 700;
-      font-family: inherit;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    .cc-quick-btn.primary {
-      background: var(--cc-primary);
-      color: #fff;
-      border: none;
-      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.18);
-    }
-    .cc-quick-btn.outline {
-      background: var(--cc-card);
-      color: var(--cc-primary-dark);
-      border: 1.5px solid var(--cc-primary);
-    }
-
-    /* بطاقة المخزون المختصرة في الرئيسية */
-    .cc-summary-row {
-      background: var(--cc-card);
-      border: 1px solid var(--cc-border);
-      border-radius: var(--cc-radius);
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .cc-summary-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .cc-summary-ico {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: var(--cc-primary-soft);
-      color: var(--cc-primary-dark);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      flex-shrink: 0;
-    }
-
-    /* شريط التبويب الفرعي (Segment Control) */
-    .cc-segment {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: #e5e7eb;
-      padding: 4px;
-      border-radius: 12px;
-      margin-bottom: 12px;
-    }
-    .cc-segment.three {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .cc-seg-btn {
-      border: none;
-      background: transparent;
-      padding: 9px 6px;
-      border-radius: 9px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--cc-muted);
-      font-family: inherit;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    .cc-seg-btn.active {
-      background: var(--cc-card);
-      color: var(--cc-primary-dark);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    }
-
-    /* قائمة المخزن النظيفة */
-    .cc-stock-row {
-      background: var(--cc-card);
-      border: 1px solid var(--cc-border);
-      border-radius: 14px;
-      padding: 13px 15px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-    .cc-stock-row.inactive {
-      opacity: 0.6;
-    }
-
-    /* شبكة الأقسام في باب المقهى */
-    .cc-module-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .cc-module-item {
-      background: var(--cc-card);
-      border: 1px solid var(--cc-border);
-      border-radius: 14px;
-      padding: 14px 8px;
-      text-align: center;
-      text-decoration: none;
-      color: var(--cc-text);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      font-family: inherit;
-    }
-    .cc-module-ico {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      background: var(--cc-bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-    }
-    .cc-module-item span {
-      font-size: 0.8rem;
-      font-weight: 700;
-    }
-
-    /* الشريط السفلي الثابت */
-    .cc-bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--cc-card);
-      border-top: 1px solid var(--cc-border);
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      z-index: 35;
-      padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
-      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
-    }
-    .cc-bottom-nav.cols-3 {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .cc-nav-btn {
-      border: none;
-      background: transparent;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 2px;
-      color: var(--cc-muted);
-      font-size: 0.72rem;
-      font-weight: 700;
-      font-family: inherit;
-      position: relative;
-      padding: 4px 0;
-    }
-    .cc-nav-btn .ico {
-      font-size: 1.25rem;
-      line-height: 1.1;
-    }
-    .cc-nav-btn.active {
-      color: var(--cc-primary);
-    }
-    .cc-nav-dot {
-      position: absolute;
-      top: 1px;
-      left: calc(50% - 18px);
-      background: var(--cc-danger);
-      color: #fff;
-      font-size: 0.65rem;
-      font-weight: 800;
-      min-width: 17px;
-      height: 17px;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 4px;
-    }
-
-    /* النوافذ السفلية التاكتيل */
-    .modal-backdrop {
-      align-items: flex-end !important;
-      padding: 0 !important;
-    }
-    .modal {
-      width: 100% !important;
-      max-width: 560px !important;
-      border-radius: 22px 22px 0 0 !important;
-      max-height: 90vh !important;
-      margin: 0 auto !important;
-      padding-bottom: calc(18px + env(safe-area-inset-bottom)) !important;
-    }
-    .cc-sheet-handle {
-      width: 40px;
-      height: 4px;
-      background: #d1d5db;
-      border-radius: 4px;
-      margin: -4px auto 12px;
-    }
-
-    /* أزرار التكتيل داخل النوافذ */
-    .cc-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 8px;
-    }
-    .cc-chip {
-      border: 1.5px solid var(--cc-border);
-      background: var(--cc-bg);
-      color: var(--cc-text);
-      border-radius: 10px;
-      padding: 7px 11px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      font-family: inherit;
-    }
-    .cc-chip.active {
-      border-color: var(--cc-primary);
-      background: var(--cc-primary-soft);
-      color: var(--cc-primary-dark);
-    }
-
-    .cc-stepper {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      flex-shrink: 0;
-    }
-    .cc-step-btn {
-      min-width: 34px;
-      height: 36px;
-      border-radius: 9px;
-      border: 1px solid var(--cc-border);
-      background: var(--cc-bg);
-      color: var(--cc-text);
-      font-weight: 800;
-      font-size: 0.85rem;
-      font-family: inherit;
-      padding: 0 6px;
-    }
-    .cc-step-btn.plus {
-      background: var(--cc-primary-soft);
-      color: var(--cc-primary-dark);
-      border-color: #99f6e4;
-    }
-    .cc-step-input {
-      width: 56px !important;
-      height: 36px;
-      text-align: center;
-      padding: 4px !important;
-      font-weight: 700;
-    }
-
-    /* سجل تحركات المادة */
-    .cc-log-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 9px 0;
-      border-bottom: 1px solid var(--cc-border);
-      font-size: 0.86rem;
-    }
-    .cc-log-item:last-child {
-      border-bottom: none;
-    }
-  </style>
+  <link rel="stylesheet" href="./core/styles.css?v=1.3.0" />
 </head>
 <body>
   <div id="app" v-cloak>
@@ -572,7 +67,7 @@
 
     <!-- لوحة تسيير المقهى -->
     <div v-else class="cc-shell">
-      <!-- الشريط العلوي المتكيف مع الصفحة المفتوحة -->
+      <!-- الشريط العلوي المتكيف مع كل صفحة -->
       <header class="cc-topbar">
         <div class="cc-brand">
           <h1>{{ headerInfo.title }}</h1>
@@ -580,7 +75,6 @@
         </div>
 
         <div class="cc-top-actions">
-          <!-- زر رجوع في الصفحات الفرعية داخل المقهى -->
           <button
             v-if="['menu', 'finance', 'settings'].includes(tab)"
             class="cc-back-btn cc-tap"
@@ -589,7 +83,6 @@
             رجوع ⬅
           </button>
 
-          <!-- أزرار الصفحة الرئيسية -->
           <template v-if="tab === 'home'">
             <select
               v-if="availableCafes.length > 1"
@@ -602,49 +95,17 @@
             <button class="cc-icon-btn cc-tap" @click="refreshAll" :disabled="busy" title="تحديث">🔄</button>
           </template>
 
-          <!-- أزرار الإجراء السياقية لكل صفحة -->
-          <button
-            v-if="tab === 'shifts' && canWrite"
-            class="cc-pill-btn cc-tap"
-            @click="openShiftModal(null)"
-          >
-            + يومية
-          </button>
-          <button
-            v-if="tab === 'stock' && stockSubTab === 'items' && canWrite"
-            class="cc-pill-btn cc-tap"
-            @click="openStockItemModal(null)"
-          >
-            + مادة
-          </button>
-          <button
-            v-if="tab === 'stock' && stockSubTab === 'invoices' && canWrite"
-            class="cc-pill-btn cc-tap"
-            @click="openInvoiceModal"
-          >
-            + فاتورة
-          </button>
-          <button
-            v-if="tab === 'menu' && canWrite"
-            class="cc-pill-btn cc-tap"
-            @click="openProductModal(null)"
-          >
-            + سلعة
-          </button>
-          <button
-            v-if="tab === 'finance' && canWrite"
-            class="cc-pill-btn cc-tap"
-            @click="openFixedModal"
-          >
-            + مصروف
-          </button>
+          <button v-if="tab === 'shifts' && canWrite" class="cc-pill-btn cc-tap" @click="openShiftModal(null)">+ يومية</button>
+          <button v-if="tab === 'stock' && stockSubTab === 'items' && canWrite" class="cc-pill-btn cc-tap" @click="openStockItemModal(null)">+ مادة</button>
+          <button v-if="tab === 'stock' && stockSubTab === 'invoices' && canWrite" class="cc-pill-btn cc-tap" @click="openInvoiceModal">+ فاتورة</button>
+          <button v-if="tab === 'menu' && canWrite" class="cc-pill-btn cc-tap" @click="openProductModal(null)">+ سلعة</button>
+          <button v-if="tab === 'finance' && canWrite" class="cc-pill-btn cc-tap" @click="openFixedModal">+ مصروف</button>
         </div>
       </header>
 
       <main class="cc-main">
         <!-- ==================== 0. الصفحة الرئيسية (الوحيدة التي تعرض الربح) ==================== -->
         <section v-if="tab === 'home'">
-          <!-- تنبيه الاشتراك -->
           <div v-if="!canWrite" class="cc-alert danger">
             <strong>وضع القراءة فقط:</strong>
             {{ !cafe.active ? "هذا المقهى موقوف مؤقتاً." : "انتهت مدة اشتراك هذا المقهى." }}
@@ -653,13 +114,11 @@
             تنبيه: يتبقّى <strong>{{ subDaysLeft }}</strong> يوم على نهاية الاشتراك ({{ formatDate(cafe.subscription_until) }}).
           </div>
 
-          <!-- اختيار الشهر -->
           <div class="cc-month-bar">
             <label>حسابات شهر:</label>
             <input type="month" v-model="selectedMonth" @change="refreshMonthData" class="ltr" />
           </div>
 
-          <!-- تنبيه العمليات بانتظار المراجعة -->
           <div
             v-if="pendingCount > 0"
             class="cc-alert cc-alert-click cc-tap"
@@ -669,7 +128,6 @@
             <span>عرض ⬅</span>
           </div>
 
-          <!-- تنبيه المصاريف الثابتة المستحقّة -->
           <div v-if="dueFixedAlerts.length" class="cc-alert">
             <strong style="display:block; margin-bottom:6px;">تذكير مصاريف ثابتة مستحقّة:</strong>
             <div v-for="fe in dueFixedAlerts" :key="fe.id" class="row" style="margin-bottom:6px;">
@@ -680,7 +138,6 @@
             </div>
           </div>
 
-          <!-- بطاقة الربح الرئيسية -->
           <div class="cc-hero">
             <div class="cc-hero-lbl">ربح الشهر ({{ selectedMonth }})</div>
             <div class="cc-hero-val">
@@ -698,13 +155,11 @@
             </div>
           </div>
 
-          <!-- أزرار الإجراء السريع 50/50 -->
           <div v-if="canWrite" class="cc-quick-grid" :class="{ 'one-col': !hasFeature('stock') }">
             <button class="cc-quick-btn primary cc-tap" @click="openShiftModal(null)">+ يومية جديدة</button>
             <button v-if="hasFeature('stock')" class="cc-quick-btn outline cc-tap" @click="openInvoiceModal">+ فاتورة مخزن</button>
           </div>
 
-          <!-- بطاقة المخزون المختصرة -->
           <div
             v-if="hasFeature('stock')"
             class="cc-summary-row cc-tap"
@@ -722,10 +177,9 @@
             </span>
           </div>
 
-          <!-- اختصار حالة المصاريف الثابتة غير المدفوعة إن وجدت -->
           <div v-if="monthStats.fixedUnpaidMi > 0" class="cc-summary-row cc-tap" @click="tab = 'finance'">
             <div class="cc-summary-right">
-              <div class="cc-summary-ico" style="background:var(--cc-warn-bg); color:var(--cc-warn-text);">🧾</div>
+              <div class="cc-summary-ico" style="background:var(--warn-soft); color:#92400e;">🧾</div>
               <div>
                 <div class="muted" style="font-size:0.78rem;">مصاريف ثابتة لم تُدفع بعد</div>
                 <strong class="num" style="font-size:1rem;">{{ miToTnd(monthStats.fixedUnpaidMi) }} د.ت</strong>
@@ -735,7 +189,7 @@
           </div>
         </section>
 
-        <!-- ==================== 1. تبويب اليوميات (والعمال) ==================== -->
+        <!-- ==================== 1. اليوميات والعمال ==================== -->
         <section v-if="tab === 'shifts' || tab === 'workers'">
           <div v-if="hasWorkersInPattern" class="cc-segment">
             <button class="cc-seg-btn cc-tap" :class="{ active: tab === 'shifts' }" @click="tab = 'shifts'">
@@ -747,7 +201,6 @@
             </button>
           </div>
 
-          <!-- قسم اليوميات -->
           <template v-if="tab === 'shifts'">
             <div v-if="attentionShifts.length" style="margin-bottom:14px;">
               <strong style="display:block; margin-bottom:8px; color:var(--warn);">
@@ -825,7 +278,6 @@
             </div>
           </template>
 
-          <!-- قسم العمال والتسوية -->
           <template v-if="tab === 'workers' && hasWorkersInPattern">
             <div v-if="!activeWorkers.length" class="card" style="text-align:center;">
               <p class="muted">لا يوجد عمال نشطون في النمط الحالي.</p>
@@ -841,16 +293,16 @@
                 <span class="muted num">الأجر: <strong>{{ miToTnd(w.default_wage_mi) }} د.ت</strong></span>
               </div>
 
-              <div class="grid-3" style="margin-bottom:10px;">
-                <div class="stat" style="padding:8px;">
+              <div class="grid-3-inline" style="margin-bottom:10px;">
+                <div class="stat" style="padding:8px 4px;">
                   <div class="stat-val" style="font-size:1.05rem;">{{ workerSummary(w).shiftsCount }}</div>
                   <div class="stat-lbl">غير مُسوّاة</div>
                 </div>
-                <div class="stat" style="padding:8px;">
+                <div class="stat" style="padding:8px 4px;">
                   <div class="stat-val" style="font-size:1.05rem;">{{ miToTnd(workerSummary(w).prevCarryMi) }}</div>
                   <div class="stat-lbl">المرحّل</div>
                 </div>
-                <div class="stat" style="padding:8px;">
+                <div class="stat" style="padding:8px 4px;">
                   <div class="stat-val" style="font-size:1.05rem;" :style="{ color: workerSummary(w).grossDueMi >= 0 ? 'var(--primary)' : 'var(--danger)' }">
                     {{ miToTnd(workerSummary(w).grossDueMi) }}
                   </div>
@@ -894,7 +346,7 @@
           </template>
         </section>
 
-        <!-- ==================== 2. تبويب المخزن والفواتير ==================== -->
+        <!-- ==================== 2. المخزن والفواتير ==================== -->
         <section v-if="tab === 'stock' && hasFeature('stock')">
           <div class="cc-segment">
             <button class="cc-seg-btn cc-tap" :class="{ active: stockSubTab === 'items' }" @click="stockSubTab = 'items'">
@@ -906,7 +358,7 @@
             </button>
           </div>
 
-          <!-- المواد (قائمة نظيفة — مفصل التحركات يفتح عند الضغط على المادة فقط) -->
+          <!-- قائمة المواد النظيفة — مفصل التحركات يفتح عند الضغط على المادة فقط -->
           <div v-if="stockSubTab === 'items'">
             <div class="cc-chips" style="margin-bottom:10px;">
               <button class="cc-chip cc-tap" :class="{ active: stockFilter === 'all' }" @click="stockFilter = 'all'">
@@ -1034,7 +486,7 @@
               <span>تحديث البيانات</span>
             </button>
             <button class="cc-module-item cc-tap" style="color:var(--danger);" @click="logout">
-              <div class="cc-module-ico" style="background:var(--cc-danger-bg);">🚪</div>
+              <div class="cc-module-ico" style="background:var(--danger-soft);">🚪</div>
               <span>خروج</span>
             </button>
           </div>
@@ -1043,7 +495,7 @@
         <!-- ==================== 4. صفحة المنيو ==================== -->
         <section v-if="tab === 'menu'">
           <div style="margin-bottom:12px;">
-            <input type="search" v-model.trim="menuSearch" placeholder="ابحث عن سلعة أو صنف..." style="width:100%;" />
+            <input type="search" v-model.trim="menuSearch" placeholder="ابحث عن سلعة أو صنف..." />
           </div>
 
           <div v-if="!filteredProducts.length" class="card" style="text-align:center;">
@@ -1212,44 +664,44 @@
 
     <!-- ==================== النوافذ السفلية المنبثقة (Modals) ==================== -->
 
-    <!-- 0. نافذة مفصل تحركات مادة المخزن (تفتح عند الضغط على أي مادة) -->
+    <!-- 0. نافذة مفصل تحركات مادة المخزن (مربوطة بجدول stock_movements) -->
     <div v-if="stockDetail.item" class="modal-backdrop" style="z-index:55;" @click.self="stockDetail.item = null">
       <div class="modal">
         <div class="cc-sheet-handle"></div>
         <div class="row" style="margin-bottom:8px;">
           <div>
             <h3 style="margin:0;">{{ stockDetail.item.name }}</h3>
-            <div class="muted num" style="font-size:0.82rem;">
-              العبوة: {{ stockDetail.item.pack_label || "صندوق" }} = {{ stockDetail.item.pack_size }} {{ stockDetail.item.unit }}
+            <div class="muted num" style="font-size:0.8rem;">
+              {{ stockDetail.item.pack_label || "صندوق" }} = {{ stockDetail.item.pack_size }} {{ stockDetail.item.unit }}
               • التكلفة: {{ miToTnd(stockDetail.item.unit_cost_mi) }} د.ت
             </div>
           </div>
           <button class="btn btn-sm btn-outline" @click="stockDetail.item = null">إغلاق</button>
         </div>
 
-        <div class="grid-3" style="margin-bottom:12px;">
-          <div class="stat" style="padding:8px;">
+        <div class="grid-3-inline" style="margin-bottom:10px;">
+          <div class="stat" style="padding:8px 4px;">
             <div class="stat-val" style="font-size:1.1rem;" :style="{ color: stockDetail.item.current_qty <= stockDetail.item.low_threshold ? 'var(--danger)' : 'var(--primary)' }">
               {{ stockDetail.item.current_qty }}
             </div>
             <div class="stat-lbl">الرصيد ({{ stockDetail.item.unit }})</div>
           </div>
-          <div class="stat" style="padding:8px;">
+          <div class="stat" style="padding:8px 4px;">
             <div class="stat-val" style="font-size:1.1rem;">{{ stockDetail.item.low_threshold }}</div>
             <div class="stat-lbl">حد النقص</div>
           </div>
-          <div class="stat" style="padding:8px;">
-            <div class="stat-val" style="font-size:1.05rem;">
+          <div class="stat" style="padding:8px 4px;">
+            <div class="stat-val" style="font-size:1rem;">
               {{ miToTnd(Math.max(0, Number(stockDetail.item.current_qty || 0)) * Number(stockDetail.item.unit_cost_mi || 0)) }}
             </div>
             <div class="stat-lbl">القيمة (د.ت)</div>
           </div>
         </div>
 
-        <div v-if="canWrite" class="cc-chips" style="margin-bottom:14px;">
-          <button class="btn btn-sm btn-primary" style="flex:1;" @click="openAdjustFromDetail(stockDetail.item, 'inventory_count', 0)">جرد / تعديل</button>
-          <button class="btn btn-sm btn-danger-soft" style="flex:1;" @click="openAdjustFromDetail(stockDetail.item, 'waste', -1)">⚠️ تالف (-1)</button>
-          <button class="btn btn-sm btn-outline" @click="openEditFromDetail(stockDetail.item)">بيانات</button>
+        <div v-if="canWrite" class="cc-chips" style="margin-bottom:12px;">
+          <button class="btn btn-sm btn-primary" style="flex:1;" @click="openAdjustStockModal(stockDetail.item, 'inventory_count', 0)">جرد / تعديل</button>
+          <button class="btn btn-sm btn-danger-soft" style="flex:1;" @click="openAdjustStockModal(stockDetail.item, 'waste', -1)">⚠️ تالف (-1)</button>
+          <button class="btn btn-sm btn-outline" @click="openStockItemModal(stockDetail.item)">بيانات</button>
           <button
             class="btn btn-sm"
             :class="stockDetail.item.active ? 'btn-warn' : 'btn-primary'"
@@ -1260,26 +712,52 @@
           </button>
         </div>
 
-        <strong style="display:block; margin-bottom:6px; font-size:0.88rem; color:var(--muted);">مفصل التحركات الأخيرة</strong>
-        <div v-if="stockDetail.loading" class="muted" style="padding:10px 0;">جارٍ تحميل التحركات...</div>
-        <div v-else-if="!stockDetail.movesAvailable" class="muted" style="font-size:0.82rem; padding:8px 0;">
-          سجل التحركات التفصيلي غير مربوط باسم جدول مطابق في قاعدة البيانات حالياً.
+        <!-- ملخص آخر الحركات -->
+        <div
+          v-if="stockDetail.moves.length"
+          style="display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:6px; margin-bottom:12px;"
+        >
+          <div class="stat" style="padding:6px 4px; background:var(--bg); border:none;">
+            <div class="stat-lbl">دخول</div>
+            <strong class="num ltr" style="color:var(--ok); font-size:0.9rem;">+{{ stockDetailSummary.inQty }}</strong>
+          </div>
+          <div class="stat" style="padding:6px 4px; background:var(--bg); border:none;">
+            <div class="stat-lbl">بيع</div>
+            <strong class="num ltr" style="color:var(--text); font-size:0.9rem;">-{{ stockDetailSummary.saleQty }}</strong>
+          </div>
+          <div class="stat" style="padding:6px 4px; background:var(--bg); border:none;">
+            <div class="stat-lbl">تالف</div>
+            <strong class="num ltr" style="color:var(--danger); font-size:0.9rem;">-{{ stockDetailSummary.wasteQty }}</strong>
+          </div>
+          <div class="stat" style="padding:6px 4px; background:var(--bg); border:none;">
+            <div class="stat-lbl">أخرى</div>
+            <strong class="num ltr" style="color:var(--warn); font-size:0.9rem;">-{{ stockDetailSummary.otherOutQty }}</strong>
+          </div>
         </div>
+
+        <strong style="display:block; margin-bottom:6px; font-size:0.86rem; color:var(--muted);">
+          مفصل التحركات (آخر {{ stockDetail.moves.length }} حركة)
+        </strong>
+        <div v-if="stockDetail.loading" class="muted" style="padding:10px 0;">جارٍ تحميل التحركات...</div>
         <div v-else-if="!stockDetail.moves.length" class="muted" style="font-size:0.84rem; padding:8px 0;">
           لا توجد تحركات مسجّلة لهذه المادة بعد.
         </div>
-        <div v-else style="max-height:240px; overflow-y:auto;">
+        <div v-else style="max-height:260px; overflow-y:auto;">
           <div v-for="mv in stockDetail.moves" :key="mv.id" class="cc-log-item">
-            <div>
-              <strong>{{ moveTypeLabel(mv.move_type) }}</strong>
+            <div style="min-width:0;">
+              <strong>{{ moveTypeLabel(mv.move_type, mv.ref_type) }}</strong>
               <div class="muted" style="font-size:0.75rem;">
-                {{ formatDate(mv.created_at) }}
-                <span v-if="mv.note"> • {{ mv.note }}</span>
+                <span class="ltr">{{ formatDateTime(mv.created_at) }}</span>
+                <span v-if="actorNameByUserId(mv.created_by)"> • {{ actorNameByUserId(mv.created_by) }}</span>
               </div>
+              <div v-if="mv.note" class="muted" style="font-size:0.75rem;">{{ mv.note }}</div>
             </div>
-            <strong class="num ltr" :style="{ color: Number(mv.qty_delta) >= 0 ? 'var(--ok)' : 'var(--danger)' }">
-              {{ Number(mv.qty_delta) > 0 ? `+${mv.qty_delta}` : mv.qty_delta }} {{ stockDetail.item.unit }}
-            </strong>
+            <div style="text-align:left; flex-shrink:0;">
+              <strong class="num ltr" :style="{ color: Number(mv.qty_delta) >= 0 ? 'var(--ok)' : 'var(--danger)' }">
+                {{ Number(mv.qty_delta) > 0 ? `+${mv.qty_delta}` : mv.qty_delta }} {{ stockDetail.item.unit }}
+              </strong>
+              <div class="muted num" style="font-size:0.72rem;">الرصيد: {{ mv.qty_after }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1333,7 +811,6 @@
             </div>
           </div>
 
-          <!-- المبيعات بأزرار التكتيل -->
           <div class="field">
             <label>المبيعات (اضغط للإضافة السريعة أو أدخل العدد)</label>
             <div v-if="!shiftModalProducts.length" class="muted">أضف سلعاً في «المنيو» أولاً.</div>
@@ -1361,7 +838,6 @@
             </div>
           </div>
 
-          <!-- المصاريف اليومية مع شرائح سريعة -->
           <div class="field">
             <div class="row" style="margin-bottom:6px;">
               <label style="margin:0;">المصاريف اليومية (كاسا)</label>
@@ -1533,9 +1009,19 @@
           </div>
 
           <div class="field">
-            <label>
-              {{ settleComputed.grossDueMi >= 0 ? "المبلغ الذي سلّمه العامل نقداً (د.ت)" : "المبلغ الذي دفعه المالك للعامل (د.ت)" }}
-            </label>
+            <div class="row" style="margin-bottom:4px;">
+              <label style="margin:0;">
+                {{ settleComputed.grossDueMi >= 0 ? "المبلغ الذي سلّمه العامل نقداً (د.ت)" : "المبلغ الذي دفعه المالك للعامل (د.ت)" }}
+              </label>
+              <button
+                type="button"
+                class="cc-chip cc-tap"
+                style="padding:3px 8px; font-size:0.74rem;"
+                @click="settleModal.paid_tnd = miToTnd(Math.abs(settleComputed.grossDueMi)); resetSettleTxId()"
+              >
+                المبلغ كامل
+              </button>
+            </div>
             <input type="text" inputmode="decimal" v-model.trim="settleModal.paid_tnd" required class="ltr" @input="resetSettleTxId" />
           </div>
 
@@ -1817,13 +1303,13 @@
             </div>
           </div>
 
-          <!-- إضافة مواد الفاتورة بالضغط السريع -->
           <div class="field">
             <div class="row" style="margin-bottom:6px;">
               <label style="margin:0;">اختر المواد بالضغط</label>
               <button type="button" class="btn btn-sm btn-outline" @click="addInvoiceLine">+ سطر فارغ</button>
             </div>
-            <div class="cc-chips" v-if="activeStockItems.length">
+            <div v-if="!activeStockItems.length" class="muted" style="margin-bottom:8px;">أضف مواد المخزن أولاً من تبويب «المخزن».</div>
+            <div v-else class="cc-chips">
               <button
                 type="button"
                 v-for="st in activeStockItems"
@@ -1833,6 +1319,9 @@
               >
                 + {{ st.name }}
               </button>
+            </div>
+            <div v-if="activeStockItems.length && !invoiceModal.items.length" class="muted" style="font-size:0.8rem; margin-bottom:6px;">
+              اضغط على أي مادة بالأعلى لإضافتها فوراً للفاتورة.
             </div>
 
             <div v-for="(ln, idx) in invoiceModal.items" :key="idx" class="card" style="background:#f9fafb; padding:8px; margin-bottom:8px;">
@@ -1849,9 +1338,9 @@
                 <div class="field" style="margin:0;">
                   <label>الكمية</label>
                   <div class="cc-stepper">
-                    <button type="button" class="cc-step-btn cc-tap" style="min-width:26px; height:34px;" @click="bumpInvoiceQty(ln, -1)">-</button>
-                    <input type="number" min="1" max="100000" step="1" v-model.number="ln.pack_qty" required class="ltr cc-step-input" style="width:44px !important; height:34px;" @input="onInvoiceQtyChange(ln)" />
-                    <button type="button" class="cc-step-btn plus cc-tap" style="min-width:26px; height:34px;" @click="bumpInvoiceQty(ln, 1)">+</button>
+                    <button type="button" class="cc-step-btn cc-tap" style="min-width:28px; height:36px;" @click="bumpInvoiceQty(ln, -1)">-</button>
+                    <input type="number" min="1" max="100000" step="1" v-model.number="ln.pack_qty" required class="ltr cc-step-input" style="flex:1;" @input="onInvoiceQtyChange(ln)" />
+                    <button type="button" class="cc-step-btn plus cc-tap" style="min-width:28px; height:36px;" @click="bumpInvoiceQty(ln, 1)">+</button>
                   </div>
                 </div>
                 <div class="field" style="margin:0;">
@@ -1917,7 +1406,7 @@
       </div>
     </div>
 
-    <!-- 13. نافذة إضافة مصروف ثابت (مع شرائح جاهزة) -->
+    <!-- 13. نافذة إضافة مصروف ثابت -->
     <div v-if="fixedModal.open" class="modal-backdrop" style="z-index:50;" @click.self="fixedModal.open = false">
       <div class="modal">
         <div class="cc-sheet-handle"></div>
@@ -1995,7 +1484,7 @@
     </div>
 
     <!-- إشعار Toast -->
-    <div v-if="toast.text" class="toast" :class="toast.type" style="z-index:1200;">{{ toast.text }}</div>
+    <div v-if="toast.text" class="toast" :class="toast.type">{{ toast.text }}</div>
   </div>
 
   <script type="module">
@@ -2066,6 +1555,27 @@
             ? crypto.randomUUID()
             : `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
           return `${prefix}_${rnd}`;
+        };
+
+        const formatDateTime = (iso) => {
+          if (!iso) return "—";
+          try {
+            const d = new Date(iso);
+            if (Number.isNaN(d.getTime())) return formatDate(iso);
+            const parts = new Intl.DateTimeFormat("en-GB", {
+              timeZone: "Africa/Tunis",
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            }).formatToParts(d);
+            const get = (t) => parts.find((p) => p.type === t)?.value || "";
+            return `${get("year")}-${get("month")}-${get("day")} ${get("hour")}:${get("minute")}`;
+          } catch {
+            return formatDate(iso);
+          }
         };
 
         const hasFeature = (key) => Boolean(cafe.value?.features?.[key]);
@@ -2163,20 +1673,39 @@
           reversed: { label: "معكوسة", cls: "badge-danger" },
         }[st] || { label: st, cls: "badge-info" });
 
-        const moveTypeLabel = (t) => ({
-          sale: "بيع (يومية)",
-          shift_sale: "بيع (يومية)",
-          shift_reopen: "إرجاع يومية",
-          invoice: "شراء (فاتورة)",
-          purchase: "شراء (فاتورة)",
-          invoice_reverse: "عكس فاتورة",
-          inventory_count: "جرد مخزن",
-          waste: "تالف / ضياع",
-          manual: "تعديل يدوي",
-        }[t] || t || "حركة مخزن");
+        const moveTypeLabel = (t, refType) => {
+          const labels = {
+            sale: "بيع (يومية)",
+            shift_sale: "بيع (يومية)",
+            shift: "بيع (يومية)",
+            shift_reopen: "إرجاع يومية",
+            reopen: "إرجاع يومية",
+            invoice: "شراء (فاتورة)",
+            purchase: "شراء (فاتورة)",
+            invoice_in: "شراء (فاتورة)",
+            stock_invoice: "شراء (فاتورة)",
+            invoice_reverse: "عكس فاتورة",
+            reverse: "عكس فاتورة",
+            inventory_count: "جرد مخزن",
+            waste: "تالف / ضياع",
+            manual: "تعديل يدوي",
+            initial: "رصيد افتتاحي",
+          };
+          if (labels[t]) return labels[t];
+          if (refType === "daily_shift" || refType === "shift") return "حركة يومية";
+          if (refType === "stock_invoice" || refType === "invoice") return "فاتورة مخزن";
+          return t || "حركة مخزن";
+        };
 
         const stockItemNameById = (id) => stockItems.value.find((s) => s.id === id)?.name || "—";
         const memberNameById = (id) => members.value.find((m) => m.id === id)?.display_name || "عامل";
+        const actorNameByUserId = (uid) => {
+          if (!uid) return "";
+          const m = members.value.find((x) => x.user_id === uid);
+          if (m) return m.role === "owner" ? (m.display_name || "المالك") : m.display_name;
+          if (uid === currentUserId.value) return isSuperAdmin.value ? "المشرف" : "المالك";
+          return "";
+        };
 
         const pendingShifts = computed(() =>
           unsettledShifts.value.filter((s) => s.status === "pending")
@@ -2283,6 +1812,61 @@
           }
         };
 
+        // --- مفصل تحركات مادة المخزن (stock_movements) ---
+        const stockDetail = reactive({ item: null, loading: false, moves: [] });
+
+        const stockDetailSummary = computed(() => {
+          let inQty = 0;
+          let saleQty = 0;
+          let wasteQty = 0;
+          let otherOutQty = 0;
+          for (const mv of stockDetail.moves) {
+            const d = Number(mv.qty_delta || 0);
+            if (d > 0) {
+              inQty += d;
+            } else if (d < 0) {
+              const absD = Math.abs(d);
+              const mt = String(mv.move_type || "");
+              const rt = String(mv.ref_type || "");
+              if (mt === "waste") {
+                wasteQty += absD;
+              } else if (mt.includes("sale") || mt === "shift" || rt === "daily_shift" || rt === "shift") {
+                saleQty += absD;
+              } else {
+                otherOutQty += absD;
+              }
+            }
+          }
+          return { inQty, saleQty, wasteQty, otherOutQty };
+        });
+
+        const loadStockMovements = async (stockItemId) => {
+          if (!cafe.value || !stockItemId) return;
+          stockDetail.loading = true;
+          try {
+            const { data, error } = await supabase
+              .from("stock_movements")
+              .select("id, move_type, qty_delta, qty_after, ref_type, ref_id, note, created_by, created_at")
+              .eq("cafe_id", cafe.value.id)
+              .eq("stock_item_id", stockItemId)
+              .order("created_at", { ascending: false })
+              .limit(50);
+            if (error) throw error;
+            stockDetail.moves = data || [];
+          } catch (e) {
+            notify(translateError(e), "err");
+            stockDetail.moves = [];
+          } finally {
+            stockDetail.loading = false;
+          }
+        };
+
+        const openStockDetail = async (st) => {
+          stockDetail.item = st;
+          stockDetail.moves = [];
+          await loadStockMovements(st.id);
+        };
+
         // --- الجلسة والبيانات ---
         const clearState = () => {
           currentUserId.value = null;
@@ -2298,6 +1882,8 @@
           unsettledInvoices.value = [];
           fixedExpenses.value = [];
           recentSettlements.value = [];
+          stockDetail.item = null;
+          stockDetail.moves = [];
           shareCard.value = null;
           loginForm.password = "";
         };
@@ -2415,6 +2001,7 @@
             if (stockDetail.item) {
               const updated = stockItems.value.find((x) => x.id === stockDetail.item.id);
               stockDetail.item = updated || null;
+              if (updated) await loadStockMovements(updated.id);
             }
 
             await refreshMonthData(false);
@@ -2470,45 +2057,6 @@
           try { await supabase.auth.signOut(); } finally { clearState(); }
         };
 
-        // ==================== مفصل تحركات مادة المخزن ====================
-        const stockDetail = reactive({ item: null, loading: false, moves: [], movesAvailable: true });
-        const openStockDetail = async (st) => {
-          stockDetail.item = st;
-          stockDetail.loading = true;
-          stockDetail.moves = [];
-          stockDetail.movesAvailable = true;
-          try {
-            const { data, error } = await supabase
-              .from("stock_movements")
-              .select("*")
-              .eq("cafe_id", cafe.value.id)
-              .eq("stock_item_id", st.id)
-              .order("created_at", { ascending: false })
-              .limit(30);
-            if (error) {
-              stockDetail.movesAvailable = false;
-            } else {
-              stockDetail.moves = data || [];
-            }
-          } catch {
-            stockDetail.movesAvailable = false;
-          } finally {
-            stockDetail.loading = false;
-          }
-        };
-
-        const openAdjustFromDetail = (st, moveType, defaultDelta) => {
-          stockDetail.item = null;
-          openAdjustStockModal(st);
-          adjustModal.move_type = moveType;
-          adjustModal.qty_delta = defaultDelta;
-        };
-
-        const openEditFromDetail = (st) => {
-          stockDetail.item = null;
-          openStockItemModal(st);
-        };
-
         // ==================== 1. منطق اليوميات ====================
         const shiftModal = reactive({
           open: false,
@@ -2524,9 +2072,7 @@
           extraProductIds: [],
         });
 
-        const resetShiftTxId = () => {
-          shiftModal.client_tx_id = generateTxId("sh");
-        };
+        const resetShiftTxId = () => { shiftModal.client_tx_id = generateTxId("sh"); };
 
         const shiftModalProducts = computed(() =>
           products.value.filter((p) => p.active || shiftModal.extraProductIds.includes(p.id))
@@ -2540,15 +2086,14 @@
           }
           let expensesMi = 0;
           for (const ex of shiftModal.expenses) {
-            expensesMi += tndToMi(ex.amount_tnd);
+            expensesMi += tndToMi(ex.amount_tnd || "0");
           }
           return { salesMi, expensesMi };
         });
 
         const changeShiftProductQty = (productId, delta) => {
           const cur = Math.round(Number(shiftModal.qtyByProduct[productId] || 0));
-          const next = Math.max(0, Math.min(100000, cur + delta));
-          shiftModal.qtyByProduct[productId] = next;
+          shiftModal.qtyByProduct[productId] = Math.max(0, Math.min(100000, cur + delta));
           resetShiftTxId();
         };
 
@@ -2558,7 +2103,7 @@
         };
 
         const bumpExpenseAmount = (ex, addTnd) => {
-          const nextMi = Math.max(0, tndToMi(ex.amount_tnd) + Math.round(addTnd * 1000));
+          const nextMi = Math.max(0, tndToMi(ex.amount_tnd || "0") + Math.round(addTnd * 1000));
           ex.amount_tnd = miToTnd(nextMi);
           resetShiftTxId();
         };
@@ -2626,7 +2171,7 @@
           }
           const expenses = [];
           for (const ex of shiftModal.expenses) {
-            const amt = tndToMi(ex.amount_tnd);
+            const amt = tndToMi(ex.amount_tnd || "0");
             if (amt > 0) expenses.push({ label: ex.label || "مصروف يومي", amount_mi: amt, time: ex.time || "" });
           }
           if (!sales.length && !expenses.length) {
@@ -2758,7 +2303,7 @@
             .filter((i) => settleModal.selectedInvoiceIds.includes(i.id))
             .reduce((a, i) => a + Number(i.total_amount_mi || 0), 0);
           const grossDueMi = shiftsNetMi - invsPaidMi + Number(settleModal.prevCarryMi || 0);
-          const absPaidMi = tndToMi(settleModal.paid_tnd);
+          const absPaidMi = tndToMi(settleModal.paid_tnd || "0");
           const signedPaidMi = grossDueMi < 0 ? -absPaidMi : absPaidMi;
           const nextCarryMi = grossDueMi - signedPaidMi;
           return { grossDueMi, signedPaidMi, nextCarryMi };
@@ -3019,7 +2564,7 @@
           id: null,
           name: "",
           unit: "وحدة",
-          pack_label: "صندوق",
+          pack_label: "ستيكة",
           pack_size: 12,
           unit_cost_tnd: "0",
           low_threshold: 5,
@@ -3042,7 +2587,7 @@
             unit: stockItemModal.unit || "وحدة",
             pack_label: stockItemModal.pack_label || stockItemModal.unit,
             pack_size: Math.max(1, Math.round(Number(stockItemModal.pack_size || 1))),
-            unit_cost_mi: tndToMi(stockItemModal.unit_cost_tnd),
+            unit_cost_mi: tndToMi(stockItemModal.unit_cost_tnd || "0"),
             low_threshold: Math.max(0, Math.round(Number(stockItemModal.low_threshold || 0))),
             updated_at: new Date().toISOString(),
           };
@@ -3085,10 +2630,10 @@
         };
 
         const adjustModal = reactive({ item: null, move_type: "inventory_count", qty_delta: 0, note: "" });
-        const openAdjustStockModal = (st) => {
+        const openAdjustStockModal = (st, moveType = "inventory_count", defaultDelta = 0) => {
           adjustModal.item = st;
-          adjustModal.move_type = "inventory_count";
-          adjustModal.qty_delta = 0;
+          adjustModal.move_type = moveType;
+          adjustModal.qty_delta = defaultDelta;
           adjustModal.note = "";
         };
         const bumpAdjustDelta = (delta) => {
@@ -3128,7 +2673,7 @@
         });
         const resetInvoiceTxId = () => { invoiceModal.client_tx_id = generateTxId("inv"); };
         const invoiceFormTotalMi = computed(() =>
-          invoiceModal.items.reduce((a, ln) => a + tndToMi(ln.line_cost_tnd), 0)
+          invoiceModal.items.reduce((a, ln) => a + tndToMi(ln.line_cost_tnd || "0"), 0)
         );
         const addInvoiceLine = () => {
           invoiceModal.items.push({ stock_item_id: "", pack_qty: 1, by_unit: false, line_cost_tnd: "" });
@@ -3185,7 +2730,7 @@
               stock_item_id: ln.stock_item_id,
               pack_qty: Math.round(Number(ln.pack_qty)),
               by_unit: Boolean(ln.by_unit),
-              line_cost_mi: tndToMi(ln.line_cost_tnd),
+              line_cost_mi: tndToMi(ln.line_cost_tnd || "0"),
             }));
           if (!items.length) return notify(translateError("EMPTY_INVOICE"), "err");
 
@@ -3401,14 +2946,15 @@
           fixedExpenses, dueFixedAlerts, recentSettlements,
           subDaysLeft, canWrite, hasWorkersInPattern, pendingCount, monthStats,
           loginForm, toast,
-          stockDetail, shiftModal, shiftModalProducts, shiftFormTotals, detailShift, approveShiftModal,
+          stockDetail, stockDetailSummary,
+          shiftModal, shiftModalProducts, shiftFormTotals, detailShift, approveShiftModal,
           settleModal, settleComputed, workerEditModal, pinModal, resetModal,
           productModal, stockItemModal, adjustModal, invoiceModal, invoiceFormTotalMi, detailInvoice, fixedModal,
           WORK_PATTERNS, FEATURE_LABELS,
-          hasFeature, miToTnd, formatDate, shiftNetMi, shiftTypeLabel, shiftStatusBadge,
-          paymentSourceLabel, invoiceStatusBadge, moveTypeLabel, stockItemNameById, memberNameById, workerSummary, generateRandomPin,
+          hasFeature, miToTnd, formatDate, formatDateTime, shiftNetMi, shiftTypeLabel, shiftStatusBadge,
+          paymentSourceLabel, invoiceStatusBadge, moveTypeLabel, stockItemNameById, memberNameById, actorNameByUserId, workerSummary, generateRandomPin,
           login, logout, selectCafe, refreshAll, refreshMonthData, copyShareCard,
-          openStockDetail, openAdjustFromDetail, openEditFromDetail,
+          openStockDetail,
           changeShiftProductQty, addQuickShiftExpense, bumpExpenseAmount,
           openShiftModal, resetShiftTxId, addShiftExpenseRow, removeShiftExpenseRow, submitShiftForm,
           openShiftDetail, openApproveShiftModal, confirmApproveShift, reopenShiftAction, deleteShiftAction,
