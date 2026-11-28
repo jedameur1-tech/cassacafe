@@ -5,7 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0f766e" />
   <title>CassaCafe — لوحة المشرف العام</title>
-  <link rel="stylesheet" href="./core/styles.css?v=1.2.7" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./core/styles.css?v=1.3.0" />
+  <style>
+    .num-ltr {
+      direction: ltr !important;
+      unicode-bidi: isolate !important;
+      display: inline-block;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
 </head>
 <body>
   <div id="app" v-cloak>
@@ -44,7 +55,7 @@
           <div style="font-size:0.75rem; opacity:0.85;">{{ serverToday || "توقيت تونس" }}</div>
         </div>
         <div class="row">
-          <button class="btn btn-sm btn-outline" @click="refreshAll" :disabled="busy">تحديث</button>
+          <button class="btn btn-sm btn-outline" @click="refreshAll(true)" :disabled="busy">تحديث</button>
           <button class="btn btn-sm btn-danger" @click="logout">خروج</button>
         </div>
       </header>
@@ -122,6 +133,14 @@
                 :style="cafe.features?.[key] ? '' : 'background:#f3f4f6;color:#9ca3af;'"
               >
                 {{ lbl }}
+              </span>
+              <span
+                v-if="cafe.work_pattern !== 'owner_only' && cafe.features?.stock"
+                class="badge"
+                :class="cafe.settings?.worker_invoices_enabled ? 'badge-info' : ''"
+                :style="cafe.settings?.worker_invoices_enabled ? '' : 'background:#f3f4f6;color:#9ca3af;'"
+              >
+                فواتير العمال
               </span>
             </div>
 
@@ -265,8 +284,16 @@
                 <input type="text" v-model.trim="createForm.w1_name" minlength="2" maxlength="60" placeholder="اختياري" />
               </div>
               <div class="field">
-                <label>الأجر اليومي (د.ت)</label>
-                <input type="number" step="0.5" min="0" v-model.number="createForm.w1_wage_tnd" class="ltr" />
+                <label>الأجر اليومي (مي)</label>
+                <input
+                  type="tel"
+                  inputmode="numeric"
+                  :value="createForm.w1_wage_mi_text"
+                  @input="createForm.w1_wage_mi_text = formatSpacedIntInput($event.target.value)"
+                  class="ltr"
+                  style="text-align:center; font-weight:700;"
+                  placeholder="25 000"
+                />
               </div>
               <div class="field" v-if="patternNeedsW1Pin(createForm.work_pattern)">
                 <label>رمز PIN (6-8 أرقام)</label>
@@ -287,8 +314,16 @@
                 <input type="text" v-model.trim="createForm.w2_name" minlength="2" maxlength="60" placeholder="اختياري" />
               </div>
               <div class="field">
-                <label>الأجر اليومي (د.ت)</label>
-                <input type="number" step="0.5" min="0" v-model.number="createForm.w2_wage_tnd" class="ltr" />
+                <label>الأجر اليومي (مي)</label>
+                <input
+                  type="tel"
+                  inputmode="numeric"
+                  :value="createForm.w2_wage_mi_text"
+                  @input="createForm.w2_wage_mi_text = formatSpacedIntInput($event.target.value)"
+                  class="ltr"
+                  style="text-align:center; font-weight:700;"
+                  placeholder="25 000"
+                />
               </div>
               <div class="field">
                 <label>رمز PIN (6-8 أرقام)</label>
@@ -314,6 +349,15 @@
                 {{ lbl }}
               </label>
             </div>
+          </div>
+
+          <!-- فواتير العمال الاختيارية -->
+          <div class="field" v-if="createForm.work_pattern !== 'owner_only' && createForm.features.stock">
+            <label>صلاحيات العمال (اختياري)</label>
+            <label class="toggle-chip" :class="{ on: createForm.worker_invoices_enabled }">
+              <input type="checkbox" v-model="createForm.worker_invoices_enabled" />
+              إظهار باب «فواتير المخزن» للعمال
+            </label>
           </div>
 
           <button type="submit" class="btn btn-primary btn-block" :disabled="busy">
@@ -379,6 +423,15 @@
           </div>
         </div>
 
+        <!-- فواتير العمال الاختيارية -->
+        <div class="field" v-if="editForm.work_pattern !== 'owner_only' && editForm.features.stock">
+          <label>صلاحيات العمال (حصري للمشرف)</label>
+          <label class="toggle-chip" :class="{ on: editForm.worker_invoices_enabled }">
+            <input type="checkbox" v-model="editForm.worker_invoices_enabled" />
+            إظهار باب «فواتير المخزن» للعمال
+          </label>
+        </div>
+
         <button
           class="btn btn-primary btn-block"
           @click="saveCafeChanges"
@@ -416,7 +469,9 @@
           <div v-for="w in cafeWorkers" :key="w.id" class="card" style="background:#f9fafb; padding:10px;">
             <div class="row" style="margin-bottom:6px;">
               <strong>{{ w.display_name }} ({{ w.slot }})</strong>
-              <span class="muted num">الأجر: {{ miToTnd(w.default_wage_mi) }} د.ت • جلسة #{{ w.session_version }}</span>
+              <span class="muted">
+                الأجر: <strong class="num-ltr">{{ formatMi(w.default_wage_mi) }}</strong> مي • جلسة #<span class="num-ltr">{{ w.session_version }}</span>
+              </span>
             </div>
             <div class="row">
               <button v-if="w.user_id" class="btn btn-sm btn-outline" @click="openPinModal(w)" :disabled="busy">
@@ -528,7 +583,7 @@
       </div>
     </div>
 
-    <!-- نافذة بطاقة مشاركة بيانات الدخول للواتساب (تظهر فوق جميع النوافذ) -->
+    <!-- نافذة بطاقة مشاركة بيانات الدخول للواتساب -->
     <div v-if="member && shareCard" class="modal-backdrop" style="z-index:70;" @click.self="shareCard = null">
       <div class="modal">
         <div class="row" style="margin-bottom:10px;">
@@ -567,8 +622,9 @@
       supabase,
       callManageAccounts,
       getServerTime,
-      miToTnd,
-      tndToMi,
+      formatMi,
+      inputToMi,
+      formatSpacedIntInput,
       daysRemaining,
       formatDate,
       formatWaPhone,
@@ -578,7 +634,7 @@
       generateRandomPin,
       WORK_PATTERNS,
       FEATURE_LABELS,
-    } from "./core/supabase.js?v=1.2.7";
+    } from "./core/supabase.js?v=1.3.1";
 
     createApp({
       setup() {
@@ -636,6 +692,26 @@
           }
         };
 
+        const saveWorkerInvoicesSetting = async ({ cafeId = null, code = null, enabled = false }) => {
+          let q = supabase.from("cafes").select("id, settings");
+          if (cafeId) q = q.eq("id", cafeId);
+          else if (code) q = q.eq("code", code);
+          else return;
+
+          const { data: row, error: selErr } = await q.maybeSingle();
+          if (selErr || !row) throw selErr || new Error("CAFE_NOT_FOUND");
+
+          const nextSettings = {
+            ...(row.settings && typeof row.settings === "object" ? row.settings : {}),
+            worker_invoices_enabled: Boolean(enabled),
+          };
+          const { error: updErr } = await supabase
+            .from("cafes")
+            .update({ settings: nextSettings })
+            .eq("id", row.id);
+          if (updErr) throw updErr;
+        };
+
         const showCreate = ref(false);
         const defaultCreateForm = () => ({
           name: "",
@@ -647,11 +723,12 @@
           work_pattern: "worker_only",
           days: 30,
           w1_name: "",
-          w1_wage_tnd: 25,
+          w1_wage_mi_text: "25 000",
           w1_pin: generateRandomPin(),
           w2_name: "",
-          w2_wage_tnd: 25,
+          w2_wage_mi_text: "25 000",
           w2_pin: generateRandomPin(),
+          worker_invoices_enabled: false,
           features: {
             stock: true,
             credit: false,
@@ -672,6 +749,7 @@
           phone: "",
           work_pattern: "owner_only",
           features: {},
+          worker_invoices_enabled: false,
           patternWarning: "",
           patternCanForce: false,
           patternForce: false,
@@ -782,7 +860,7 @@
             }
             member.value = data;
             loginForm.password = "";
-            await refreshAll();
+            await refreshAll(false);
             return true;
           } catch (e) {
             notify(translateError(e), "err");
@@ -792,7 +870,8 @@
           }
         };
 
-        const refreshAll = async () => {
+        const refreshAll = async (showFeedback = false) => {
+          const shouldNotify = showFeedback === true;
           busy.value = true;
           try {
             const [t, cRes, mRes, fRes, eRes] = await Promise.all([
@@ -815,11 +894,16 @@
             if (!eRes.error) errors.value = eRes.data || [];
             if (fRes.error || eRes.error) {
               notify("تم تحديث المقاهي، لكن تعذّر تحميل بعض السجلات الجانبية.", "err");
+            } else if (shouldNotify) {
+              notify("تم تحديث البيانات بنجاح.");
             }
 
             if (selectedCafe.value) {
               const fresh = cafes.value.find((c) => c.id === selectedCafe.value.id);
               selectedCafe.value = fresh || null;
+              if (fresh) {
+                editForm.worker_invoices_enabled = Boolean(fresh.settings?.worker_invoices_enabled);
+              }
             }
           } catch (e) {
             notify(translateError(e), "err");
@@ -878,6 +962,11 @@
               owner_email: email,
               owner_password: createForm.owner_password,
             };
+            const wantWorkerInvoices = Boolean(
+              createForm.work_pattern !== "owner_only" &&
+              createForm.features.stock &&
+              createForm.worker_invoices_enabled
+            );
             const payload = {
               action: "create_cafe",
               code: snapshot.code,
@@ -892,18 +981,27 @@
             };
             if (createForm.work_pattern !== "owner_only") {
               payload.w1_name = createForm.w1_name;
-              payload.w1_wage_mi = tndToMi(createForm.w1_wage_tnd);
+              payload.w1_wage_mi = inputToMi(createForm.w1_wage_mi_text);
               if (patternNeedsW1Pin(createForm.work_pattern)) {
                 payload.w1_pin = createForm.w1_pin;
               }
             }
             if (createForm.work_pattern === "two_workers") {
               payload.w2_name = createForm.w2_name;
-              payload.w2_wage_mi = tndToMi(createForm.w2_wage_tnd);
+              payload.w2_wage_mi = inputToMi(createForm.w2_wage_mi_text);
               payload.w2_pin = createForm.w2_pin;
             }
 
             const res = await callManageAccounts(payload);
+
+            if (wantWorkerInvoices) {
+              try {
+                await saveWorkerInvoicesSetting({ code: snapshot.code, enabled: true });
+              } catch (sErr) {
+                notify(`تم إنشاء المقهى، لكن تعذّر حفظ خيار فواتير العمال: ${translateError(sErr)}`, "err");
+              }
+            }
+
             showCreate.value = false;
             notify("تم إنشاء المقهى وحساباته بنجاح.");
 
@@ -927,7 +1025,7 @@
               phone: snapshot.phone,
               lines,
             });
-            await refreshAll();
+            await refreshAll(false);
           } catch (e) {
             notify(translateError(e), "err");
           } finally {
@@ -942,6 +1040,7 @@
           editForm.owner_name = cafe.owner_name || "";
           editForm.phone = cafe.phone || "";
           editForm.work_pattern = cafe.work_pattern;
+          editForm.worker_invoices_enabled = Boolean(cafe.settings?.worker_invoices_enabled);
           editForm.features = {
             stock: false,
             credit: false,
@@ -971,6 +1070,16 @@
               features: { ...editForm.features },
               force: editForm.patternForce,
             });
+
+            const nextWorkerInv = Boolean(
+              editForm.work_pattern !== "owner_only" &&
+              editForm.features.stock &&
+              editForm.worker_invoices_enabled
+            );
+            if (nextWorkerInv !== Boolean(cafeRef.settings?.worker_invoices_enabled)) {
+              await saveWorkerInvoicesSetting({ cafeId: cafeRef.id, enabled: nextWorkerInv });
+            }
+
             clearPatternWarning();
             notify("تم حفظ التعديلات.");
             const pins = res.worker_pins || {};
@@ -987,7 +1096,7 @@
                 lines,
               });
             }
-            await refreshAll();
+            await refreshAll(false);
           } catch (e) {
             const slotLabel = e.details?.slot ? ` (${e.details.slot})` : "";
             if (e?.message === "WORKER_HAS_UNSETTLED_ITEMS") {
@@ -997,9 +1106,9 @@
               editForm.patternForce = false;
               editForm.patternWarning = `لا يمكن تغيير النمط: يوجد ${s} يومية و ${inv} فاتورة غير مُسوّاة للمقعد${slotLabel}. سوِّ الحساب أولاً من لوحة المقهى.`;
             } else if (e?.message === "WORKER_HAS_CARRY_OVER") {
-              const c = miToTnd(e.details?.carry_over_mi || 0);
+              const c = formatMi(e.details?.carry_over_mi || 0);
               editForm.patternCanForce = true;
-              editForm.patternWarning = `يوجد رصيد مرحّل بقيمة ${c} د.ت بذمّة المقعد${slotLabel} الذي سيُعطّل عند تغيير النمط.`;
+              editForm.patternWarning = `يوجد رصيد مرحّل بقيمة ${c} مي بذمّة المقعد${slotLabel} الذي سيُعطّل عند تغيير النمط.`;
             }
             notify(translateError(e), "err");
           } finally {
@@ -1017,7 +1126,7 @@
               extend_days: days,
             });
             notify(`تم تمديد الاشتراك +${days} يوم.`);
-            await refreshAll();
+            await refreshAll(false);
           } catch (e) {
             notify(translateError(e), "err");
           } finally {
@@ -1038,7 +1147,7 @@
               active: !cafe.active,
             });
             notify(cafe.active ? "تم إيقاف المقهى." : "تم تفعيل المقهى.");
-            await refreshAll();
+            await refreshAll(false);
           } catch (e) {
             notify(translateError(e), "err");
           } finally {
@@ -1106,7 +1215,7 @@
                 `رمز PIN الجديد: ${pin}`,
               ],
             });
-            await refreshAll();
+            await refreshAll(false);
           } catch (e) {
             notify(translateError(e), "err");
           } finally {
@@ -1155,7 +1264,7 @@
                 ],
               });
             }
-            await refreshAll();
+            await refreshAll(false);
           } catch (e) {
             if (e?.message === "WORKER_HAS_UNSETTLED_ITEMS") {
               const s = e.details?.pending_shifts || 0;
@@ -1164,9 +1273,9 @@
               resetModal.force = false;
               resetModal.warning = `يوجد ${s} يومية و ${inv} فاتورة غير مُسوّاة لهذا العامل. يجب تسويتها أولاً من لوحة المقهى قبل التصفير.`;
             } else if (e?.message === "WORKER_HAS_CARRY_OVER") {
-              const c = miToTnd(e.details?.carry_over_mi || 0);
+              const c = formatMi(e.details?.carry_over_mi || 0);
               resetModal.canForce = true;
-              resetModal.warning = `يوجد رصيد مرحّل متبقٍ بقيمة ${c} د.ت بذمّة العامل السابق.`;
+              resetModal.warning = `يوجد رصيد مرحّل متبقٍ بقيمة ${c} مي بذمّة العامل السابق.`;
             }
             notify(translateError(e), "err");
           } finally {
@@ -1191,7 +1300,7 @@
             } else {
               notify("تم حذف المقهى وحساباته نهائياً.");
             }
-            await refreshAll();
+            await refreshAll(false);
           } catch (e) {
             notify(translateError(e), "err");
           } finally {
@@ -1225,7 +1334,7 @@
           loginForm, toast, showCreate, createForm, selectedCafe, editForm, ownerNewPass,
           pinModal, resetModal, deleteModal,
           WORK_PATTERNS, FEATURE_LABELS,
-          miToTnd, formatDate, statusBadge, daysLabel, cafeNameById, patternNeedsW1Pin, generateRandomPin,
+          formatMi, inputToMi, formatSpacedIntInput, formatDate, statusBadge, daysLabel, cafeNameById, patternNeedsW1Pin, generateRandomPin,
           clearPatternWarning,
           login, logout, refreshAll, copyShareCard, openCreateModal, createCafe,
           openManageModal, saveCafeChanges, quickExtend, toggleActive,
